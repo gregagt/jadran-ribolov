@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#020c1b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Jadran · Plima & Ribolov</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Courier+Prime&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{background:linear-gradient(160deg,#020c1b,#071a35 50%,#030d1e);background-attachment:fixed;color:#e2e8f0;font-family:'Courier Prime',monospace;padding-bottom:80px;overflow-x:hidden}
+button{cursor:pointer;font-family:inherit}button:focus{outline:none}a{color:#38bdf8}
+#app{max-width:660px;margin:0 auto;padding:0 13px;position:relative;z-index:1}
+#stars{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:0;overflow:hidden}
+.star{position:absolute;background:#fff;border-radius:50%;animation:twinkle var(--d) infinite alternate}
+@keyframes twinkle{from{opacity:var(--a)}to{opacity:calc(var(--a)*.3)}}
+/* Header */
+.hdr{text-align:center;padding:22px 0 12px;position:relative}
+.hdr h1{font-family:'Playfair Display',serif;font-size:23px;font-weight:700;letter-spacing:2px;text-shadow:0 0 30px rgba(56,189,248,.4)}
+.hdr-sub{color:#38bdf8;font-size:12px;letter-spacing:3px;margin-top:3px;text-transform:uppercase}
+.hdr-anchor{font-size:30px;animation:float 3s ease-in-out infinite;display:block;margin-bottom:4px}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.cfg-btn{position:absolute;top:22px;right:0;background:transparent;border:1px solid #1e3a5f;border-radius:8px;padding:7px 10px;color:#64748b;font-size:16px}
+.api-badge{display:inline-flex;align-items:center;gap:5px;border-radius:6px;padding:3px 8px;font-size:11px;letter-spacing:1px;margin-top:5px}
+/* Location */
+.loc-card{background:linear-gradient(135deg,#0d1f38,#0a1628);border-radius:14px;padding:13px 14px;border:1px solid #1e3a5f;margin-bottom:12px}
+.loc-scroll{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-bottom:8px}
+.loc-scroll::-webkit-scrollbar{display:none}
+.loc-btn{flex-shrink:0;padding:6px 13px;border-radius:16px;background:#0a1628;border:1.5px solid #1e3a5f;color:#94a3b8;font-size:13px;white-space:nowrap;cursor:pointer;transition:all .2s}
+.loc-btn.on{background:linear-gradient(135deg,#1d4ed8,#1e40af);border-color:#3b82f6;color:#fff}
+/* Tabs */
+.tabs{display:flex;gap:5px;background:#0a1628;border-radius:11px;padding:4px;margin-bottom:12px}
+.tab{flex:1;padding:10px 0;border-radius:8px;background:transparent;border:1px solid transparent;color:#64748b;font-size:14px;transition:all .2s}
+.tab.on{background:#1d4ed8;border-color:#3b82f6;color:#fff}
+/* Date nav */
+.dnav{display:flex;align-items:center;background:#0f1e35;border-radius:11px;padding:8px 12px;border:1px solid #1e3a5f;margin-bottom:12px}
+.dnav-btn{background:transparent;border:1px solid #1e3a5f;color:#60a5fa;border-radius:8px;padding:5px 13px;font-size:15px}
+.dnav-btn:active{background:#1e3a5f}
+.ddisp{text-align:center;flex:1}
+.ddisp .wday{color:#64748b;font-size:12px;letter-spacing:2px;text-transform:uppercase}
+.ddisp .dstr{color:#e2e8f0;font-family:'Playfair Display',serif;font-size:17px;margin-top:2px}
+.today-b{display:inline-block;background:#1d4ed8;color:#93c5fd;font-size:9px;padding:2px 6px;border-radius:4px;margin-top:3px;letter-spacing:1px}
+/* Cards */
+.card{background:linear-gradient(135deg,#0d1f38,#0a1628);border-radius:14px;padding:14px;border:1px solid #1e3a5f;margin-bottom:12px}
+.clbl{font-size:12px;color:#38bdf8;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px}
+.tgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+/* Weather card */
+.wcard{background:linear-gradient(135deg,#0d2238,#081624);border-radius:14px;padding:14px;border:1px solid #1e4060;margin-bottom:12px}
+.w-main{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.w-ico{font-size:40px;flex-shrink:0}
+.w-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.w-it{background:#0a1628;border-radius:9px;padding:8px 10px;text-align:center}
+.w-itl{color:#475569;font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}
+.w-itv{color:#e2e8f0;font-size:16px;font-family:'Playfair Display',serif}
+.w-itu{color:#64748b;font-size:11px;margin-top:2px}
+.sea-b{display:inline-flex;align-items:center;gap:6px;background:#0a2a3a;border:1px solid #0e4a6e;border-radius:8px;padding:5px 11px;margin-top:7px}
+/* Chart */
+.src-row{display:flex;align-items:center;gap:6px;margin-bottom:7px}
+.src-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.src-txt{font-size:12px;color:#64748b}
+.cnote{text-align:right;color:#f472b6;font-size:10px;margin-top:-4px}
+/* Extremes */
+.ext-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ext-it{background:#0a1628;border-radius:9px;padding:9px 11px}
+/* Fishing windows */
+.fw{background:#0a1628;border-radius:9px;padding:10px 12px;display:flex;align-items:center;gap:10px;margin-bottom:7px;border:1px solid #1e3a5f}
+.fw.hi{border-color:#92400e}
+.fw-inf{flex:1}
+.fw-bdg{background:#1e3a5f;border-radius:7px;padding:5px 9px;color:#38bdf8;font-size:12px;text-align:center;flex-shrink:0;line-height:1.5}
+/* Show more button */
+.smb{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(90deg,#0f2340,#0a1a30);border:1px solid #1e4060;border-radius:10px;padding:11px 14px;margin-top:10px;color:#38bdf8;font-size:14px;font-family:monospace;letter-spacing:1px;cursor:pointer;width:100%;text-align:left;transition:all .2s}
+.smb:active{background:linear-gradient(90deg,#1a3a60,#152a50)}
+.smb.green{border-color:#166534;background:linear-gradient(90deg,#0a2010,#061508);color:#4ade80}
+.smb-l{display:flex;align-items:center;gap:8px}
+/* Knots card */
+.kcard{background:linear-gradient(135deg,#052010,#0a1a0c);border-radius:14px;padding:14px;border:1.5px solid #166534;margin-bottom:12px}
+/* Knots overlay */
+.kn-card{background:linear-gradient(135deg,#0d1f38,#0a1628);border-radius:13px;border:1px solid #1e3a5f;margin-bottom:13px;overflow:hidden}
+.kn-hdr{padding:11px 13px 7px;display:flex;align-items:center;gap:9px}
+.kn-name{font-family:'Playfair Display',serif;font-size:22px;color:#e2e8f0;flex:1}
+.kn-bdg{border-radius:6px;padding:4px 9px;font-size:11px;font-family:monospace;letter-spacing:1px}
+.kn-use{color:#94a3b8;font-size:14px;padding:0 13px 9px;line-height:1.6}
+.kn-steps{padding:10px 13px 13px;display:flex;flex-direction:column;gap:7px}
+.kn-step{background:#040e1c;border-radius:8px;padding:9px 11px;display:flex;align-items:flex-start;gap:9px}
+.kn-snum{background:#1e3a5f;color:#60a5fa;border-radius:50%;width:24px;height:24px;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-family:monospace}
+.kn-stxt{color:#e2e8f0;font-size:15px;line-height:1.5}
+/* Ferry */
+.ferry-card{background:linear-gradient(135deg,#0d1f38,#0a1628);border-radius:14px;padding:14px;border:1px solid #1e3a5f;margin-bottom:12px}
+.ferry-dir{background:#0a1628;border-radius:11px;padding:12px 13px;margin-bottom:10px;border:1px solid #1e3a5f}
+.ferry-times{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.ferry-time{background:#040e1c;border-radius:7px;padding:7px 4px;text-align:center;font-family:monospace;font-size:14px;color:#e2e8f0;border:1px solid #1e3a5f}
+.ferry-time.next{background:#1d4ed8;border-color:#3b82f6;color:#fff;font-weight:700}
+.ferry-time.past{opacity:.35}
+.season-btn{flex:1;padding:9px;border-radius:9px;background:transparent;border:1px solid #1e3a5f;color:#64748b;font-size:13px;font-family:monospace;cursor:pointer;transition:all .2s}
+.season-btn.on{background:#1d4ed8;border-color:#3b82f6;color:#fff}
+/* Ferry lines */
+.fl-region{margin-bottom:16px}
+.fl-region-title{font-size:12px;color:#38bdf8;letter-spacing:3px;text-transform:uppercase;font-family:monospace;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid #1e3a5f}
+.fl-card{background:#0a1628;border-radius:10px;padding:10px 12px;margin-bottom:7px;border:1px solid #1e3a5f}
+.fl-name{font-family:'Playfair Display',serif;font-size:16px;color:#e2e8f0;margin-bottom:4px}
+.fl-meta{display:flex;gap:7px;margin-bottom:7px;flex-wrap:wrap}
+.fl-badge{font-size:11px;font-family:monospace;padding:2px 7px;border-radius:4px;letter-spacing:1px}
+.fl-times-wrap{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px}
+.fl-time{background:#040e1c;border:1px solid #1e3a5f;border-radius:5px;padding:5px 9px;font-size:13px;font-family:monospace;color:#e2e8f0}
+.fl-time.next{border-color:#3b82f6;color:#60a5fa;background:#0d1e3a;font-weight:700}
+.fl-note{color:#475569;font-size:12px;margin-top:4px;line-height:1.5}
+/* Calendar */
+.cal-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:11px}
+.cal-nav{background:transparent;border:1px solid #1e3a5f;color:#60a5fa;border-radius:6px;padding:5px 11px;font-size:12px}
+.cal-dh{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:3px}
+.cal-dn{text-align:center;color:#475569;font-size:12px;padding:4px 0}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-d{background:transparent;border:1.5px solid transparent;border-radius:7px;color:#cbd5e1;font-size:14px;padding:6px 2px;text-align:center;position:relative;font-family:monospace;transition:all .15s;min-height:33px}
+.cal-d.tod{background:#1e3a5f;border-color:#334155}
+.cal-d.sel{background:#1d4ed8;border-color:#60a5fa;color:#fff}
+.cal-d:active{opacity:.7}
+.cal-dot{position:absolute;top:1px;right:3px;font-size:7px;color:#fbbf24}
+/* Overlay */
+.ovl{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:200;background:#020c1b;flex-direction:column;animation:fadeIn .22s ease}
+.ovl.on{display:flex}
+@keyframes fadeIn{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
+.ovl-hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 15px 9px;border-bottom:1px solid #1e3a5f;background:linear-gradient(180deg,#071a35,#020c1b);flex-shrink:0;gap:8px;flex-wrap:wrap}
+.ovl-ttl{font-family:'Playfair Display',serif;font-size:24px;color:#e2e8f0;letter-spacing:1px}
+.ovl-sub{color:#64748b;font-size:12px;margin-top:2px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.cls-btn{background:linear-gradient(135deg,#1d4ed8,#1e40af);border:1px solid #3b82f6;color:#fff;border-radius:9px;padding:8px 15px;font-size:14px;font-family:monospace;white-space:nowrap}
+.cls-btn:active{background:#1e40af}
+.ovl-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 13px 20px}
+/* FS chart */
+.fs-legend{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:3px}
+.ldot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.ftl{background:#0a1628;border-radius:11px;padding:11px}
+.ftl-lbl{font-size:10px;color:#38bdf8;letter-spacing:2px;text-transform:uppercase;margin-bottom:7px}
+.ft-row{display:flex;align-items:center;gap:7px;margin-bottom:5px}
+.ft-t{color:#64748b;font-size:10px;width:38px;flex-shrink:0;font-family:monospace}
+.ft-bw{flex:1;background:#0f1e35;border-radius:4px;height:17px;overflow:hidden}
+.ft-b{height:100%;border-radius:4px;display:flex;align-items:center;justify-content:flex-end;padding-right:5px;min-width:28px}
+.ft-p{font-size:9px;color:#fff;font-family:monospace;font-weight:700}
+/* WF */
+.wf-day{background:linear-gradient(135deg,#0d1f38,#0a1628);border-radius:12px;padding:12px 13px;margin-bottom:8px;border:1px solid #1e3a5f;display:flex;align-items:center;gap:11px}
+.wf-day.tod{border-color:#1d4ed8}.wf-day.sel{border-color:#fbbf24}
+/* Settings */
+.sett-panel{background:linear-gradient(135deg,#0d1f38,#0a1628);border:1px solid #1e3a5f;border-radius:18px;padding:22px;margin:auto 14px;max-width:460px;width:100%}
+.sinp{width:100%;background:#0a1628;border:1px solid #1e3a5f;border-radius:10px;padding:10px 13px;color:#e2e8f0;font-size:15px;font-family:monospace}
+.sinp:focus{outline:none;border-color:#3b82f6}
+/* Map */
+#ov-map .ovl-body{padding:0;display:flex;flex-direction:column}
+#leaflet-map{width:100%;height:100%;min-height:400px}
+.map-bar{background:#0a1628;padding:10px 14px;border-top:1px solid #1e3a5f;flex-shrink:0}
+.leaflet-tooltip-dark{background:#0a1628;border:1px solid #1e3a5f;color:#e2e8f0;font-family:monospace;font-size:12px;border-radius:6px;padding:4px 8px}
+.ferry-popup .leaflet-popup-content-wrapper{background:#0a1628;border:1px solid #1e3a5f;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,.6);padding:0}
+.ferry-popup .leaflet-popup-content{margin:0}
+.ferry-popup .leaflet-popup-tip{background:#1e3a5f}
+/* Inst */
+.inst-section{margin-bottom:16px}
+.inst-title{display:flex;align-items:center;gap:8px;font-family:'Playfair Display',serif;font-size:20px;color:#38bdf8;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #1e3a5f}
+.inst-item{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;background:#040e1c;border-radius:9px;padding:9px 11px}
+.inst-ico{font-size:20px;flex-shrink:0;margin-top:1px}
+.inst-txt b{color:#e2e8f0;font-size:15px;display:block;margin-bottom:2px}
+.inst-txt span{color:#64748b;font-size:13px;line-height:1.5}
+.ibadge{display:inline-block;background:#1d4ed8;color:#93c5fd;font-size:9px;padding:2px 7px;border-radius:4px;font-family:monospace;letter-spacing:1px;margin-left:6px;vertical-align:middle}
+/* Footer */
+.ftr{text-align:center;margin-top:20px;color:#1e3a5f;font-size:9px;letter-spacing:2px;line-height:2}
+#ibanner{display:none;position:fixed;bottom:0;left:0;right:0;z-index:100;background:linear-gradient(135deg,#1d4ed8,#1e40af);padding:12px 16px;align-items:center;gap:10px;border-top:1px solid #3b82f6}
+#ibanner.on{display:flex}
+#ibanner p{flex:1;font-size:12px;color:#e0f2fe}
+</style>
+</head>
+<body>
+<div id="stars"></div>
+
+<!-- CHART FS -->
+<div id="ov-chart" class="ovl">
+  <div class="ovl-hdr"><div><div class="ovl-ttl">🌊 Plima &amp; Ribolov</div><div class="ovl-sub" id="fs-date"></div></div><button class="cls-btn" onclick="Z('ov-chart')">✕ Zapri</button></div>
+  <div class="ovl-body">
+    <div style="width:100%;overflow-x:auto"><svg id="chart-fs" viewBox="0 0 700 260" style="width:100%;min-width:300px;height:auto;display:block"></svg></div>
+    <div class="fs-legend" style="margin:4px 0 10px">
+      <span style="display:flex;align-items:center;gap:4px;font-size:10px;color:#94a3b8"><span class="ldot" style="background:#38bdf8"></span>Plima</span>
+      <span style="display:flex;align-items:center;gap:4px;font-size:10px;color:#94a3b8"><span class="ldot" style="background:#4ade80"></span>Ribolov%</span>
+      <span style="display:flex;align-items:center;gap:4px;font-size:10px;color:#94a3b8"><span class="ldot" style="background:#fbbf24"></span>Visoka</span>
+      <span style="display:flex;align-items:center;gap:4px;font-size:10px;color:#94a3b8"><span class="ldot" style="background:#60a5fa"></span>Nizka</span>
+      <span style="display:flex;align-items:center;gap:4px;font-size:10px;color:#94a3b8"><span class="ldot" style="background:#f472b6"></span>Zdaj</span>
+    </div>
+    <div class="ftl"><div class="ftl-lbl">🎣 Ribolov po urah</div><div id="fs-bars"></div></div>
+    <div style="margin-top:10px"><div style="font-size:10px;color:#38bdf8;letter-spacing:3px;text-transform:uppercase;margin-bottom:7px">📊 Plima / Oseka</div><div class="ext-grid" id="fs-ext"></div></div>
+  </div>
+</div>
+
+<!-- WEATHER -->
+<div id="ov-wf" class="ovl">
+  <div class="ovl-hdr"><div><div class="ovl-ttl">⛅ 10-dnevna napoved</div><div class="ovl-sub" id="wf-loc"></div></div><button class="cls-btn" onclick="Z('ov-wf')">✕ Zapri</button></div>
+  <div class="ovl-body" id="wf-body"><div style="text-align:center;padding:40px;color:#334155;font-size:12px">⟳ NALAGANJE...</div></div>
+</div>
+
+<!-- KNOTS -->
+<div id="ov-knots" class="ovl">
+  <div class="ovl-hdr"><div><div class="ovl-ttl">🪢 Ribiški vozli</div><div class="ovl-sub">VIR: RIBISKEKARTE.SI</div></div><button class="cls-btn" onclick="Z('ov-knots')">✕ Zapri</button></div>
+  <div class="ovl-body" id="knots-body"></div>
+</div>
+
+<!-- FERRY -->
+<div id="ov-ferry" class="ovl">
+  <div class="ovl-hdr">
+    <div style="flex:1;min-width:0"><div class="ovl-ttl">⛴️ Trajekt Prizna – Žigljen</div><div class="ovl-sub">JADROLINIJA · LINIJA 9052 <button onclick="toggleSched()" id="btn-sched" style="background:#1e3a5f;border:1px solid #334155;color:#38bdf8;border-radius:6px;padding:3px 9px;font-size:10px;font-family:monospace;cursor:pointer">Pokaži urnik ›</button></div></div>
+    <button class="cls-btn" onclick="Z('ov-ferry')">✕ Zapri</button>
+  </div>
+  <div class="ovl-body">
+    <div style="display:flex;align-items:center;gap:10px;background:#040e1c;border-radius:9px;padding:9px 12px;margin-bottom:10px"><span style="font-size:22px">⏱️</span><div style="flex:1"><div style="color:#e2e8f0;font-size:13px">Čas prečkanja</div><div style="color:#38bdf8;font-size:13px;margin-top:2px">~15 minut · razdalja 3,5 km</div></div><div style="text-align:right"><div style="color:#4ade80;font-size:13px;font-family:monospace">NON-STOP</div><div style="color:#64748b;font-size:10px">v sezoni</div></div></div>
+    <div id="sched-body" style="display:none">
+      <div style="display:flex;gap:6px;margin-bottom:12px">
+        <button class="season-btn on" onclick="setFS('summer')" id="fs-summer">☀️ Sezona</button>
+        <button class="season-btn" onclick="setFS('winter')" id="fs-winter">❄️ Izven sezone</button>
+      </div>
+      <div class="ferry-dir"><div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="font-size:18px">🚢</span><div style="font-family:'Playfair Display',serif;font-size:15px;color:#e2e8f0;flex:1">Prizna → Žigljen</div><span style="font-size:10px;color:#64748b;font-family:monospace">(celina → otok)</span></div><div class="ferry-times" id="ft-pz"></div></div>
+      <div class="ferry-dir"><div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="font-size:18px">🚢</span><div style="font-family:'Playfair Display',serif;font-size:15px;color:#e2e8f0;flex:1">Žigljen → Prizna</div><span style="font-size:10px;color:#64748b;font-family:monospace">(otok → celina)</span></div><div class="ferry-times" id="ft-zp"></div></div>
+      <div style="background:#0a1628;border-radius:9px;padding:9px 12px;border:1px solid #334155;font-size:10px;color:#475569;line-height:1.6;margin-bottom:10px">⚠️ <strong style="color:#e2e8f0">Urnik je informativen</strong> — preverite na <a href="https://www.jadrolinija.hr" target="_blank">jadrolinija.hr</a></div>
+      <a href="https://www.jadrolinija.hr/vozni-red/brodske-linije" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#1d4ed8,#1e40af);border:1px solid #3b82f6;border-radius:10px;padding:11px;color:#fff;font-size:12px;font-family:monospace;text-decoration:none;margin-bottom:8px">🌐 URADNI URNIK — JADROLINIJA.HR</a>
+      <a href="tel:+38521338333" style="display:flex;align-items:center;justify-content:center;gap:8px;background:#0a1628;border:1px solid #1e3a5f;border-radius:10px;padding:10px;color:#94a3b8;font-size:12px;font-family:monospace;text-decoration:none;margin-bottom:8px">📞 JADROLINIJA: +385 21 338 333</a>
+    </div>
+    <button onclick="Z('ov-ferry');O('ov-ferry-all')" style="width:100%;background:linear-gradient(135deg,#0d2238,#081624);border:1.5px solid #1e4060;border-radius:10px;padding:11px;color:#38bdf8;font-size:12px;font-family:monospace;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;letter-spacing:1px;margin-top:4px">⛴️ OSTALE HRVAŠKE TRAJEKTNE LINIJE ›</button>
+  </div>
+</div>
+
+<!-- FERRY ALL -->
+<div id="ov-ferry-all" class="ovl">
+  <div class="ovl-hdr"><div><div class="ovl-ttl">⛴️ Hrvaške trajektne linije</div><div class="ovl-sub">JADROLINIJA · KRILO</div></div><button class="cls-btn" onclick="Z('ov-ferry-all')">✕ Zapri</button></div>
+  <div class="ovl-body" id="fl-body"></div>
+</div>
+
+<!-- MAP -->
+<div id="ov-map" class="ovl">
+  <div class="ovl-hdr"><div><div class="ovl-ttl" id="map-ttl">🗺️ Izberi lokacijo</div><div class="ovl-sub" id="map-sub">TAPNI NA KARTI ZA POLJUBNO LOKACIJO</div></div><button class="cls-btn" onclick="Z('ov-map')">✕ Zapri</button></div>
+  <div class="ovl-body" style="padding:0;display:flex;flex-direction:column">
+    <div style="flex:1;min-height:0"><div id="leaflet-map"></div></div>
+    <div class="map-bar">
+      <div style="color:#64748b;font-size:10px;font-family:monospace;margin-bottom:6px;letter-spacing:1px">IZBRANA LOKACIJA</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div id="map-info" style="flex:1;color:#e2e8f0;font-size:13px;font-family:'Playfair Display',serif">—</div>
+        <button id="map-btn" onclick="confirmMapLoc()" style="background:linear-gradient(135deg,#1d4ed8,#1e40af);border:1px solid #3b82f6;color:#fff;border-radius:9px;padding:8px 16px;font-size:12px;font-family:monospace;cursor:pointer;display:none">Potrdi ›</button>
+      </div>
+      <div id="map-coords" style="color:#475569;font-size:10px;font-family:monospace;margin-top:3px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div id="ov-cfg" class="ovl">
+  <div class="ovl-hdr"><div><div class="ovl-ttl">⚙️ Nastavitve</div><div class="ovl-sub">WORLDTIDES API KLJUČ</div></div><button class="cls-btn" onclick="Z('ov-cfg')">✕ Zapri</button></div>
+  <div class="ovl-body"><div class="sett-panel">
+    <div style="font-size:10px;color:#38bdf8;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px">🔑 API ključ</div>
+    <input class="sinp" id="api-inp" type="password" placeholder="Prilepite WorldTides API ključ…" autocomplete="off">
+    <div style="color:#475569;font-size:10px;line-height:1.6;margin-top:8px">Brezplačen ključ (10 zahtev/dan): <a href="https://www.worldtides.info" target="_blank" style="color:#60a5fa">worldtides.info</a> → Register → Free Plan<br><br>Brez ključa: harmonični model — napaka do <strong style="color:#f87171">±1-2 uri</strong>.<br>Z ključem: uradni podatki — natančnost <strong style="color:#4ade80">±5 min</strong>.</div>
+    <div style="display:flex;align-items:center;gap:8px;background:#0a1628;border-radius:8px;padding:10px 12px;margin-top:12px"><div id="cfg-dot" style="width:8px;height:8px;border-radius:50%;background:#334155;flex-shrink:0"></div><div id="cfg-txt" style="color:#94a3b8;font-size:11px">Ni ključa</div></div>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button onclick="saveCfg()" style="flex:1;background:linear-gradient(135deg,#1d4ed8,#1e40af);border:1px solid #3b82f6;color:#fff;border-radius:10px;padding:11px;font-size:13px;font-family:monospace">💾 Shrani</button>
+      <button onclick="Z('ov-cfg')" style="flex:1;background:transparent;border:1px solid #334155;color:#94a3b8;border-radius:10px;padding:11px;font-size:13px;font-family:monospace">Zapri</button>
+    </div>
+  </div></div>
+</div>
+
+<!-- INSTRUCTIONS -->
+<div id="ov-inst" class="ovl">
+  <div class="ovl-hdr"><div><div class="ovl-ttl">📖 Navodila za uporabo</div><div class="ovl-sub">JADRAN RIBOLOV &amp; PLIMA v2</div></div><button class="cls-btn" onclick="Z('ov-inst')">✕ Zapri</button></div>
+  <div class="ovl-body">
+    <div class="inst-section">
+      <div class="inst-title"><span>📍</span> Lokacija</div>
+      <div class="inst-item"><div class="inst-ico">🏝️</div><div class="inst-txt"><b>Hitra izbira</b><span>Tapni gumb mesta pod lokacijsko kartico</span></div></div>
+      <div class="inst-item"><div class="inst-ico">🗺️</div><div class="inst-txt"><b>Karta</b><span>Tapni "Pokaži na karti" → tapni točko → Potrdi. Za poljubne točke se plimski podatki interpolirajo.</span></div></div>
+    </div>
+    <div class="inst-section">
+      <div class="inst-title"><span>🌊</span> Plima &amp; ribolov</div>
+      <div class="inst-item"><div class="inst-ico">📊</div><div class="inst-txt"><b>Graf</b><span>Tapni "Pokaži več" za povečan graf z ribolovno aktivnostjo v %.</span></div></div>
+      <div class="inst-item"><div class="inst-ico">🎣</div><div class="inst-txt"><b>Ocena 0–100</b><span>Upošteva plimo, luno, zoro/mrak. ✅ Najboljši časi = ob visoki plimi. ❌ Najslabši = ob nizki oseki.</span></div></div>
+    </div>
+    <div class="inst-section">
+      <div class="inst-title"><span>⚙️</span> Natančnost</div>
+      <div class="inst-item"><div class="inst-ico">🌊</div><div class="inst-txt"><b>Brez API ključa<span class="ibadge">±1-2 URI</span></b><span>Harmonični model — orientacijska vrednost, napaka do ±2 uri.</span></div></div>
+      <div class="inst-item"><div class="inst-ico">✅</div><div class="inst-txt"><b>Z WorldTides ključem<span class="ibadge" style="background:#14532d;color:#4ade80">±5 MIN</span></b><span>Uradni admiralitetni podatki. Brezplačen ključ na <a href="https://www.worldtides.info" target="_blank">worldtides.info</a></span></div></div>
+    </div>
+    <div style="text-align:center;padding:8px 0;color:#1e3a5f;font-size:9px;font-family:monospace;letter-spacing:2px">JADRAN RIBOLOV &amp; PLIMA · v2.0</div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <div class="hdr">
+    <span class="hdr-anchor">⚓</span><h1>Plima &amp; Ribolov</h1>
+    <div class="hdr-sub" id="hdr-sub">Jadransko morje</div>
+    <div id="api-bdg"></div>
+    <button class="cfg-btn" onclick="O('ov-cfg')">⚙️</button>
+  </div>
+
+  <div class="loc-card">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+      <div style="font-size:28px" id="loc-flag">🏝️</div>
+      <div style="flex:1"><div style="font-family:'Playfair Display',serif;font-size:20px;color:#e2e8f0" id="loc-name">Pag</div><div style="color:#475569;font-size:12px;font-family:monospace;margin-top:2px" id="loc-coords">44.44°N · 15.06°E</div></div>
+    </div>
+    <div class="loc-scroll" id="locs"></div>
+    <button class="smb" onclick="O('ov-map')"><div class="smb-l"><span>🗺️</span><span>Pokaži na karti — izberi poljubno lokacijo</span></div><span style="font-size:18px;color:#60a5fa">›</span></button>
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" onclick="showTab('t')" id="tab-t">📅 Pregled</button>
+    <button class="tab" onclick="showTab('c')" id="tab-c">🗓 Koledar</button>
+  </div>
+  <div class="dnav">
+    <button class="dnav-btn" onclick="chgDay(-1)">◀</button>
+    <div class="ddisp"><div class="wday" id="wday"></div><div class="dstr" id="dstr"></div><div id="today-b" class="today-b" style="display:none">DANES</div></div>
+    <button class="dnav-btn" onclick="chgDay(1)">▶</button>
+  </div>
+
+  <div id="v-t">
+    <div class="tgrid">
+      <div class="card">
+        <div class="clbl">🎣 Ribolov</div>
+        <div style="text-align:center">
+          <svg viewBox="0 0 100 100" style="width:84px;height:84px">
+            <circle cx="50" cy="50" r="38" fill="none" stroke="#1e3a5f" stroke-width="8"/>
+            <circle cx="50" cy="50" r="38" fill="none" id="sc-arc" stroke="#4ade80" stroke-width="8" stroke-linecap="round" stroke-dasharray="0 239" transform="rotate(-90 50 50)" style="transition:stroke-dasharray .6s"/>
+            <text x="50" y="46" text-anchor="middle" fill="#e2e8f0" font-size="18" font-family="'Playfair Display',serif" font-weight="700" id="sc-num">--</text>
+            <text x="50" y="58" text-anchor="middle" fill="#94a3b8" font-size="8" font-family="monospace">/100</text>
+          </svg>
+          <div style="font-size:13px;letter-spacing:1px;margin-top:2px" id="sc-lbl"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="clbl">🌙 Luna</div>
+        <span style="font-size:44px;display:block;text-align:center;margin:3px 0 5px" id="moon-ico">🌕</span>
+        <div style="color:#cbd5e1;font-size:13px;text-align:center" id="moon-name"></div>
+        <div style="color:#64748b;font-size:10px;text-align:center;margin-top:3px" id="moon-phase"></div>
+        <div style="color:#475569;font-size:9px;text-align:center;margin-top:6px;line-height:1.5" id="moon-tip"></div>
+      </div>
+    </div>
+
+    <div class="wcard">
+      <div class="clbl">⛅ Vreme &amp; Morje <span id="w-loc-lbl" style="color:#64748b;font-size:11px;float:right;font-family:monospace;text-transform:none;letter-spacing:0"></span></div>
+      <div id="w-content"><div style="text-align:center;color:#334155;font-size:11px;padding:16px;letter-spacing:2px">⟳ NALAGANJE...</div></div>
+      <div id="w-strip" style="margin-top:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none"></div>
+      <button class="smb" onclick="openWF()" style="margin-top:8px"><div class="smb-l"><span>🗓️</span><span>Pokaži več — 10-dnevna napoved</span></div><span style="font-size:18px;color:#60a5fa">›</span></button>
+    </div>
+
+    <div class="card">
+      <div class="clbl">🌊 Graf plime in oseke <span id="chart-loc-lbl" style="color:#64748b;font-size:11px;float:right;font-family:monospace;text-transform:none;letter-spacing:0"></span></div>
+      <div class="src-row" id="src-row"></div>
+      <div style="width:100%;overflow-x:auto"><svg id="chart-sm" viewBox="0 0 600 155" style="width:100%;height:auto;display:block"></svg></div>
+      <div class="cnote" id="cnote" style="display:none">── trenutni čas</div>
+      <button class="smb" onclick="O('ov-chart')" style="margin-top:10px"><div class="smb-l"><span>📊</span><span>Pokaži več — detajlni graf z ribolovnimi %</span></div><span style="font-size:18px;color:#60a5fa">›</span></button>
+    </div>
+
+    <div class="card"><div class="clbl">📊 Plima / Oseka</div><div class="ext-grid" id="ext-grid"></div></div>
+    <div class="card"><div class="clbl">🐟 Najboljši čas za ribolov</div><div id="fw-list"></div></div>
+
+    <div class="kcard">
+      <div class="clbl" style="color:#4ade80">🪢 Ribiški vozli</div>
+      <div style="display:flex;align-items:center;gap:14px;padding:2px 0 4px">
+        <div style="font-size:44px">🪢</div>
+        <div style="flex:1"><div style="color:#e2e8f0;font-family:'Playfair Display',serif;font-size:18px;margin-bottom:4px">5 ribiških vozlov</div><div style="color:#4ade80;font-size:13px">Palomar · Rapala · Clinch · Uni · San Diego</div></div>
+        <div style="background:#166534;border-radius:10px;padding:10px 12px;color:#4ade80;font-size:22px">›</div>
+      </div>
+      <button class="smb green" onclick="openKnots()" style="margin-top:10px"><div class="smb-l"><span>🪢</span><span>Pokaži več — slike vozlov</span></div><span style="font-size:18px;color:#4ade80">›</span></button>
+    </div>
+
+    <div class="ferry-card">
+      <div class="clbl">⛴️ Trajekt Prizna – Žigljen</div>
+      <div style="display:flex;align-items:center;gap:14px;padding:2px 0 4px">
+        <div style="font-size:44px">⛴️</div>
+        <div style="flex:1"><div style="color:#e2e8f0;font-family:'Playfair Display',serif;font-size:18px;margin-bottom:3px">Jadrolinija · Linija 9052</div><div id="ferry-lbl" style="color:#38bdf8;font-size:14px;font-family:monospace;margin-bottom:3px">⟳ nalagam...</div><div style="color:#475569;font-size:12px">~15 min prečkanje</div></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="smb" onclick="O('ov-ferry');toggleSched(true)" style="flex:1"><div class="smb-l"><span>🕐</span><span>Urnik odhodov</span></div><span style="font-size:18px;color:#60a5fa">›</span></button>
+        <button class="smb" onclick="openFerryMap()" style="flex:1"><div class="smb-l"><span>🗺️</span><span>Ostale linije</span></div><span style="font-size:18px;color:#60a5fa">›</span></button>
+      </div>
+    </div>
+
+    <div class="card" style="cursor:pointer" onclick="O('ov-inst')">
+      <div style="display:flex;align-items:center;gap:12px"><span style="font-size:32px">📖</span><div style="flex:1"><div style="font-family:'Playfair Display',serif;font-size:16px;color:#e2e8f0;margin-bottom:3px">Navodila za uporabo</div><div style="color:#64748b;font-size:11px">Kako brati graf · Ribolovna ocena · API ključ</div></div><span style="color:#334155;font-size:22px">›</span></div>
+    </div>
+
+    <div class="ftr">JADRAN FISHING TIDES · JADRANSKO MORJE<br><span style="font-size:8px">Podatki so orientacijski</span></div>
+  </div>
+
+  <div id="v-c" style="display:none">
+    <div class="card">
+      <div class="cal-hdr"><button class="cal-nav" onclick="calNav(-1)">◀</button><div style="font-family:'Playfair Display',serif;font-size:15px;color:#e2e8f0" id="cal-mn"></div><button class="cal-nav" onclick="calNav(1)">▶</button></div>
+      <div class="cal-dh"><div class="cal-dn">Po</div><div class="cal-dn">To</div><div class="cal-dn">Sr</div><div class="cal-dn">Če</div><div class="cal-dn">Pe</div><div class="cal-dn">So</div><div class="cal-dn">Ne</div></div>
+      <div class="cal-grid" id="cal-grid"></div>
+    </div>
+    <div class="ftr" style="margin-top:8px">● = nova luna ali polna luna</div>
+  </div>
+</div>
+<div id="ibanner"><p>📲 Dodaj na začetni zaslon</p><button onclick="installApp()" style="background:#fff;color:#1d4ed8;border:none;border-radius:8px;padding:7px 13px;font-size:12px;font-weight:700">Namesti</button><button onclick="document.getElementById('ibanner').classList.remove('on')" style="background:transparent;border:none;color:#93c5fd;font-size:20px;padding:0 4px">✕</button></div>
+
+<script>
+// ── Stars ──────────────────────────────────────────────────────────
+const SE=document.getElementById('stars');
+for(let i=0;i<60;i++){const s=document.createElement('div');s.className='star';const sz=Math.random()*2+1,op=(Math.random()*.5+.1).toFixed(2),d=(Math.random()*3+2).toFixed(1)+'s';s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*60}%;--a:${op};--d:${d}`;SE.appendChild(s);}
+
+// ── Locations ──────────────────────────────────────────────────────
+const LOCS=[
+  {id:'pag',name:'Pag',lat:44.44,lon:15.06,flag:'🏝️',tide:{msl:.25,M2:{H:.185,g:128},S2:{H:.075,g:153},N2:{H:.036,g:108},K1:{H:.112,g:226},O1:{H:.086,g:205}}},
+  {id:'zadar',name:'Zadar',lat:44.12,lon:15.23,flag:'🏰',tide:{msl:.27,M2:{H:.190,g:140},S2:{H:.077,g:165},N2:{H:.038,g:120},K1:{H:.115,g:226},O1:{H:.088,g:205}}},
+  {id:'split',name:'Split',lat:43.51,lon:16.44,flag:'⚓',tide:{msl:.22,M2:{H:.170,g:112},S2:{H:.063,g:138},N2:{H:.033,g:93},K1:{H:.110,g:225},O1:{H:.085,g:204}}},
+  {id:'dubrovnik',name:'Dubrovnik',lat:42.65,lon:18.09,flag:'🌅',tide:{msl:.18,M2:{H:.135,g:83},S2:{H:.053,g:108},N2:{H:.027,g:63},K1:{H:.092,g:214},O1:{H:.072,g:194}}},
+  {id:'pula',name:'Pula',lat:44.87,lon:13.85,flag:'🏛️',tide:{msl:.40,M2:{H:.320,g:208},S2:{H:.133,g:237},N2:{H:.064,g:188},K1:{H:.133,g:230},O1:{H:.102,g:210}}},
+  {id:'cervar',name:'Červar',lat:45.22,lon:13.62,flag:'🏖️',tide:{msl:.38,M2:{H:.295,g:206},S2:{H:.122,g:234},N2:{H:.058,g:186},K1:{H:.133,g:230},O1:{H:.102,g:209}}},
+  {id:'rovinj',name:'Rovinj',lat:45.08,lon:13.64,flag:'🎨',tide:{msl:.38,M2:{H:.292,g:205},S2:{H:.121,g:233},N2:{H:.057,g:185},K1:{H:.132,g:230},O1:{H:.101,g:208}}},
+];
+
+// ── State ──────────────────────────────────────────────────────────
+const MN=['Januar','Februar','Marec','April','Maj','Junij','Julij','Avgust','September','Oktober','November','December'];
+const WD=['nedelja','ponedeljek','torek','sreda','četrtek','petek','sobota'];
+let selDate=new Date(); selDate.setHours(0,0,0,0);
+let selLoc=LOCS[0];
+let calY=selDate.getFullYear(), calM=selDate.getMonth();
+let _pts=[], _exs=[], _rid=0;
+let tCache={}, wCache={}, fcCache={};
+let apiKey=''; try{apiKey=localStorage.getItem('wt_key')||'';}catch(e){}
+const SG_KEY_DEFAULT=''; // Ključ je v Netlify environment variables
+let sgKey=SG_KEY_DEFAULT;
+
+// ── Helpers ────────────────────────────────────────────────────────
+function lD(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function fmt(d){return d.toLocaleTimeString('sl-SI',{hour:'2-digit',minute:'2-digit'});}
+function fmtH(h){return h.toFixed(2)+' m';}
+function fMin(t){const[h,m]=t.split(':').map(Number);return h*60+m;}
+
+// ── Tide model ─────────────────────────────────────────────────────
+const EP=Date.UTC(2024,0,1,0,0,0);
+const V0={M2:149.14,S2:0,N2:283.28,K1:10.52,O1:48.62};
+const OM={M2:28.9841,S2:30,N2:28.4397,K1:15.0411,O1:13.9430};
+function tH(d,loc){
+  const t=(d.getTime()-EP)/3600000,r=Math.PI/180,{msl,M2,S2,N2,K1,O1}=loc.tide;
+  return msl+M2.H*Math.cos((OM.M2*t+V0.M2-M2.g)*r)+S2.H*Math.cos((OM.S2*t+V0.S2-S2.g)*r)+N2.H*Math.cos((OM.N2*t+V0.N2-N2.g)*r)+K1.H*Math.cos((OM.K1*t+V0.K1-K1.g)*r)+O1.H*Math.cos((OM.O1*t+V0.O1-O1.g)*r);
+}
+function buildHarmonic(loc,date){
+  const s=new Date(date.getFullYear(),date.getMonth(),date.getDate()),pts=[],exs=[];
+  for(let m=0;m<=1440;m+=15){const d=new Date(s.getTime()+m*60000);pts.push({minute:m,height:tH(d,loc),time:d});}
+  for(let i=1;i<pts.length-1;i++){const p=pts[i-1].height,c=pts[i].height,n=pts[i+1].height;if(c>p&&c>n)exs.push({...pts[i],type:'high'});else if(c<p&&c<n)exs.push({...pts[i],type:'low'});}
+  return{pts,exs,src:'harmonic'};
+}
+function interpolateTide(lat,lon){
+  const w=LOCS.map(l=>{const d=Math.sqrt((lat-l.lat)**2+(lon-l.lon)**2)||.0001;return 1/(d*d);});
+  const sw=w.reduce((a,b)=>a+b,0);
+  const tide={msl:LOCS.reduce((a,l,i)=>a+l.tide.msl*w[i],0)/sw};
+  ['M2','S2','N2','K1','O1'].forEach(c=>{
+    const H=LOCS.reduce((a,l,i)=>a+l.tide[c].H*w[i],0)/sw;
+    let ss=0,cs=0;LOCS.forEach((l,i)=>{ss+=Math.sin(l.tide[c].g*Math.PI/180)*w[i];cs+=Math.cos(l.tide[c].g*Math.PI/180)*w[i];});
+    tide[c]={H,g:(Math.atan2(ss/sw,cs/sw)*180/Math.PI+360)%360};
+  });
+  return tide;
+}
+
+async function fetchSG(loc,date){
+  const ld=lD(date);
+  const cacheKey='sg2_'+loc.id+'_'+ld;
+  // In-memory
+  if(tCache[cacheKey])return tCache[cacheKey];
+  // localStorage
+  try{
+    const s=localStorage.getItem(cacheKey);
+    if(s){const p=JSON.parse(s);p.pts=p.pts.map(x=>({...x,time:new Date(x.time)}));p.exs=p.exs.map(x=>({...x,time:new Date(x.time)}));tCache[cacheKey]=p;return p;}
+  }catch(e){}
+
+  // Pridobi ekstrema iz Netlify Function (1 klic/lokacijo/leto)
+  const timeout=ms=>new Promise((_,r)=>setTimeout(()=>r(new Error('Timeout')),ms));
+  const url=`/api/tides?lat=${loc.lat}&lng=${loc.lon}&date=${ld}`;
+  const res=await Promise.race([fetch(url),timeout(15000)]);
+  if(!res.ok)throw new Error('API HTTP '+res.status);
+  const data=await res.json();
+  if(data.error)throw new Error(data.error);
+
+  const d0=new Date(date.getFullYear(),date.getMonth(),date.getDate());
+
+  // Parsiraj ekstrema
+  const exs=(data.extremes||[]).map(e=>{
+    const d=new Date(e.time),m=Math.round((d-d0)/60000);
+    return m>=-120&&m<=1560?{minute:Math.max(0,Math.min(1440,m)),height:e.height,time:d,type:e.type}:null;
+  }).filter(Boolean);
+
+  // Rekonstruiraj krivuljo plime iz ekstremov (kosinus interpolacija)
+  const pts=reconstructCurve(exs,d0);
+
+  const r={pts,exs,src:'stormglass'};
+  tCache[cacheKey]=r;
+  try{
+    // Počisti star keš in shrani
+    Object.keys(localStorage).filter(k=>k.startsWith('sg2_')&&k!==cacheKey).forEach(k=>localStorage.removeItem(k));
+    localStorage.setItem(cacheKey,JSON.stringify({pts:pts.map(p=>({...p,time:p.time.toISOString()})),exs:exs.map(e=>({...e,time:e.time.toISOString()})),src:'stormglass'}));
+  }catch(e){}
+  return r;
+}
+
+// Rekonstruira gladko krivuljo plime iz točk ekstremov
+function reconstructCurve(exs, d0){
+  if(!exs||exs.length<2)return[];
+  // Razširi z ocenjenimi točkami izven dneva za gladke robove
+  const all=[...exs].sort((a,b)=>a.minute-b.minute);
+  const pts=[];
+  for(let m=0;m<=1440;m+=15){
+    // Najdi sosednji ekstrem pred in po
+    let before=null,after=null;
+    for(let i=0;i<all.length;i++){
+      if(all[i].minute<=m)before=all[i];
+      if(all[i].minute>=m&&!after)after=all[i];
+    }
+    let h;
+    if(!before&&after)h=after.height;
+    else if(before&&!after)h=before.height;
+    else if(before.minute===m)h=before.height;
+    else{
+      // Kosinus interpolacija med dvema ekstremoma
+      const t=(m-before.minute)/(after.minute-before.minute);
+      h=(before.height+after.height)/2-(after.height-before.height)/2*Math.cos(Math.PI*t);
+    }
+    pts.push({minute:m,height:h,time:new Date(d0.getTime()+m*60000)});
+  }
+  return pts;
+}
+
+
+async function fetchWT(loc,date){
+  const ld=lD(date),ck=loc.id+'_'+ld;if(tCache[ck])return tCache[ck];
+  const s=Math.floor(new Date(date.getFullYear(),date.getMonth(),date.getDate()).getTime()/1000);
+  const ctrl=new AbortController();setTimeout(()=>ctrl.abort(),12000);
+  const res=await fetch(`https://www.worldtides.info/api/v3?heights&extremes&step=900&lat=${loc.lat}&lon=${loc.lon}&start=${s}&length=86400&datum=LAT&key=${apiKey}`,{signal:ctrl.signal});
+  if(!res.ok)throw new Error('HTTP '+res.status);
+  const data=await res.json();if(data.status&&data.status!==200)throw new Error(data.error||'API err');
+  const ds=new Date(date.getFullYear(),date.getMonth(),date.getDate());
+  const pts=data.heights.map(h=>{const d=new Date(h.dt*1000),m=Math.round((d-ds)/60000);return{minute:m,height:h.height,time:d};}).filter(p=>p.minute>=0&&p.minute<=1440);
+  const exs=data.extremes.map(e=>{const d=new Date(e.dt*1000),m=Math.round((d-ds)/60000);return{minute:m,height:e.height,time:d,type:e.type==='High'?'high':'low'};}).filter(e=>e.minute>=0&&e.minute<=1440);
+  const r={pts,exs,src:'worldtides'};tCache[ck]=r;return r;
+}
+async function getTides(loc,date){
+  {try{return await fetchSG(loc,date);}catch(e){
+    if(apiKey){try{return await fetchWT(loc,date);}catch(e2){const h=buildHarmonic(loc,date);h.apiErr='SG: '+e.message;return h;}}
+    const h=buildHarmonic(loc,date);h.apiErr='Stormglass: '+e.message;return h;
+  }}
+  if(apiKey){try{return await fetchWT(loc,date);}catch(e){const h=buildHarmonic(loc,date);h.apiErr=e.message;return h;}}
+  return buildHarmonic(loc,date);
+}
+
+// ── Moon ──────────────────────────────────────────────────────────
+function moonPhase(d){const diff=(d-new Date(2000,0,6,18,14,0))/86400000;return((diff%29.53058867)+29.53058867)%29.53058867;}
+const MOONS=[{max:1.5,n:'Mlaj',i:'🌑'},{max:7.4,n:'Raščerb.',i:'🌒'},{max:14.75,n:'Polmesec ↗',i:'🌓'},{max:16.25,n:'Polna luna',i:'🌕'},{max:22.1,n:'Polmesec ↘',i:'🌖'},{max:28,n:'Tč. 3/4',i:'🌘'},{max:30,n:'Mlaj (pred)',i:'🌑'}];
+function getMoon(d){const p=moonPhase(d);for(const m of MOONS)if(p<=m.max)return{...m,p};return{...MOONS[MOONS.length-1],p};}
+
+// ── Fishing score ─────────────────────────────────────────────────
+function fScore(t,exs,date){
+  const p=moonPhase(date),md=Math.min(p,29.53-p,Math.abs(p-14.77)),mb=Math.max(0,30-md*8);
+  const h=t.getHours()+t.getMinutes()/60,dd=((h>=5&&h<=7)||(h>=19&&h<=21))?15:0;
+  let tb=0;for(const e of exs){const dh=Math.abs((t-e.time)/3600000);if(dh<2.5)tb=Math.max(tb,25-dh*8);}
+  return Math.min(100,Math.round(30+mb*.5+tb+dd));
+}
+function dayScore(date,exs){return fScore(new Date(date.getFullYear(),date.getMonth(),date.getDate(),6),exs,date);}
+
+// ── Weather ───────────────────────────────────────────────────────
+function wmo(c){const m={0:['☀️','Jasno'],1:['🌤️','Pretežno jasno'],2:['⛅','Delno oblačno'],3:['☁️','Oblačno'],45:['🌫️','Megla'],51:['🌦️','Rosica'],61:['🌧️','Rahel dež'],63:['🌧️','Dež'],65:['🌧️','Močan dež'],71:['🌨️','Sneg'],80:['🌦️','Plohe'],81:['🌧️','Plohe'],82:['⛈️','Plohe'],95:['⛈️','Nevihta']};return m[c]||['🌡️','Neznano'];}
+function wDir(d){return['S','SSV','SV','VSV','V','VJV','JV','JJV','J','JJZ','JZ','ZJZ','Z','ZSZ','SZ','SSZ'][Math.round(d/22.5)%16];}
+function wArr(d){return['↓','↙','←','↖','↑','↗','→','↘'][Math.round(d/45)%8];}
+function bft(k){if(k<6)return'1 Bft';if(k<12)return'2 Bft';if(k<20)return'3 Bft';if(k<29)return'4 Bft';if(k<39)return'5 Bft';if(k<50)return'6 Bft';return'7+ Bft';}
+function wCol(s){return s>40?'#f87171':s>25?'#fb923c':'#4ade80';}
+async function fetchW(loc,date){
+  const today=new Date();today.setHours(0,0,0,0);
+  const diff=Math.round((date-today)/86400000);
+  if(diff<0||diff>6)return{oor:true};
+  const ld=lD(date),ck=loc.id+'_'+ld;if(wCache[ck])return wCache[ck];
+  try{
+    const ctrl=new AbortController(),t=setTimeout(()=>ctrl.abort(),10000);
+    const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&daily=weathercode,temperature_2m_max,temperature_2m_min,windspeed_10m_max,winddirection_10m_dominant,precipitation_sum&timezone=Europe%2FZagreb&forecast_days=7`,{signal:ctrl.signal});
+    clearTimeout(t);if(!r.ok)throw new Error('HTTP '+r.status);const wd=await r.json();
+    let mt=null;try{const ctrl2=new AbortController(),t2=setTimeout(()=>ctrl2.abort(),8000);const r2=await fetch(`https://marine-api.open-meteo.com/v1/marine?latitude=${loc.lat}&longitude=${loc.lon}&daily=sea_surface_temperature_mean&timezone=Europe%2FZagreb&forecast_days=7`,{signal:ctrl2.signal});clearTimeout(t2);if(r2.ok)mt=await r2.json();}catch(e){}
+    const idx=wd.daily?.time?.indexOf(ld)??-1;if(idx===-1)return{err:'Datum ni v napovedi'};
+    const res={code:wd.daily.weathercode[idx],tMax:wd.daily.temperature_2m_max[idx],tMin:wd.daily.temperature_2m_min[idx],ws:wd.daily.windspeed_10m_max[idx],wd:wd.daily.winddirection_10m_dominant[idx],pr:wd.daily.precipitation_sum[idx],sea:mt?.daily?.sea_surface_temperature_mean?.[idx]??null};
+    wCache[ck]=res;return res;
+  }catch(e){return{err:e.name==='AbortError'?'Timeout':e.message};}
+}
+function renderW(data,date){
+  const today=new Date();today.setHours(0,0,0,0);
+  const el=document.getElementById('w-content');if(!el)return;
+  const diff=Math.round((date-today)/86400000);
+  if(!data||data.oor||diff<0||diff>6){el.innerHTML=`<div style="color:#334155;font-size:11px;padding:10px;text-align:center">📅 Napoved samo za naslednjih 7 dni</div>`;return;}
+  if(data.err){el.innerHTML=`<div style="color:#475569;font-size:11px;padding:10px;text-align:center">${data.err}<br><button onclick="retryW()" style="background:#1d4ed8;border:1px solid #3b82f6;color:#fff;border-radius:7px;padding:6px 14px;font-size:11px;font-family:monospace;cursor:pointer;margin-top:8px">⟳ Poskusi znova</button></div>`;return;}
+  const[ico,desc]=wmo(data.code),wc=wCol(data.ws);
+  el.innerHTML=`<div class="w-main"><div class="w-ico">${ico}</div><div><div style="font-family:'Playfair Display',serif;font-size:32px;line-height:1">${Math.round(data.tMax)}° <span style="color:#64748b;font-size:17px">/ ${Math.round(data.tMin)}°</span></div><div style="color:#94a3b8;font-size:13px;margin-top:3px">${desc.toUpperCase()}</div></div></div><div class="w-grid"><div class="w-it"><div class="w-itl">💨 Veter</div><div class="w-itv" style="color:${wc}">${Math.round(data.ws)}</div><div class="w-itu">km/h · ${bft(data.ws)}</div></div><div class="w-it"><div class="w-itl">${wArr(data.wd)} Smer</div><div class="w-itv">${wDir(data.wd)}</div><div class="w-itu">${Math.round(data.wd)}°</div></div><div class="w-it"><div class="w-itl">🌧️ Padavine</div><div class="w-itv">${data.pr!=null?data.pr.toFixed(1):'--'}</div><div class="w-itu">mm/dan</div></div></div>${data.sea!=null?`<div style="margin-top:7px"><div class="sea-b"><span style="font-size:17px">🌊</span><span style="color:#38bdf8;font-family:'Playfair Display',serif;font-size:19px">${data.sea.toFixed(1)}°C</span><span style="color:#64748b;font-size:10px">temperatura morja</span></div></div>`:''}`;
+}
+function retryW(){wCache={};const el=document.getElementById('w-content');if(el)el.innerHTML='<div style="text-align:center;color:#334155;font-size:11px;padding:16px">⟳ NALAGANJE...</div>';fetchW(selLoc,selDate).then(d=>renderW(d,selDate));}
+
+function renderStrip(data){
+  const el=document.getElementById('w-strip');if(!el)return;
+  if(!data||data.err||data.oor){el.innerHTML='';return;}
+  // build from fcCache if available
+  const fc=fcCache[selLoc.id];
+  if(!fc||fc.err){el.innerHTML='';return;}
+  const sd=['Ne','Po','To','Sr','Če','Pe','So'],today=new Date();today.setHours(0,0,0,0);
+  const seas=fc.sea?.sea_surface_temperature_mean||[];
+  let h='<div style="display:flex;gap:6px;padding:2px 0 4px">';
+  fc.w.time.forEach((ds,i)=>{
+    const d=new Date(ds+'T12:00:00'),it=d.getTime()===today.getTime(),is=d.getTime()===selDate.getTime();
+    const[ico]=wmo(fc.w.weathercode[i]),ws=Math.round(fc.w.windspeed_10m_max[i]),wc=wCol(ws);
+    h+=`<div onclick="selFromFC('${ds}')" style="flex-shrink:0;width:58px;background:${is?'#1d4ed8':it?'#1e3a5f':'#0a1628'};border:1.5px solid ${is?'#60a5fa':it?'#334155':'#1e3a5f'};border-radius:10px;padding:8px 4px;text-align:center;cursor:pointer">
+      <div style="font-size:10px;color:${is?'#93c5fd':'#64748b'};font-family:monospace;margin-bottom:2px">${it?'Danes':sd[d.getDay()]}</div>
+      <div style="font-size:10px;color:${is?'#fff':'#94a3b8'};margin-bottom:1px">${d.getDate()}.${d.getMonth()+1}.</div>
+      <div style="font-size:22px;margin:3px 0">${ico}</div>
+      <div style="font-family:'Playfair Display',serif;font-size:14px;color:${is?'#fff':'#e2e8f0'}">${Math.round(fc.w.temperature_2m_max[i])}°</div>
+      <div style="font-size:11px;color:#475569">${Math.round(fc.w.temperature_2m_min[i])}°</div>
+      <div style="font-size:11px;color:${wc};margin-top:2px">${ws}<span style="font-size:9px">km/h</span></div>
+      ${seas[i]!=null?`<div style="font-size:10px;color:#38bdf8;margin-top:2px">🌊${seas[i].toFixed(0)}°</div>`:''}
+    </div>`;
+  });
+  h+='</div>';
+  el.innerHTML=h;
+}
+
+async function fetchFC(loc){
+  if(fcCache[loc.id])return fcCache[loc.id];
+  try{
+    const ctrl=new AbortController();setTimeout(()=>ctrl.abort(),12000);
+    let wr,mr;
+    try{const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&daily=weathercode,temperature_2m_max,temperature_2m_min,windspeed_10m_max,winddirection_10m_dominant,precipitation_sum&timezone=Europe%2FZagreb&forecast_days=10`,{signal:ctrl.signal});wr={ok:r.ok,r};}catch(e){wr={ok:false};}
+    try{const r=await fetch(`https://marine-api.open-meteo.com/v1/marine?latitude=${loc.lat}&longitude=${loc.lon}&daily=sea_surface_temperature_mean&timezone=Europe%2FZagreb&forecast_days=10`,{signal:ctrl.signal});mr={ok:r.ok,r};}catch(e){mr={ok:false};}
+    if(!wr.ok)throw new Error('Napaka pri nalaganju');
+    const wd=await wr.r.json(),md=mr.ok?await mr.r.json():null;
+    const res={w:wd.daily,sea:md?.daily||null};fcCache[loc.id]=res;return res;
+  }catch(e){return{err:e.message};}
+}
+async function openWF(force){
+  if(force)fcCache={};
+  const wb=document.getElementById('wf-body');if(wb)wb.innerHTML='<div style="text-align:center;padding:40px;color:#334155;font-size:12px">⟳ NALAGANJE...</div>';
+  const wl=document.getElementById('wf-loc');if(wl)wl.innerHTML=`<span style='color:#e2e8f0;font-size:14px;font-family:\'Playfair Display\',serif'>${selLoc.flag} ${selLoc.name}</span> <span style='color:#475569'>· Jadransko morje</span>`;
+  O('ov-wf');
+  const data=await fetchFC(selLoc);
+  const el=document.getElementById('wf-body');if(!el)return;
+  if(data.err){el.innerHTML=`<div style="text-align:center;padding:30px;color:#475569;font-size:11px">${data.err}<br><br><button onclick="openWF(true)" style="background:#1d4ed8;border:1px solid #3b82f6;color:#fff;border-radius:8px;padding:7px 14px;font-size:12px;font-family:monospace;cursor:pointer">⟳ Poskusi znova</button></div>`;return;}
+  const today=new Date();today.setHours(0,0,0,0);
+  const sd=['Ned','Pon','Tor','Sre','Čet','Pet','Sob'],sm=['jan','feb','mar','apr','maj','jun','jul','avg','sep','okt','nov','dec'];
+  const seas=data.sea?.sea_surface_temperature_mean||[];
+  let h='';
+  if(seas[0]!=null){const e=seas[0]>24?'🔥':seas[0]>20?'😊':seas[0]>16?'🏊':'🥶';h+=`<div style="background:#0a1e30;border-radius:10px;padding:10px 13px;margin-bottom:9px;border:1px solid #0e3a5f;display:flex;align-items:center;gap:10px"><span style="font-size:18px">🌊</span><div style="flex:1;color:#38bdf8;font-size:10px;letter-spacing:2px;text-transform:uppercase">Temperatura morja danes</div><span style="font-family:'Playfair Display',serif;font-size:18px;color:#38bdf8">${seas[0].toFixed(1)}°C ${e}</span></div>`;}
+  data.w.time.forEach((ds,i)=>{
+    const d=new Date(ds+'T12:00:00'),it=d.getTime()===today.getTime(),is=d.getTime()===selDate.getTime();
+    const[ico,desc]=wmo(data.w.weathercode[i]),ws=Math.round(data.w.windspeed_10m_max[i]),wc=wCol(ws),pr=data.w.precipitation_sum[i]??0;
+    h+=`<div class="wf-day${it?' tod':is?' sel':''}" onclick="selFromFC('${ds}')" style="cursor:pointer"><div style="flex-shrink:0;width:50px"><div style="color:#94a3b8;font-size:9px;letter-spacing:1px;text-transform:uppercase">${it?'Danes':sd[d.getDay()]}</div><div style="color:#e2e8f0;font-family:'Playfair Display',serif;font-size:16px;margin-top:1px">${d.getDate()}. ${sm[d.getMonth()]}</div></div><div style="font-size:28px;flex-shrink:0;width:36px;text-align:center">${ico}</div><div style="flex:1;min-width:0"><div style="color:#cbd5e1;font-size:11px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${desc}</div><div style="display:flex;align-items:center;gap:4px;font-size:10px"><span style="color:${wc}">${wArr(data.w.winddirection_10m_dominant[i])} ${ws} km/h</span><span style="color:#475569">${wDir(data.w.winddirection_10m_dominant[i])}</span></div>${pr>.2?`<div style="font-size:9px;color:#60a5fa;margin-top:2px">🌧️ ${pr.toFixed(1)} mm</div>`:''}</div><div style="text-align:right;flex-shrink:0"><div style="font-family:'Playfair Display',serif;font-size:17px;color:#e2e8f0">${Math.round(data.w.temperature_2m_max[i])}°</div><div style="font-family:'Playfair Display',serif;font-size:12px;color:#64748b">${Math.round(data.w.temperature_2m_min[i])}°</div>${seas[i]!=null?`<div style="font-size:9px;color:#38bdf8;margin-top:2px">🌊${seas[i].toFixed(1)}°</div>`:''}</div></div>`;
+  });
+  el.innerHTML=h;
+}
+function selFromFC(ds){const d=new Date(ds+'T12:00:00');selDate=new Date(d.getFullYear(),d.getMonth(),d.getDate());calY=selDate.getFullYear();calM=selDate.getMonth();Z('ov-wf');render();}
+
+// ── Chart SVG ─────────────────────────────────────────────────────
+function buildSVG(pts,exs,curMin,W,H,fish,date){
+  if(!pts||!pts.length)return'<text x="50%" y="50%" text-anchor="middle" fill="#334155" font-size="10" font-family="monospace">Ni podatkov</text>';
+  // Small chart uses bigger text → needs more padding
+  const PL=fish?44:56,PR=fish?20:20,PT=20,PB=fish?28:36;
+  const cW=W-PL-PR,cH=H-PT-PB;
+  const hs=pts.map(p=>p.height),minH=Math.min(...hs)-.03,maxH=Math.max(...hs)+.03,rng=maxH-minH;
+  const xS=m=>PL+(m/1440)*cW,yS=h=>PT+cH-((h-minH)/rng)*cH;
+  const fp=fish?pts.map(p=>({m:p.minute,s:fScore(p.time,exs,date)})):[];
+  const pd=pts.map((p,i)=>`${i===0?'M':'L'}${xS(p.minute).toFixed(1)},${yS(p.height).toFixed(1)}`).join(' ');
+  const ad=pd+` L${xS(1440)},${PT+cH} L${PL},${PT+cH} Z`;
+  const hrs=[0,3,6,9,12,15,18,21,24];
+  let s=`<defs><linearGradient id="tg${W}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#38bdf8" stop-opacity=".45"/><stop offset="100%" stop-color="#0c4a6e" stop-opacity=".08"/></linearGradient>${fish?'<linearGradient id="fg'+W+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4ade80" stop-opacity=".32"/><stop offset="100%" stop-color="#166534" stop-opacity=".05"/></linearGradient>':''}<filter id="gl"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>`;
+  hrs.forEach(h=>{s+=`<line x1="${xS(h*60)}" y1="${PT}" x2="${xS(h*60)}" y2="${PT+cH}" stroke="#1e3a5f" stroke-width="1" stroke-dasharray="3,3"/>`;});
+  if(fish&&fp.length){
+    const fY=v=>PT+cH-(v/100)*cH,fpd=fp.map((p,i)=>`${i===0?'M':'L'}${xS(p.m).toFixed(1)},${fY(p.s).toFixed(1)}`).join(' ');
+    s+=`<path d="${fpd} L${xS(1440)},${PT+cH} L${PL},${PT+cH} Z" fill="url(#fg${W})"/>`;
+    s+=`<path d="${fpd}" fill="none" stroke="#4ade80" stroke-width="1.5" opacity=".7"/>`;
+    [0,50,100].forEach(v=>{s+=`<text x="${PL+cW+4}" y="${fY(v)+3}" fill="#4ade80" font-size="8" font-family="monospace" opacity=".6">${v}%</text>`;});
+    for(let i=2;i<fp.length-2;i++){const c=fp[i].s;if(c>fp[i-1].s&&c>fp[i+1].s&&c>=60){const x=xS(fp[i].m),y=fY(c)-10;s+=`<rect x="${x-14}" y="${y-10}" width="28" height="13" rx="4" fill="#166534" opacity=".85"/><text x="${x}" y="${y}" text-anchor="middle" fill="#4ade80" font-size="9" font-family="monospace" font-weight="700">${c}%</text>`;}}
+  }
+  s+=`<path d="${ad}" fill="url(#tg${W})"/><path d="${pd}" fill="none" stroke="#38bdf8" stroke-width="2.5" filter="url(#gl)"/>`;
+  exs.forEach(e=>{
+    const x=xS(e.minute).toFixed(1),y=yS(e.height).toFixed(1),col=e.type==='high'?'#fbbf24':'#60a5fa',ty=e.type==='high'?(parseFloat(y)-12):(parseFloat(y)+15);
+    s+=`<circle cx="${x}" cy="${y}" r="${fish?6:8}" fill="${col}" stroke="#0f172a" stroke-width="1.5"/>`;
+    s+=`<text x="${x}" y="${ty}" text-anchor="middle" fill="${col}" font-size="${fish?9:11}" font-family="monospace">${e.height.toFixed(2)}m</text>`;
+    if(fish)s+=`<text x="${x}" y="${parseFloat(ty)+(e.type==='high'?-11:13)}" text-anchor="middle" fill="${col}" font-size="8" font-family="monospace" opacity=".8">${fmt(e.time)}</text>`;
+  });
+  if(curMin!=null&&curMin>=0&&curMin<=1440)s+=`<line x1="${xS(curMin)}" y1="${PT}" x2="${xS(curMin)}" y2="${PT+cH}" stroke="#f472b6" stroke-width="2" stroke-dasharray="4,3" opacity=".9"/>`;
+  hrs.forEach(h=>{s+=`<text x="${xS(h*60)}" y="${H-5}" text-anchor="middle" fill="#64748b" font-size="${fish?9:12}" font-family="monospace">${h===24?'24:00':String(h).padStart(2,'0')+':00'}</text>`;});
+  [minH,(minH+maxH)/2,maxH].forEach(v=>{s+=`<text x="${PL-4}" y="${yS(v)+3}" text-anchor="end" fill="#64748b" font-size="${fish?8:11}" font-family="monospace">${v.toFixed(2)}</text>`;});
+  s+=`<text x="${W-PR}" y="${H-5}" text-anchor="end" fill="#1e3a5f" font-size="${fish?9:9}" font-family="monospace">${date.getDate()}.${date.getMonth()+1}.${date.getFullYear()}</text>`;
+  return s;
+}
+
+// ── Knots ─────────────────────────────────────────────────────────
+const KNOTS=[
+  {n:'Uni Slip vozel',bc:'#14532d',bt:'#4ade80',bdg:'ENOSTAVEN',use:'Zdrsne do ušesca in se zatisne ob vleku.',img:'https://www.ribiskekarte.si/blog/wp-content/uploads/2015/03/san.png',steps:['Navleci 15cm skozi ušesce, podvoji nazaj vzporedno','Oblikuj zanko vzdolž dvojne vrvice (rep navzdol)','Rep 5–6× ovij skozi zanko od spredaj navzad','Navlaži — povleci za rep nato stojko do ušesca']},
+  {n:'San Diego Jam vozel',bc:'#14532d',bt:'#4ade80',bdg:'ENOSTAVEN',use:'Zanesljiv za težje trnke in morski ribolov.',img:'https://www.ribiskekarte.si/blog/wp-content/uploads/2015/03/the-uni-slip-knot.png',steps:['Navleci 15cm skozi ušesce, rep vzporedno ob stojki','5× ovij REP okrog stojke od ušesca navzven','Zadnji ovoj skozi malo zanko ob ušescu','Navlaži in zatisni — obreži rep na 3mm']},
+  {n:'Palomar vozel',bc:'#14532d',bt:'#4ade80',bdg:'ENOSTAVEN',use:'Eden najmočnejših vozlov — ohrani 95% trdnosti.',img:'https://www.ribiskekarte.si/blog/wp-content/uploads/2015/03/vo2.png',steps:['Podvoji vrvico — OBE niti skupaj skozi ušesce trnke','Zaveži preprost vozel v dvojni vrvici — pusti zanko','Celotno trnko potisni skozi veliko zanko','Navlaži in enakomerno zatisni — obreži rep']},
+  {n:'Clinch vozel (izboljšan)',bc:'#14532d',bt:'#4ade80',bdg:'ENOSTAVEN',use:'Najpogostejši ribiški vozel na svetu.',img:'https://www.ribiskekarte.si/blog/wp-content/uploads/2015/03/vo3.png',steps:['Navleci 15cm skozi ušesce — 5–6× ovij rep okrog stojke','Rep skozi PRVO zanko tik ob ušescu','Rep nazaj skozi VELIKO zanko ki se je naredila','Navlaži — počasi in enakomerno zatisni k ušescu']},
+  {n:'Rapala vozel (prosta zanka)',bc:'#14532d',bt:'#4ade80',bdg:'ENOSTAVEN',use:'Vaba dobi prosto zanko za naravno gibanje.',img:'https://www.ribiskekarte.si/blog/wp-content/uploads/2015/03/vo6.png',steps:['15cm od konca zaveži preprost vozel — pusti odprto','Rep navleci skozi ušesce vabe ali trnke','Rep nazaj skozi preprost vozel','3× ovij rep okrog stojke, skozi zanko — zatisni']},
+];
+function openKnots(){
+  const el=document.getElementById('knots-body');if(!el)return;
+  let h='<div style="background:#0a1e10;border-radius:10px;padding:10px 13px;margin-bottom:12px;border:1px solid #166534;display:flex;align-items:center;gap:8px"><span style="font-size:15px">🪢</span><span style="color:#4ade80;font-size:10px;font-family:monospace;letter-spacing:1px">VIR: RIBISKEKARTE.SI</span><a href="https://www.ribiskekarte.si/blog/vozli-vozli-vozli/" target="_blank" style="margin-left:auto;color:#38bdf8;font-size:10px;font-family:monospace;text-decoration:none">ODPRI ›</a></div>';
+  KNOTS.forEach(k=>{h+=`<div class="kn-card"><div class="kn-hdr"><div class="kn-name">${k.n}</div><span class="kn-bdg" style="background:${k.bc};color:${k.bt}">${k.bdg}</span></div><div class="kn-use">${k.use}</div><div style="padding:4px 10px 8px;background:#fff"><img src="${k.img}" referrerpolicy="no-referrer" style="width:100%;display:block;max-height:240px;object-fit:contain" loading="lazy" alt="${k.n}"></div><div class="kn-steps">${k.steps.map((s,j)=>`<div class="kn-step"><div class="kn-snum">${j+1}</div><div class="kn-stxt">${s}</div></div>`).join('')}</div></div>`;});
+  el.innerHTML=h;O('ov-knots');
+}
+
+// ── Ferry Prizna ──────────────────────────────────────────────────
+const FERRY={summer:{pz:['05:00','06:00','07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00','00:00','01:00','02:00','03:00','04:00'],zp:['05:20','06:20','07:20','08:20','09:20','10:20','11:20','12:20','13:20','14:20','15:20','16:20','17:20','18:20','19:20','20:20','21:20','22:20','23:20','00:20','01:20','02:20','03:20','04:20']},winter:{pz:['06:00','08:00','10:00','12:00','14:00','16:00','18:00','20:00','22:00'],zp:['07:00','09:00','11:00','13:00','15:00','17:00','19:00','21:00','23:00']}};
+let fSezon='summer';
+function toggleSched(forceOpen){
+  const el=document.getElementById('sched-body'),btn=document.getElementById('btn-sched');if(!el)return;
+  const open=forceOpen!==undefined?forceOpen:(el.style.display==='none');
+  el.style.display=open?'block':'none';
+  if(btn)btn.textContent=open?'Skrij urnik ↑':'Pokaži urnik ›';
+  if(open)renderFerry();
+}
+function renderFerry(){
+  const now=new Date(),nowMin=now.getHours()*60+now.getMinutes(),sch=FERRY[fSezon];
+  ['pz','zp'].forEach(dir=>{
+    const el=document.getElementById('ft-'+dir);if(!el)return;
+    const times=sch[dir];let ni=-1;for(let i=0;i<times.length;i++){if(fMin(times[i])>nowMin){ni=i;break;}}
+    el.innerHTML=times.map((t,i)=>{const past=fMin(t)<nowMin&&i!==ni;return`<div class="ferry-time${i===ni?' next':past?' past':''}">${t}</div>`;}).join('');
+  });
+  const lbl=document.getElementById('ferry-lbl');
+  if(lbl){const pzT=sch.pz;let nt=null;for(const t of pzT){if(fMin(t)>nowMin){nt=t;break;}}
+    if(nt){const d=fMin(nt)-nowMin;lbl.textContent=`⛴️ Naslednji iz Prizne: ${nt} (čez ${Math.floor(d/60)>0?Math.floor(d/60)+'h ':''}${d%60}min)`;}
+    else lbl.textContent='⛴️ Naslednji: jutri ob '+pzT[0];}
+}
+function setFS(s){fSezon=s;const ss=document.getElementById('fs-summer'),sw=document.getElementById('fs-winter');if(ss)ss.className='season-btn'+(s==='summer'?' on':'');if(sw)sw.className='season-btn'+(s==='winter'?' on':'');renderFerry();}
+
+// ── Ferry all lines ────────────────────────────────────────────────
+const FERRY_ALL=[
+  {region:'⚓ Kvarner',lines:[
+    {name:'Prizna – Žigljen',sub:'Pag',time:'~15 min',op:'Jadrolinija · L9052',badge:'Non-stop v sezoni',
+     pz:['05:00','06:00','07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00','00:00'],
+     zp:['05:20','06:20','07:20','08:20','09:20','10:20','11:20','12:20','13:20','14:20','15:20','16:20','17:20','18:20','19:20','20:20','21:20','22:20','23:20','00:20']},
+    {name:'Stinica – Mišnjak',sub:'Rab',time:'~15 min',op:'Jadrolinija · L9064',
+     pz:['06:00','07:00','08:00','09:30','11:00','12:30','14:00','15:30','17:00','18:30','20:00','21:30','23:00'],
+     zp:['06:30','07:30','08:30','10:00','11:30','13:00','14:30','16:00','17:30','19:00','20:30','22:00','23:30']},
+    {name:'Brestova – Porozina',sub:'Cres',time:'~35 min',op:'Jadrolinija · L9055',
+     pz:['05:30','07:00','08:30','10:00','11:30','13:00','14:30','16:00','17:30','19:00','20:30','22:00'],
+     zp:['06:15','07:45','09:15','10:45','12:15','13:45','15:15','16:45','18:15','19:45','21:15','22:45']},
+    {name:'Valbiska – Merag',sub:'Krk–Cres',time:'~30 min',op:'Jadrolinija · L9056',
+     pz:['06:00','08:00','10:00','12:00','14:00','16:00','18:00','20:00','22:00'],
+     zp:['06:40','08:40','10:40','12:40','14:40','16:40','18:40','20:40','22:40']},
+  ]},
+  {region:'⚓ Zadar',lines:[
+    {name:'Zadar – Preko',sub:'Ugljan',time:'~20 min',op:'Jadrolinija · L9030',badge:'Pogost',
+     pz:['05:30','06:30','07:30','08:30','09:30','10:30','12:00','13:30','15:00','16:30','18:00','19:30','21:00','22:30'],
+     zp:['06:00','07:00','08:00','09:00','10:00','11:00','12:30','14:00','15:30','17:00','18:30','20:00','21:30','23:00']},
+    {name:'Biograd – Tkon',sub:'Pašman',time:'~20 min',op:'Jadrolinija · L9031',
+     pz:['06:00','08:00','10:00','12:00','14:00','16:00','18:00','20:00','22:00'],
+     zp:['06:30','08:30','10:30','12:30','14:30','16:30','18:30','20:30','22:30']},
+  ]},
+  {region:'⚓ Šibenik',lines:[
+    {name:'Šibenik – Zlarin – Prvić – Vodice',sub:'otoki',time:'~45 min',op:'Jadrolinija · L9046',
+     pz:['06:30','09:00','12:00','15:00','18:00','20:30'],
+     zp:['07:30','10:00','13:00','16:00','19:00','21:30'],
+     note:'Postanki: Zlarin → Prvić Šepurina → Prvić Luka → Vodice'},
+  ]},
+  {region:'⚓ Split',lines:[
+    {name:'Split – Supetar',sub:'Brač ⭐',time:'~50 min',op:'Jadrolinija · L9027',badge:'Najprometnješa',
+     pz:['05:00','07:00','08:30','10:00','11:30','13:00','14:30','16:00','17:30','19:00','20:30','22:00','23:30'],
+     zp:['06:00','08:00','09:30','11:00','12:30','14:00','15:30','17:00','18:30','20:00','21:30','23:00','00:30']},
+    {name:'Split – Rogač',sub:'Šolta',time:'~1 h',op:'Jadrolinija · L9028',
+     pz:['06:00','09:00','12:00','15:00','18:00','21:00'],
+     zp:['07:10','10:10','13:10','16:10','19:10','22:10']},
+    {name:'Split – Stari Grad',sub:'Hvar',time:'~2 h',op:'Jadrolinija · L9025',
+     pz:['06:00','09:00','12:30','16:00','20:00','23:00'],
+     zp:['05:00','08:00','11:00','14:30','18:00','22:00']},
+    {name:'Split – Vis',sub:'',time:'~2.5 h',op:'Jadrolinija · L9021',
+     pz:['07:00','14:30','21:00'],
+     zp:['05:00','12:00','18:00']},
+    {name:'Split – Vela Luka',sub:'Korčula',time:'~2.5 h',op:'Jadrolinija · L9022',
+     pz:['06:00','13:00','20:00'],
+     zp:['05:00','11:30','18:00'],
+     note:'Postanki: Hvar in Vela Luka'},
+    {name:'Drvenik – Sućuraj',sub:'Hvar',time:'~35 min',op:'Jadrolinija · L9034',
+     pz:['07:00','09:00','11:00','13:00','15:00','17:00','19:00','21:00'],
+     zp:['07:45','09:45','11:45','13:45','15:45','17:45','19:45','21:45']},
+    {name:'Makarska – Sumartin',sub:'Brač',time:'~1 h',op:'Jadrolinija · L9032',
+     pz:['06:30','09:00','12:00','15:00','18:00','21:00'],
+     zp:['05:30','07:30','10:00','13:00','16:00','19:30']},
+  ]},
+  {region:'⚓ Pelješac & Dubrovnik',lines:[
+    {name:'Ploče – Trpanj',sub:'Pelješac',time:'~1 h',op:'Jadrolinija · L9035',
+     pz:['07:00','09:30','12:00','15:00','18:00','20:30'],
+     zp:['06:00','08:00','10:30','13:00','16:00','19:00']},
+    {name:'Orebić – Dominče',sub:'Korčula',time:'~15 min',op:'Jadrolinija · L9039',
+     pz:['06:00','07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00'],
+     zp:['06:20','07:20','08:20','09:20','10:20','11:20','12:20','13:20','14:20','15:20','16:20','17:20','18:20','19:20','20:20','21:20','22:20']},
+    {name:'Dubrovnik – Koločep – Lopud – Šipan',sub:'otoki',time:'~1.5 h',op:'Jadrolinija · L9044',
+     pz:['07:00','09:00','12:00','15:00','18:00','21:00'],
+     zp:['06:00','08:30','11:00','14:00','17:00','20:00'],
+     note:'Postanki: Koločep → Lopud → Šipanska Luka'},
+  ]},
+  {region:'⚡ Hitri katamarani (Krilo)',lines:[
+    {name:'Split – Hvar – Korčula – Lastovo',sub:'',time:'~2 h',op:'Krilo',badge:'Rezervacija obvezna',
+     pz:['08:00','17:00'],zp:['06:00','15:30'],note:'krilo.hr · Sezonska linija'},
+    {name:'Split – Brač – Hvar – Vis',sub:'',time:'~2.5 h',op:'Krilo',
+     pz:['09:00','18:00'],zp:['06:30','16:00'],note:'Sezonska linija'},
+  ]},
+];
+
+function buildFerryAll(){
+  const el=document.getElementById('fl-body');if(!el)return;
+  const nowMin=new Date().getHours()*60+new Date().getMinutes();
+  const dirBlock=(dirName,times)=>{
+    if(!times||!times.length)return'';
+    const ni=times.findIndex(t=>fMin(t)>nowMin);
+    return`<div style="margin-bottom:10px">
+      <div style="font-family:'Playfair Display',serif;font-size:14px;color:#e2e8f0;margin-bottom:5px">${dirName}</div>
+      <div class="fl-times-wrap">${times.map((t,i)=>`<span class="fl-time${i===ni?' next':''}">${t}</span>`).join('')}</div>
+    </div>`;
+  };
+  let h='<div style="background:#0a1628;border:1px solid #334155;border-radius:9px;padding:9px 12px;margin-bottom:12px;font-size:12px;color:#475569;line-height:1.6">⚠️ Urniki so <strong style="color:#e2e8f0">orientacijski</strong> — preverite na <a href="https://www.jadrolinija.hr/vozni-red" target="_blank" style="color:#38bdf8">jadrolinija.hr</a></div>';
+  FERRY_ALL.forEach(reg=>{
+    h+=`<div class="fl-region"><div class="fl-region-title">${reg.region}</div>`;
+    reg.lines.forEach(line=>{
+      const parts=line.name.split(' – ');
+      const portA=parts[0].trim();
+      const portB=parts[parts.length-1].trim();
+      const revName=parts.slice().reverse().join(' – ');
+      h+=`<div class="fl-card">
+        <div class="fl-meta" style="margin-bottom:8px">
+          <span class="fl-badge" style="background:#14532d;color:#4ade80">${line.time}</span>
+          <span class="fl-badge" style="background:#0f1e35;color:#60a5fa">${line.op}</span>
+          ${line.badge?`<span class="fl-badge" style="background:#7c2d12;color:#fb923c">${line.badge}</span>`:''}
+          ${line.sub?`<span class="fl-badge" style="background:#0f2a1e;color:#86efac">${line.sub}</span>`:''}
+        </div>
+        <div style="border-left:3px solid #1e4060;padding-left:10px;margin-bottom:8px">
+          ${dirBlock(line.name,line.pz)}
+        </div>
+        ${line.zp?`<div style="border-left:3px solid #1e3a5f;padding-left:10px;margin-bottom:4px">${dirBlock(revName,line.zp)}</div>`:''}
+        ${line.note?`<div class="fl-note">ℹ️ ${line.note}</div>`:''}
+      </div>`;
+    });
+    h+='</div>';
+  });
+  h+=`<div style="text-align:center;margin-top:8px"><a href="https://www.jadrolinija.hr/vozni-red/brodske-linije" target="_blank" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#1d4ed8,#1e40af);border:1px solid #3b82f6;border-radius:10px;padding:11px 20px;color:#fff;font-size:12px;font-family:monospace;text-decoration:none;letter-spacing:1px">🌐 JADROLINIJA.HR — URADNI URNIKI</a></div>`;
+  el.innerHTML=h;
+}
+
+// ── Ferry map ─────────────────────────────────────────────────────
+const FERRY_ROUTES=[
+  {name:'Prizna–Žigljen',sub:'Pag',col:'#38bdf8',
+   coords:[[44.602,14.970],[44.581,14.949]],
+   pz:['05:00','06:00','07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00','00:00'],
+   zp:['05:20','06:20','07:20','08:20','09:20','10:20','11:20','12:20','13:20','14:20','15:20','16:20','17:20','18:20','19:20','20:20','21:20','22:20','23:20','00:20']},
+  {name:'Stinica–Mišnjak',sub:'Rab',col:'#7dd3fc',
+   coords:[[44.720,14.891],[44.706,14.861]],
+   pz:['06:00','07:00','09:30','11:00','12:30','14:00','15:30','17:00','18:30','20:00','21:30','23:00'],
+   zp:['06:30','07:30','10:00','11:30','13:00','14:30','16:00','17:30','19:00','20:30','22:00','23:30']},
+  {name:'Brestova–Porozina',sub:'Cres',col:'#60a5fa',
+   coords:[[45.169,14.220],[45.112,14.312]],
+   pz:['05:30','07:00','08:30','10:00','11:30','13:00','14:30','16:00','17:30','19:00','20:30','22:00'],
+   zp:['06:15','07:45','09:15','10:45','12:15','13:45','15:15','16:45','18:15','19:45','21:15','22:45']},
+  {name:'Valbiska–Merag',sub:'Krk–Cres',col:'#60a5fa',
+   coords:[[45.028,14.497],[44.980,14.448]],
+   pz:['06:00','08:00','10:00','12:00','14:00','16:00','18:00','20:00','22:00'],
+   zp:['06:40','08:40','10:40','12:40','14:40','16:40','18:40','20:40','22:40']},
+  {name:'Zadar–Preko',sub:'Ugljan',col:'#fbbf24',
+   coords:[[44.119,15.231],[44.089,15.189]],
+   pz:['05:30','06:30','07:30','08:30','09:30','10:30','12:00','13:30','15:00','16:30','18:00','19:30','21:00','22:30'],
+   zp:['06:00','07:00','08:00','09:00','10:00','11:00','12:30','14:00','15:30','17:00','18:30','20:00','21:30','23:00']},
+  {name:'Biograd–Tkon',sub:'Pašman',col:'#fbbf24',
+   coords:[[43.939,15.446],[43.921,15.414]],
+   pz:['06:00','08:00','10:00','12:00','14:00','16:00','18:00','20:00','22:00'],
+   zp:['06:30','08:30','10:30','12:30','14:30','16:30','18:30','20:30','22:30']},
+  {name:'Šibenik–Zlarin–Prvić–Vodice',sub:'otoki',col:'#fb923c',
+   coords:[[43.735,15.889],[43.700,15.858],[43.716,15.810],[43.744,15.779],[43.772,15.778]],
+   pz:['06:30','09:00','12:00','15:00','18:00','20:30'],
+   zp:['07:30','10:00','13:00','16:00','19:00','21:30']},
+  {name:'Split–Supetar',sub:'Brač',col:'#4ade80',
+   coords:[[43.508,16.440],[43.384,16.552]],
+   pz:['05:00','07:00','08:30','10:00','11:30','13:00','14:30','16:00','17:30','19:00','20:30','22:00','23:30'],
+   zp:['06:00','08:00','09:30','11:00','12:30','14:00','15:30','17:00','18:30','20:00','21:30','23:00','00:30']},
+  {name:'Split–Rogač',sub:'Šolta',col:'#34d399',
+   coords:[[43.508,16.440],[43.450,16.350],[43.382,16.277]],
+   pz:['06:00','09:00','12:00','15:00','18:00','21:00'],
+   zp:['07:10','10:10','13:10','16:10','19:10','22:10']},
+  {name:'Split–Stari Grad',sub:'Hvar',col:'#6ee7b7',
+   coords:[[43.508,16.440],[43.420,16.490],[43.300,16.530],[43.183,16.594]],
+   pz:['06:00','09:00','12:30','16:00','20:00','23:00'],
+   zp:['05:00','08:00','11:00','14:30','18:00','22:00']},
+  {name:'Split–Vis',sub:'',col:'#a7f3d0',
+   coords:[[43.508,16.440],[43.380,16.350],[43.200,16.250],[43.062,16.180]],
+   pz:['07:00','14:30','21:00'],
+   zp:['05:00','12:00','18:00']},
+  {name:'Split–Vela Luka',sub:'Korčula',col:'#86efac',
+   coords:[[43.508,16.440],[43.350,16.490],[43.150,16.630],[43.050,16.700],[42.967,16.715]],
+   pz:['06:00','13:00','20:00'],
+   zp:['05:00','11:30','18:00']},
+  {name:'Drvenik–Sućuraj',sub:'Hvar',col:'#a78bfa',
+   coords:[[43.155,17.249],[43.124,17.189]],
+   pz:['07:00','09:00','11:00','13:00','15:00','17:00','19:00','21:00'],
+   zp:['07:45','09:45','11:45','13:45','15:45','17:45','19:45','21:45']},
+  {name:'Makarska–Sumartin',sub:'Brač',col:'#c4b5fd',
+   coords:[[43.296,17.019],[43.283,16.871]],
+   pz:['06:30','09:00','12:00','15:00','18:00','21:00'],
+   zp:['05:30','07:30','10:00','13:00','16:00','19:30']},
+  {name:'Ploče–Trpanj',sub:'Pelješac',col:'#f97316',
+   coords:[[43.055,17.437],[42.982,17.274]],
+   pz:['07:00','09:30','12:00','15:00','18:00','20:30'],
+   zp:['06:00','08:00','10:30','13:00','16:00','19:00']},
+  {name:'Orebić–Dominče',sub:'Korčula',col:'#fb923c',
+   coords:[[42.977,17.187],[42.961,17.138]],
+   pz:['06:00','07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00'],
+   zp:['06:20','07:20','08:20','09:20','10:20','11:20','12:20','13:20','14:20','15:20','16:20','17:20','18:20','19:20','20:20','21:20','22:20']},
+  {name:'Dubrovnik–otoki',sub:'Koločep–Lopud–Šipan',col:'#fda4af',
+   coords:[[42.654,18.082],[42.687,17.963],[42.682,17.932],[42.726,17.872]],
+   pz:['07:00','09:00','12:00','15:00','18:00','21:00'],
+   zp:['06:00','08:30','11:00','14:00','17:00','20:00']},
+];
+let _map=null,_mapMarker=null,_pendingLoc=null,_ferryMode=false,_ferryPoly=[];
+
+function openFerryMap(){
+  _ferryMode=true;
+  O('ov-map');
+  const t=document.getElementById('map-ttl'),s=document.getElementById('map-sub');
+  if(t)t.textContent='🗺️ Trajektne linije';if(s)s.textContent='TAPNI LINIJO ZA URNIK ODHODOV';
+  if(!window.L){const sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';sc.onload=initFerryMap;document.head.appendChild(sc);}
+  else setTimeout(initFerryMap,100);
+}
+function initFerryMap(){
+  _ferryPoly.forEach(p=>{try{_map&&_map.removeLayer(p);}catch(e){}});_ferryPoly=[];
+  if(!_map){
+    const el=document.getElementById('leaflet-map');if(!el||!window.L)return;
+    _map=L.map('leaflet-map',{center:[43.8,16.0],zoom:7});
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:18}).addTo(_map);
+  }else{_map.setView([43.8,16.0],7);_map.invalidateSize();}
+  _map.off('click');
+  const nowMin=new Date().getHours()*60+new Date().getMinutes();
+  FERRY_ROUTES.forEach(route=>{
+    const makeChips=(times,label,reverse)=>{
+      const ni=times.findIndex(t=>fMin(t)>nowMin);
+      const chips=times.map((t,i)=>`<span style="display:inline-block;background:${i===ni?'#1d4ed8':'#040e1c'};border:1px solid ${i===ni?'#3b82f6':'#334155'};border-radius:4px;padding:3px 7px;font-size:12px;font-family:monospace;color:${i===ni?'#fff':'#e2e8f0'};margin:2px">${t}</span>`).join('');
+      return`<div style="margin-bottom:8px"><div style="font-family:'Playfair Display',serif;font-size:13px;color:#e2e8f0;margin-bottom:4px">${label}</div><div style="display:flex;flex-wrap:wrap;gap:2px">${chips}</div></div>`;
+    };
+    const parts=route.name.split('–').map(s=>s.trim());
+    const revName=parts.slice().reverse().join(' – ');
+    const popup=`<div style="background:#0a1628;border-radius:8px;padding:12px 14px;min-width:220px;max-width:280px">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;padding-bottom:7px;border-bottom:1px solid #1e3a5f">
+        <span style="font-size:18px">⛴️</span>
+        <div><div style="font-family:'Playfair Display',serif;font-size:15px;color:#e2e8f0">${route.name}</div>${route.sub?`<div style="color:#4ade80;font-size:11px">${route.sub}</div>`:''}</div>
+      </div>
+      ${makeChips(route.pz,route.name)}
+      ${route.zp?makeChips(route.zp,revName):''}
+    </div>`;
+    // Invisible hit area (60% bigger snap = weight 8, but use 20 for easy mobile tap)
+    const hitPl=L.polyline(route.coords,{color:route.col,weight:20,opacity:0,interactive:true}).addTo(_map);
+    hitPl.bindPopup(popup,{className:'ferry-popup',maxWidth:260});
+    _ferryPoly.push(hitPl);
+    // Visual line
+    const pl=L.polyline(route.coords,{color:route.col,weight:5,opacity:0.85,interactive:false}).addTo(_map);
+    _ferryPoly.push(pl);
+    route.coords.forEach(c=>{const icon=L.divIcon({html:`<div style="background:${route.col};border:2px solid #020c1b;border-radius:50%;width:10px;height:10px"></div>`,className:'',iconSize:[10,10],iconAnchor:[5,5]});const m=L.marker(c,{icon}).addTo(_map);m.on('click',()=>pl.openPopup());_ferryPoly.push(m);});
+  });
+  const mi=document.getElementById('map-info'),mc=document.getElementById('map-coords'),mb=document.getElementById('map-btn');
+  if(mi)mi.textContent='Tapni trajektno linijo za urnik';if(mc)mc.textContent='';if(mb)mb.style.display='none';
+}
+
+// ── Location map ──────────────────────────────────────────────────
+function initLocMap(){
+  if(!_map){
+    const el=document.getElementById('leaflet-map');if(!el||!window.L)return;
+    _map=L.map('leaflet-map',{center:[44.0,15.5],zoom:7});
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:18}).addTo(_map);
+  }else{_map.setView([44.0,15.5],7);_map.invalidateSize();}
+  _map.off('click');
+  LOCS.forEach(loc=>{
+    const sel=loc.id===selLoc.id;
+    const icon=L.divIcon({html:`<div style="background:${sel?'#1d4ed8':'#0f1e35'};border:2px solid ${sel?'#60a5fa':'#334155'};border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 8px rgba(0,0,0,.5)">${loc.flag}</div>`,className:'',iconSize:[34,34],iconAnchor:[17,17]});
+    L.marker([loc.lat,loc.lon],{icon}).addTo(_map).bindTooltip(`<b>${loc.name}</b>`,{permanent:false,direction:'top',className:'leaflet-tooltip-dark'}).on('click',()=>setMapPending(loc.lat,loc.lon,loc.name,loc.flag,loc));
+  });
+  _map.on('click',e=>setMapPending(e.latlng.lat,e.latlng.lng,null,null,null));
+  const mi=document.getElementById('map-info'),mc=document.getElementById('map-coords'),mb=document.getElementById('map-btn');
+  if(mi)mi.textContent=selLoc.flag+' '+selLoc.name;if(mc)mc.textContent=`${selLoc.lat.toFixed(4)}°N · ${selLoc.lon.toFixed(4)}°E`;if(mb)mb.style.display='none';
+}
+function setMapPending(lat,lon,name,flag,locObj){
+  if(_mapMarker){try{_map.removeLayer(_mapMarker);}catch(e){}}_mapMarker=null;
+  if(!locObj){
+    const icon=L.divIcon({html:`<div style="background:#1d4ed8;border:2px solid #60a5fa;border-radius:50% 50% 50% 0;transform:rotate(-45deg);width:28px;height:28px;box-shadow:0 2px 8px rgba(0,0,0,.5)"></div>`,className:'',iconSize:[28,28],iconAnchor:[14,28]});
+    _mapMarker=L.marker([lat,lon],{icon}).addTo(_map);
+    name=`${lat.toFixed(3)}°N, ${lon.toFixed(3)}°E`;flag='📍';
+  }
+  _pendingLoc={lat,lon,name,flag,locObj};
+  const mi=document.getElementById('map-info'),mc=document.getElementById('map-coords'),mb=document.getElementById('map-btn');
+  if(mi)mi.textContent=(flag?flag+' ':'')+name;if(mc)mc.textContent=`${lat.toFixed(4)}°N · ${lon.toFixed(4)}°E`;if(mb)mb.style.display='block';
+}
+function confirmMapLoc(){
+  if(!_pendingLoc)return;
+  const{lat,lon,name,flag,locObj}=_pendingLoc;
+  selLoc=locObj||{id:'custom',name,lat:parseFloat(lat.toFixed(4)),lon:parseFloat(lon.toFixed(4)),flag:'📍',tide:interpolateTide(lat,lon)};
+  tCache={};wCache={};fcCache={};// Clear old empty keys from localStorage
+try{if(!localStorage.getItem('sg_key')||localStorage.getItem('sg_key').length<20){localStorage.removeItem('sg_key');sgKey=SG_KEY_DEFAULT;}}catch(e){}
+buildLocs();updateApiUI();Z('ov-map');render();
+}
+
+// ── Overlay ───────────────────────────────────────────────────────
+function O(id){
+  const el=document.getElementById(id);if(!el)return;
+  el.classList.add('on');document.body.style.position='fixed';document.body.style.width='100%';
+  if(id==='ov-ferry'){renderFerry();toggleSched(false);}
+  else if(id==='ov-ferry-all'){buildFerryAll();}
+  else if(id==='ov-map'&&!_ferryMode){
+    if(!window.L){const sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';sc.onload=initLocMap;document.head.appendChild(sc);}
+    else setTimeout(initLocMap,100);
+  }
+  else if(id==='ov-cfg'){const sgi=document.getElementById('sg-inp'),ai=document.getElementById('api-inp');if(sgi)sgi.value=sgKey;if(ai)ai.value=apiKey;}
+  else if(id==='ov-chart'){
+    const date=new Date(selDate.getTime()),today=new Date();today.setHours(0,0,0,0);
+    const isToday=date.getTime()===today.getTime(),curMin=isToday?new Date().getHours()*60+new Date().getMinutes():null;
+    const fd=document.getElementById('fs-date'),cfs=document.getElementById('chart-fs');
+    if(fd)fd.textContent=WD[date.getDay()]+', '+date.getDate()+'. '+MN[date.getMonth()]+' '+date.getFullYear()+' · '+selLoc.name;
+    if(cfs)cfs.innerHTML=buildSVG(_pts,_exs,curMin,700,260,true,date);
+    let bars='';for(let h=0;h<24;h+=2){const t=new Date(date.getFullYear(),date.getMonth(),date.getDate(),h),sc=fScore(t,_exs,date),c=sc>=75?'#4ade80':sc>=55?'#fbbf24':sc>=40?'#fb923c':'#f87171',l=sc>=75?'Odlično':sc>=60?'Zelo dobro':sc>=50?'Dobro':sc>=40?'Srednje':'Slabo';bars+=`<div class="ft-row"><div class="ft-t">${String(h).padStart(2,'0')}:00</div><div class="ft-bw"><div class="ft-b" style="width:${sc}%;background:linear-gradient(90deg,${c}99,${c})"><span class="ft-p">${sc}%</span></div></div><div style="font-size:11px;color:${c};width:60px;flex-shrink:0;text-align:right">${l}</div></div>`;}
+    const fb=document.getElementById('fs-bars'),fe=document.getElementById('fs-ext');
+    if(fb)fb.innerHTML=bars;
+    if(fe)fe.innerHTML=_exs.map(e=>`<div class="ext-it" style="border-left:3px solid ${e.type==='high'?'#fbbf24':'#60a5fa'}"><div style="font-size:15px;color:${e.type==='high'?'#fcd34d':'#7dd3fc'};font-weight:700;margin-bottom:6px">${e.type==='high'?'▲ VISOKA PLIMA':'▼ NIZKA OSEKA'}</div><div style="font-family:'Playfair Display',serif;font-size:28px;color:#fff;font-weight:700">${fmt(e.time)}</div><div style="font-size:15px;color:#86efac;margin-top:3px">${fmtH(e.height)}</div></div>`).join('');
+  }
+}
+function Z(id){
+  const el=document.getElementById(id);if(!el)return;
+  el.classList.remove('on');document.body.style.position='';document.body.style.width='';
+  if(id==='ov-map'&&_ferryMode){
+    _ferryMode=false;
+    _ferryPoly.forEach(p=>{try{_map&&_map.removeLayer(p);}catch(e){}});_ferryPoly=[];
+    const t=document.getElementById('map-ttl'),s=document.getElementById('map-sub');
+    if(t)t.textContent='🗺️ Izberi lokacijo';if(s)s.textContent='TAPNI NA KARTI ZA POLJUBNO LOKACIJO';
+  }
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')['ov-chart','ov-wf','ov-knots','ov-cfg','ov-map','ov-inst','ov-ferry','ov-ferry-all'].forEach(Z);});
+
+// ── Location helpers ──────────────────────────────────────────────
+function buildLocs(){
+  const el=document.getElementById('locs');
+  if(el)el.innerHTML=LOCS.map(l=>`<button class="loc-btn${l.id===selLoc.id?' on':''}" onclick="pickLoc('${l.id}')">${l.flag} ${l.name}</button>`).join('');
+  const lf=document.getElementById('loc-flag'),ln=document.getElementById('loc-name'),lc=document.getElementById('loc-coords');
+  if(lf)lf.textContent=selLoc.flag;if(ln)ln.textContent=selLoc.name;if(lc)lc.textContent=`${selLoc.lat.toFixed(2)}°N · ${selLoc.lon.toFixed(2)}°E`;
+}
+function pickLoc(id){
+  selLoc=LOCS.find(l=>l.id===id)||LOCS[0];
+  buildLocs();
+  const hs=document.getElementById('hdr-sub');if(hs)hs.textContent=selLoc.name+' · Jadransko morje';
+  tCache={};wCache={};fcCache={};render();
+}
+function updateApiUI(){
+  const b=document.getElementById('api-bdg'),d=document.getElementById('cfg-dot'),t=document.getElementById('cfg-txt');
+  if(true){// Stormglass vedno aktiven prek Netlify Function
+    if(b)b.innerHTML='<span class="api-badge" style="background:#14532d;border:1px solid #166534;color:#4ade80">✅ Stormglass aktiven</span>';
+    if(d)d.style.background='#4ade80';if(t)t.textContent='Stormglass FES2014 aktiven (±5 min)';
+  }else if(apiKey){
+    if(b)b.innerHTML='<span class="api-badge" style="background:#14532d;border:1px solid #166534;color:#4ade80">✅ WorldTides aktiven</span>';
+    if(d)d.style.background='#4ade80';if(t)t.textContent='WorldTides aktiven (±5 min)';
+  }else{
+    if(b)b.innerHTML='<span class="api-badge" style="background:#2a0a0a;border:1px solid #7f1d1d;color:#f87171">⚙️ Harmonični model (±1-2 uri)</span>';
+    if(d)d.style.background='#fbbf24';if(t)t.textContent='Ni ključa — harmonični model (±1-2 uri)';
+  }
+}
+function saveCfg(){
+  sgKey=(document.getElementById('sg-inp').value||'').trim();
+  apiKey=(document.getElementById('api-inp').value||'').trim();
+  try{sgKey?localStorage.setItem('sg_key',sgKey):localStorage.removeItem('sg_key');}catch(e){}
+  try{apiKey?localStorage.setItem('wt_key',apiKey):localStorage.removeItem('wt_key');}catch(e){}
+  tCache={};updateApiUI();Z('ov-cfg');render();
+}
+
+// ── Main render ───────────────────────────────────────────────────
+async function render(){
+  const myID=++_rid,date=new Date(selDate.getTime()),loc=selLoc;
+  const today=new Date();today.setHours(0,0,0,0);
+  const isToday=date.getTime()===today.getTime();
+  const wd=document.getElementById('wday'),ds=document.getElementById('dstr'),tb=document.getElementById('today-b');
+  if(wd)wd.textContent=WD[date.getDay()].toUpperCase();
+  if(ds)ds.textContent=date.getDate()+'. '+MN[date.getMonth()]+' '+date.getFullYear();
+  if(tb)tb.style.display=isToday?'block':'none';
+  const moon=getMoon(date);
+  const mi=document.getElementById('moon-ico'),mn=document.getElementById('moon-name'),mp=document.getElementById('moon-phase'),mt=document.getElementById('moon-tip');
+  if(mi)mi.textContent=moon.i;if(mn)mn.textContent=moon.n;if(mp)mp.textContent='Faza: '+moon.p.toFixed(1)+' dni';
+  if(mt)mt.textContent=moon.p<2||Math.abs(moon.p-14.77)<1.5?'★ Idealno za ribolov!':moon.p>12&&moon.p<17.5?'Dober čas':'Povprečen čas';
+  const wc=document.getElementById('w-content');
+  if(wc)wc.innerHTML='<div style="text-align:center;color:#334155;font-size:11px;padding:16px;letter-spacing:2px">⟳ NALAGANJE...</div>';
+  fetchW(loc,date).then(d=>{if(myID===_rid){renderW(d,date);const wll=document.getElementById('w-loc-lbl');if(wll)wll.textContent=loc.name;}});
+  fetchFC(loc).then(()=>{if(myID===_rid)renderStrip(null);});
+  const cs=document.getElementById('chart-sm');
+  if(cs)cs.innerHTML='<text x="50%" y="50%" text-anchor="middle" fill="#334155" font-size="10" font-family="monospace">⟳ NALAGANJE...</text>';
+  const td=await getTides(loc,date);
+  if(myID!==_rid)return;
+  _pts=td.pts;_exs=td.exs;
+  const sr=document.getElementById('src-row');
+  const cll=document.getElementById('chart-loc-lbl');if(cll)cll.textContent=loc.name;
+  if(sr){if(td.src==='stormglass')sr.innerHTML='<div class="src-dot" style="background:#4ade80"></div><div class="src-txt">STORMGLASS — FES2014 MODEL (±5 MIN)</div>';
+  else if(td.src==='worldtides')sr.innerHTML='<div class="src-dot" style="background:#4ade80"></div><div class="src-txt">WORLDTIDES — URADNI PODATKI (±5 MIN)</div>';
+  else if(td.apiErr)sr.innerHTML='<div class="src-dot" style="background:#f87171"></div><div class="src-txt" style="color:#f87171">⚠️ '+td.apiErr+' — harmonični model</div>';
+  else sr.innerHTML='<div class="src-dot" style="background:#fbbf24"></div><div class="src-txt">HARMONIČNI MODEL (±1-2 URI)</div>';}
+  const score=dayScore(date,_exs),circ=2*Math.PI*38,dash=(score/100)*circ,col=score>=75?'#4ade80':score>=50?'#fbbf24':'#f87171';
+  const arc=document.getElementById('sc-arc');if(arc){arc.setAttribute('stroke-dasharray',dash.toFixed(1)+' '+circ.toFixed(1));arc.setAttribute('stroke',col);}
+  const sn=document.getElementById('sc-num'),sl=document.getElementById('sc-lbl');
+  if(sn){sn.textContent=score;sn.setAttribute('fill',col);}if(sl){sl.textContent=score>=75?'Odlično':score>=55?'Dobro':score>=40?'Srednje':'Slabo';sl.style.color=col;}
+  const curMin=isToday?new Date().getHours()*60+new Date().getMinutes():null;
+  if(cs)cs.innerHTML=buildSVG(_pts,_exs,curMin,600,155,false,date);
+  const cn=document.getElementById('cnote');if(cn)cn.style.display=isToday?'block':'none';
+  const eg=document.getElementById('ext-grid');
+  if(eg)eg.innerHTML=_exs.map(e=>`<div class="ext-it" style="border-left:3px solid ${e.type==='high'?'#fbbf24':'#60a5fa'}"><div style="font-size:9px;color:${e.type==='high'?'#fcd34d':'#7dd3fc'};font-weight:700;margin-bottom:5px">${e.type==='high'?'▲ VISOKA PLIMA':'▼ NIZKA OSEKA'}</div><div style="font-family:'Playfair Display',serif;font-size:19px;color:#e2e8f0">${fmt(e.time)}</div><div style="font-size:10px;color:#64748b;margin-top:2px">${fmtH(e.height)}</div></div>`).join('');
+  const hiE=_exs.filter(e=>e.type==='high'),loE=_exs.filter(e=>e.type==='low');
+  let fw='';
+  if(hiE.length){fw+='<div style="font-size:22px;color:#4ade80;font-weight:700;margin-bottom:8px">✅ Najboljši časi</div>';fw+=hiE.map(e=>{const b=new Date(e.time.getTime()-90*60000),a=new Date(e.time.getTime()+90*60000);return`<div class="fw hi"><div style="font-size:20px;flex-shrink:0">🎣</div><div class="fw-inf"><div style="color:#fff;font-size:17px;margin-bottom:4px;font-weight:700">${fmt(b)} – ${fmt(a)}</div><div style="color:#86efac;font-size:16px;margin-top:3px;font-family:monospace">Vrh ob ${fmt(e.time)} · ${fmtH(e.height)}</div></div><div class="fw-bdg">3h<br>okno</div></div>`;}).join('');}
+  if(loE.length){fw+='<div style="font-size:22px;color:#f87171;font-family:\'Playfair Display\',serif;font-weight:700;margin:12px 0 8px">❌ Najslabši časi</div>';fw+=loE.map(e=>{const b=new Date(e.time.getTime()-60*60000),a=new Date(e.time.getTime()+60*60000);return`<div class="fw"><div style="font-size:20px;flex-shrink:0">😴</div><div class="fw-inf"><div style="color:#fff;font-size:17px;margin-bottom:4px;font-weight:700">${fmt(b)} – ${fmt(a)}</div><div style="color:#86efac;font-size:16px;margin-top:3px;font-family:monospace">Oseka ob ${fmt(e.time)} · ${fmtH(e.height)}</div></div><div class="fw-bdg" style="color:#f87171">2h<br>okno</div></div>`;}).join('');}
+  const fl=document.getElementById('fw-list');if(fl)fl.innerHTML=fw;
+}
+
+// ── Calendar ──────────────────────────────────────────────────────
+function renderCal(){
+  const cm=document.getElementById('cal-mn');if(cm)cm.textContent=MN[calM]+' '+calY;
+  const first=(new Date(calY,calM,1).getDay()+6)%7,days=new Date(calY,calM+1,0).getDate();
+  const today=new Date();today.setHours(0,0,0,0);
+  let h='';for(let i=0;i<first;i++)h+='<div></div>';
+  for(let d=1;d<=days;d++){const dt=new Date(calY,calM,d),spec=moonPhase(dt)<2||Math.abs(moonPhase(dt)-14.77)<1.5,it=dt.getTime()===today.getTime(),is=dt.getTime()===selDate.getTime();h+=`<button class="cal-d${it?' tod':''}${is?' sel':''}" onclick="pickCalDay(${d})">${d}${spec?'<span class="cal-dot">●</span>':''}</button>`;}
+  const cg=document.getElementById('cal-grid');if(cg)cg.innerHTML=h;
+}
+function pickCalDay(d){selDate=new Date(calY,calM,d);render();renderCal();showTab('t');}
+function calNav(dir){calM+=dir;if(calM<0){calM=11;calY--;}if(calM>11){calM=0;calY++;}renderCal();}
+function showTab(t){
+  const vt=document.getElementById('v-t'),vc=document.getElementById('v-c');
+  const bt=document.getElementById('tab-t'),bc=document.getElementById('tab-c');
+  if(vt)vt.style.display=t==='t'?'block':'none';if(vc)vc.style.display=t==='c'?'block':'none';
+  if(bt)bt.className='tab'+(t==='t'?' on':'');if(bc)bc.className='tab'+(t==='c'?' on':'');
+  if(t==='c')renderCal();
+}
+function chgDay(dir){selDate=new Date(selDate.getTime()+dir*86400000);calY=selDate.getFullYear();calM=selDate.getMonth();render();}
+
+// ── PWA + Init ────────────────────────────────────────────────────
+let dP=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();dP=e;setTimeout(()=>{const ib=document.getElementById('ibanner');if(ib)ib.classList.add('on');},3000);});
+function installApp(){if(dP){dP.prompt();dP.userChoice.then(()=>{dP=null;const ib=document.getElementById('ibanner');if(ib)ib.classList.remove('on');});}}
+setInterval(()=>{const t=new Date();t.setHours(0,0,0,0);if(selDate.getTime()===t.getTime())render();renderFerry();},60000);
+
+buildLocs();
+updateApiUI();
+const ai=document.getElementById('api-inp');if(ai)ai.value=apiKey;
+render();
+renderFerry();
+
+</script>
+</body>
+</html>

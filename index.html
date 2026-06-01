@@ -336,7 +336,9 @@ button{cursor:pointer;font-family:inherit}button:focus{outline:none}a{color:#38b
     </div>
 
     <div class="wcard">
-      <div class="clbl">⛅ Vreme &amp; Morje <span id="w-loc-lbl" style="color:#64748b;font-size:11px;float:right;font-family:monospace;text-transform:none;letter-spacing:0"></span></div>
+      <div class="clbl" style="display:flex;align-items:center;justify-content:space-between">
+        <span>⛅ Vreme &amp; Morje <span id="w-loc-lbl" style="color:#64748b;font-size:11px;font-family:monospace;text-transform:none;letter-spacing:0"></span></span>
+      </div>
       <div id="w-content"><div style="text-align:center;color:#334155;font-size:11px;padding:16px;letter-spacing:2px">⟳ NALAGANJE...</div></div>
       <div id="w-strip" style="margin-top:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none"></div>
       <button class="smb" onclick="openWF()" style="margin-top:8px"><div class="smb-l"><span>🗓️</span><span>Pokaži več — 10-dnevna napoved</span></div><span style="font-size:18px;color:#60a5fa">›</span></button>
@@ -584,7 +586,7 @@ function renderW(data,date){
   if(!data||data.oor||diff<0||diff>6){el.innerHTML=`<div style="color:#334155;font-size:11px;padding:10px;text-align:center">📅 Napoved samo za naslednjih 7 dni</div>`;return;}
   if(data.err){el.innerHTML=`<div style="color:#475569;font-size:11px;padding:10px;text-align:center">${data.err}<br><button onclick="retryW()" style="background:#1d4ed8;border:1px solid #3b82f6;color:#fff;border-radius:7px;padding:6px 14px;font-size:11px;font-family:monospace;cursor:pointer;margin-top:8px">⟳ Poskusi znova</button></div>`;return;}
   const[ico,desc]=wmo(data.code),wc=wCol(data.ws);
-  el.innerHTML=`<div class="w-main"><div class="w-ico">${ico}</div><div><div style="font-family:'Playfair Display',serif;font-size:32px;line-height:1">${Math.round(data.tMax)}° <span style="color:#64748b;font-size:17px">/ ${Math.round(data.tMin)}°</span></div><div style="color:#94a3b8;font-size:13px;margin-top:3px">${desc.toUpperCase()}</div></div></div><div class="w-grid"><div class="w-it"><div class="w-itl">💨 Veter</div><div class="w-itv" style="color:${wc}">${Math.round(data.ws)}</div><div class="w-itu">km/h · ${bft(data.ws)}</div></div><div class="w-it"><div class="w-itl">${wArr(data.wd)} Smer</div><div class="w-itv">${wDir(data.wd)}</div><div class="w-itu">${Math.round(data.wd)}°</div></div><div class="w-it"><div class="w-itl">🌧️ Padavine</div><div class="w-itv">${data.pr!=null?data.pr.toFixed(1):'--'}</div><div class="w-itu">mm/dan</div></div></div>${data.sea!=null?`<div style="margin-top:7px"><div class="sea-b"><span style="font-size:17px">🌊</span><span style="color:#38bdf8;font-family:'Playfair Display',serif;font-size:19px">${data.sea.toFixed(1)}°C</span><span style="color:#64748b;font-size:10px">temperatura morja</span></div></div>`:''}`;
+  el.innerHTML=`<div class="w-main"><div class="w-ico">${ico}</div><div style="flex:1"><div style="font-family:'Playfair Display',serif;font-size:32px;line-height:1">${Math.round(data.tMax)}° <span style="color:#64748b;font-size:17px">/ ${Math.round(data.tMin)}°</span></div><div style="color:#94a3b8;font-size:13px;margin-top:3px">${desc.toUpperCase()}</div></div><a href="https://www.windy.com/?radar,${selLoc.lat},${selLoc.lon},8" target="_blank" style="display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;background:linear-gradient(135deg,#0a1f40,#0d2a50);border:1px solid #1e4080;border-radius:10px;font-size:22px;text-decoration:none;flex-shrink:0;align-self:flex-start" title="Vremenski radar — Windy">🌧️</a></div><div class="w-grid"><div class="w-it"><div class="w-itl">💨 Veter</div><div class="w-itv" style="color:${wc}">${Math.round(data.ws)}</div><div class="w-itu">km/h · ${bft(data.ws)}</div></div><div class="w-it"><div class="w-itl">${wArr(data.wd)} Smer</div><div class="w-itv">${wDir(data.wd)}</div><div class="w-itu">${Math.round(data.wd)}°</div></div><div class="w-it"><div class="w-itl">🌧️ Padavine</div><div class="w-itv">${data.pr!=null?data.pr.toFixed(1):'--'}</div><div class="w-itu">mm/dan</div></div></div>${data.sea!=null?`<div style="margin-top:7px"><div class="sea-b"><span style="font-size:17px">🌊</span><span style="color:#38bdf8;font-family:'Playfair Display',serif;font-size:19px">${data.sea.toFixed(1)}°C</span><span style="color:#64748b;font-size:10px">temperatura morja</span></div></div>`:''}`;
 }
 function retryW(){wCache={};const el=document.getElementById('w-content');if(el)el.innerHTML='<div style="text-align:center;color:#334155;font-size:11px;padding:16px">⟳ NALAGANJE...</div>';fetchW(selLoc,selDate).then(d=>renderW(d,selDate));}
 
@@ -1075,7 +1077,7 @@ async function render(){
   if(mt)mt.textContent=moon.p<2||Math.abs(moon.p-14.77)<1.5?'★ Idealno za ribolov!':moon.p>12&&moon.p<17.5?'Dober čas':'Povprečen čas';
   const wc=document.getElementById('w-content');
   if(wc)wc.innerHTML='<div style="text-align:center;color:#334155;font-size:11px;padding:16px;letter-spacing:2px">⟳ NALAGANJE...</div>';
-  fetchW(loc,date).then(d=>{if(myID===_rid){renderW(d,date);const wll=document.getElementById('w-loc-lbl');if(wll)wll.textContent=loc.name;}});
+  fetchW(loc,date).then(d=>{if(myID===_rid){renderW(d,date);const wll=document.getElementById('w-loc-lbl');if(wll)wll.textContent=loc.name;const wb=document.getElementById('windy-btn');if(wb)wb.href=`https://www.windy.com/?radar,${loc.lat},${loc.lon},8`;}});
   fetchFC(loc).then(()=>{if(myID===_rid)renderStrip(null);});
   const cs=document.getElementById('chart-sm');
   if(cs)cs.innerHTML='<text x="50%" y="50%" text-anchor="middle" fill="#334155" font-size="10" font-family="monospace">⟳ NALAGANJE...</text>';

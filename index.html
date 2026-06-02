@@ -494,7 +494,11 @@ async function fetchSG(loc,date){
   let yearData=null;
   try{
     const s=localStorage.getItem(yearKey);
-    if(s){yearData=JSON.parse(s);console.log('SG: letni keš naložen, '+yearData.length+' ekstremov');}
+    if(s){
+      const parsed=JSON.parse(s);
+      if(parsed&&parsed.length>10){yearData=parsed;console.log('SG: letni keš naložen, '+yearData.length+' ekstremov');}
+      else{localStorage.removeItem(yearKey);console.log('SG: prazen keš izbrisan');}
+    }
   }catch(e){}
 
   // Če nimamo letnih podatkov → 1 API klic za celo leto
@@ -517,11 +521,12 @@ async function fetchSG(loc,date){
     yearData=(data.data||[]).map(e=>({time:e.time,height:parseFloat(e.height),type:e.type==='high'?'high':'low'}));
     console.log('SG: naloženih '+yearData.length+' ekstremov za '+year);
 
-    // Shrani letni keš
-    try{
+    // Shrani letni keš samo če ima podatke
+    if(yearData.length>10){try{
       Object.keys(localStorage).filter(k=>k.startsWith('sg_year_')&&k!==yearKey).forEach(k=>localStorage.removeItem(k));
       localStorage.setItem(yearKey,JSON.stringify(yearData));
-    }catch(e){console.warn('Keš ni shranjen:',e);}
+      console.log('SG: '+yearData.length+' ekstremov shranjenih za '+year);
+    }catch(e){console.warn('Keš ni shranjen:',e);}}
   }
 
   // Filtriraj ekstrema za izbrani dan

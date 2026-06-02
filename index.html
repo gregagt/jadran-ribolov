@@ -318,7 +318,7 @@ button{cursor:pointer;font-family:inherit}button:focus{outline:none}a{color:#38b
   <div id="v-t">
     <div class="tgrid">
       <div class="card">
-        <div class="clbl">🎣 Ribolov</div>
+        <div class="clbl" onclick="O('ov-fw')" style="cursor:pointer">🎣 Ribolov <span style="float:right;color:#334155;font-size:10px">časi ›</span></div>
         <div style="text-align:center">
           <svg viewBox="0 0 100 100" style="width:84px;height:84px">
             <circle cx="50" cy="50" r="38" fill="none" stroke="#1e3a5f" stroke-width="8"/>
@@ -329,8 +329,8 @@ button{cursor:pointer;font-family:inherit}button:focus{outline:none}a{color:#38b
           <div style="font-size:13px;letter-spacing:1px;margin-top:2px" id="sc-lbl"></div>
         </div>
       </div>
-      <div class="card">
-        <div class="clbl">🌙 Luna</div>
+      <div class="card" onclick="showTab('c')" style="cursor:pointer;position:relative">
+        <div class="clbl">🌙 Luna <span style="float:right;color:#334155;font-size:10px">tapni ›</span></div>
         <span style="font-size:44px;display:block;text-align:center;margin:3px 0 5px" id="moon-ico">🌕</span>
         <div style="color:#cbd5e1;font-size:13px;text-align:center" id="moon-name"></div>
         <div style="color:#64748b;font-size:10px;text-align:center;margin-top:3px" id="moon-phase"></div>
@@ -356,7 +356,7 @@ button{cursor:pointer;font-family:inherit}button:focus{outline:none}a{color:#38b
     </div>
 
     <div class="card"><div class="clbl">📊 Plima / Oseka</div><div class="ext-grid" id="ext-grid"></div></div>
-    <div class="card"><div class="clbl">🐟 Najboljši čas za ribolov</div><div id="fw-list"></div></div>
+    <div style="display:none"><div id="fw-list"></div></div>
 
     <div class="kcard">
       <div class="clbl" style="color:#4ade80">🪢 Ribiški vozli</div>
@@ -1151,6 +1151,7 @@ async function render(){
   if(hiE.length){fw+='<div style="font-size:22px;color:#4ade80;font-weight:700;margin-bottom:8px">✅ Najboljši časi</div>';fw+=hiE.map(e=>{const b=new Date(e.time.getTime()-90*60000),a=new Date(e.time.getTime()+90*60000);return`<div class="fw hi"><div style="font-size:20px;flex-shrink:0">🎣</div><div class="fw-inf"><div style="color:#fff;font-size:17px;margin-bottom:4px;font-weight:700">${fmt(b)} – ${fmt(a)}</div><div style="color:#86efac;font-size:16px;margin-top:3px;font-family:monospace">Vrh ob ${fmt(e.time)} · ${fmtH(e.height)}</div></div><div class="fw-bdg">3h<br>okno</div></div>`;}).join('');}
   if(loE.length){fw+='<div style="font-size:22px;color:#f87171;font-family:\'Playfair Display\',serif;font-weight:700;margin:12px 0 8px">❌ Najslabši časi</div>';fw+=loE.map(e=>{const b=new Date(e.time.getTime()-60*60000),a=new Date(e.time.getTime()+60*60000);return`<div class="fw"><div style="font-size:20px;flex-shrink:0">😴</div><div class="fw-inf"><div style="color:#fff;font-size:17px;margin-bottom:4px;font-weight:700">${fmt(b)} – ${fmt(a)}</div><div style="color:#86efac;font-size:16px;margin-top:3px;font-family:monospace">Oseka ob ${fmt(e.time)} · ${fmtH(e.height)}</div></div><div class="fw-bdg" style="color:#f87171">2h<br>okno</div></div>`;}).join('');}
   const fl=document.getElementById('fw-list');if(fl)fl.innerHTML=fw;
+  const flo=document.getElementById('fw-list-ov');if(flo)flo.innerHTML=fw;
 }
 
 // ── Calendar ──────────────────────────────────────────────────────

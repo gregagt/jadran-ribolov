@@ -424,7 +424,7 @@ let _pts=[], _exs=[], _rid=0;
 let tCache={}, wCache={}, fcCache={};
 let apiKey=''; try{apiKey=localStorage.getItem('wt_key')||'';}catch(e){}
 // Počisti stare sg keše
-try{Object.keys(localStorage).filter(k=>k.startsWith('sg_year_')||k.startsWith('sg2_')).forEach(k=>localStorage.removeItem(k));}catch(e){}
+try{Object.keys(localStorage).filter(k=>k.startsWith('sg_year_')||k.startsWith('sg2_')||k.startsWith('sg3_')).forEach(k=>localStorage.removeItem(k));}catch(e){}
 const SG_KEY_DEFAULT='d79adcc6-5b6e-11f1-b099-0242ac120004-d79add20-5b6e-11f1-b099-0242ac120004';
 let sgKey=SG_KEY_DEFAULT; try{const sk=localStorage.getItem('sg_key');if(sk&&sk.length>20)sgKey=sk;}catch(e){}
 
@@ -485,63 +485,72 @@ function reconstructCurve(exs,d0){
 
 async function fetchSG(loc,date){
   const ld=lD(date);
-  const year=date.getFullYear();
-  const yearKey='sg3_year_'+loc.id+'_'+year;
-  const dayKey='sg2_'+loc.id+'_'+ld;
+  const dayKey='sgd_'+loc.id+'_'+ld;
 
-  // Najprej preveri in-memory keš za ta dan
+  // In-memory keš
   if(tCache[dayKey])return tCache[dayKey];
 
-  // Preveri localStorage letni keš
-  let yearData=null;
+  // localStorage keš za ta dan
   try{
-    const s=localStorage.getItem(yearKey);
+    const s=localStorage.getItem(dayKey);
     if(s){
-      const parsed=JSON.parse(s);
-      if(parsed&&parsed.length>10){yearData=parsed;console.log('SG: letni keš naložen, '+yearData.length+' ekstremov');}
-      else{localStorage.removeItem(yearKey);console.log('SG: prazen keš izbrisan');}
+      const p=JSON.parse(s);
+      if(p&&p.exs&&p.exs.length>0){
+        p.pts=p.pts.map(x=>({...x,time:new Date(x.time)}));
+        p.exs=p.exs.map(x=>({...x,time:new Date(x.time)}));
+        tCache[dayKey]=p;
+        return p;
+      }
     }
   }catch(e){}
 
-  // Če nimamo letnih podatkov → 1 API klic za celo leto
-  if(!yearData){
-    const d0=new Date(year+'-01-01T00:00:00+02:00');
-    const d1=new Date((year+1)+'-01-01T00:00:00+02:00');
-    const start=Math.floor(d0.getTime()/1000);
-    const end=Math.floor(d1.getTime()/1000);
-    const timeout=ms=>new Promise((_,r)=>setTimeout(()=>r(new Error('Timeout')),ms));
-
-    const res=await Promise.race([
-      fetch(`https://api.stormglass.io/v2/tide/extremes/point?lat=${loc.lat}&lng=${loc.lon}&start=${start}&end=${end}`,
-        {headers:{'Authorization':sgKey}}),
-      timeout(20000)
-    ]);
-    if(!res.ok)throw new Error('SG HTTP '+res.status);
-    const data=await res.json();
-    if(data.errors)throw new Error(Object.values(data.errors).join(', '));
-
-    yearData=(data.data||[]).map(e=>({time:e.time,height:parseFloat(e.height),type:e.type==='high'?'high':'low'}));
-    console.log('SG: naloženih '+yearData.length+' ekstremov za '+year);
-
-    // Shrani letni keš samo če ima podatke
-    if(yearData.length>10){try{
-      Object.keys(localStorage).filter(k=>k.startsWith('sg3_year_')&&k!==yearKey).forEach(k=>localStorage.removeItem(k));
-      localStorage.setItem(yearKey,JSON.stringify(yearData));
-      console.log('SG: '+yearData.length+' ekstremov shranjenih za '+year);
-    }catch(e){console.warn('Keš ni shranjen:',e);}}
-  }
-
-  // Filtriraj ekstrema za izbrani dan
+  // Fetch: od včeraj do +12 dni (zagotovi podatke za danes)
   const d0=new Date(date.getFullYear(),date.getMonth(),date.getDate());
+  const reqStart=new Date(d0.getTime()-86400000); // včeraj
+  const reqEnd=new Date(d0.getTime()+12*86400000); // +12 dni
+  const start=Math.floor(reqStart.getTime()/1000);
+  const end=Math.floor(reqEnd.getTime()/1000);
+  const timeout=ms=>new Promise((_,r)=>setTimeout(()=>r(new Error('Timeout')),ms));
+
+  const res=await Promise.race([
+    fetch(`https://api.stormglass.io/v2/tide/extremes/point?lat=${loc.lat}&lng=${loc.lon}&start=${start}&end=${end}`,
+      {headers:{'Authorization':sgKey}}),
+    timeout(20000)
+  ]);
+  if(!res.ok)throw new Error('SG HTTP '+res.status);
+  const data=await res.json();
+  if(data.errors)throw new Error(Object.values(data.errors).join(', '));
+
+  const allExtr=data.data||[];
+  console.log('SG: pridobljenih '+allExtr.length+' ekstremov za '+ld);
+
+  // Filtriraj za izbrani dan
   const d1=new Date(d0.getTime()+86400000);
-  const exs=yearData
-    .filter(e=>new Date(e.time)>=d0&&new Date(e.time)<d1)
-    .map(e=>{const d=new Date(e.time),m=Math.round((d-d0)/60000);
-      return{minute:Math.max(0,Math.min(1440,m)),height:e.height,time:d,type:e.type};});
+  const exs=allExtr.filter(e=>{
+    const t=new Date(e.time);
+    return t>=d0&&t<d1;
+  }).map(e=>{
+    const d=new Date(e.time),m=Math.round((d-d0)/60000);
+    return{minute:Math.max(0,Math.min(1440,m)),height:parseFloat(e.height),time:d,type:e.type==='high'?'high':'low'};
+  });
+
+  console.log('SG: '+exs.length+' ekstremov za '+ld);
 
   const pts=reconstructCurve(exs,d0);
   const r={pts,exs,src:'stormglass'};
   tCache[dayKey]=r;
+
+  // Shrani v localStorage (za naslednje 24h)
+  if(exs.length>0){try{
+    // Počisti stare dnevne keše
+    const today=lD(new Date());
+    Object.keys(localStorage).filter(k=>k.startsWith('sgd_')&&k!==dayKey&&k<'sgd_'+loc.id+'_'+today).forEach(k=>localStorage.removeItem(k));
+    localStorage.setItem(dayKey,JSON.stringify({
+      pts:pts.map(p=>({...p,time:p.time.toISOString()})),
+      exs:exs.map(e=>({...e,time:e.time.toISOString()})),
+      src:'stormglass'
+    }));
+  }catch(e){}}
   return r;
 }
 

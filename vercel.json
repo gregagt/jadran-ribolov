@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/tides.js": {
+      "runtime": "nodejs20.x"
+    }
+  }
+}

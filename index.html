@@ -423,8 +423,8 @@ let calY=selDate.getFullYear(), calM=selDate.getMonth();
 let _pts=[], _exs=[], _rid=0;
 let tCache={}, wCache={}, fcCache={};
 let apiKey=''; try{apiKey=localStorage.getItem('wt_key')||'';}catch(e){}
-const SG_KEY_DEFAULT=''; // Ključ je v Netlify environment variables
-let sgKey=SG_KEY_DEFAULT;
+const SG_KEY_DEFAULT='d79adcc6-5b6e-11f1-b099-0242ac120004-d79add20-5b6e-11f1-b099-0242ac120004';
+let sgKey=SG_KEY_DEFAULT; try{const sk=localStorage.getItem('sg_key');if(sk&&sk.length>20)sgKey=sk;}catch(e){}
 
 // ── Helpers ────────────────────────────────────────────────────────
 function lD(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}

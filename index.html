@@ -423,6 +423,8 @@ let calY=selDate.getFullYear(), calM=selDate.getMonth();
 let _pts=[], _exs=[], _rid=0;
 let tCache={}, wCache={}, fcCache={};
 let apiKey=''; try{apiKey=localStorage.getItem('wt_key')||'';}catch(e){}
+// Počisti stare sg keše
+try{Object.keys(localStorage).filter(k=>k.startsWith('sg_year_')||k.startsWith('sg2_')).forEach(k=>localStorage.removeItem(k));}catch(e){}
 const SG_KEY_DEFAULT='d79adcc6-5b6e-11f1-b099-0242ac120004-d79add20-5b6e-11f1-b099-0242ac120004';
 let sgKey=SG_KEY_DEFAULT; try{const sk=localStorage.getItem('sg_key');if(sk&&sk.length>20)sgKey=sk;}catch(e){}
 
@@ -484,7 +486,7 @@ function reconstructCurve(exs,d0){
 async function fetchSG(loc,date){
   const ld=lD(date);
   const year=date.getFullYear();
-  const yearKey='sg_year_'+loc.id+'_'+year;
+  const yearKey='sg3_year_'+loc.id+'_'+year;
   const dayKey='sg2_'+loc.id+'_'+ld;
 
   // Najprej preveri in-memory keš za ta dan
@@ -523,7 +525,7 @@ async function fetchSG(loc,date){
 
     // Shrani letni keš samo če ima podatke
     if(yearData.length>10){try{
-      Object.keys(localStorage).filter(k=>k.startsWith('sg_year_')&&k!==yearKey).forEach(k=>localStorage.removeItem(k));
+      Object.keys(localStorage).filter(k=>k.startsWith('sg3_year_')&&k!==yearKey).forEach(k=>localStorage.removeItem(k));
       localStorage.setItem(yearKey,JSON.stringify(yearData));
       console.log('SG: '+yearData.length+' ekstremov shranjenih za '+year);
     }catch(e){console.warn('Keš ni shranjen:',e);}}

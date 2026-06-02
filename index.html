@@ -1048,7 +1048,7 @@ buildLocs();updateApiUI();Z('ov-map');render();
 function O(id){
   const el=document.getElementById(id);if(!el)return;
   el.classList.add('on');document.body.style.position='fixed';document.body.style.width='100%';
-  if(id==='ov-fw'){const fwd=document.getElementById('fw-ov-date');if(fwd)fwd.textContent=fmtDate(selDate);const flo=document.getElementById('fw-list-ov'),fl=document.getElementById('fw-list');if(flo&&fl)flo.innerHTML=fl.innerHTML;}
+  if(id==='ov-fw'){const fwd=document.getElementById('fw-ov-date');if(fwd)fwd.textContent=selDate.getDate()+'.'+(selDate.getMonth()+1)+'.'+selDate.getFullYear();const flo=document.getElementById('fw-list-ov'),fl=document.getElementById('fw-list');if(flo&&fl)flo.innerHTML=fl.innerHTML;}
   else if(id==='ov-ferry'){renderFerry();toggleSched(false);}
   else if(id==='ov-ferry-all'){buildFerryAll();}
   else if(id==='ov-map'&&!_ferryMode){

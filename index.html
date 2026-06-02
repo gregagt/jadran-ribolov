@@ -458,6 +458,29 @@ function interpolateTide(lat,lon){
   return tide;
 }
 
+function reconstructCurve(exs,d0){
+  if(!exs||exs.length<2)return[];
+  const all=[...exs].sort((a,b)=>a.minute-b.minute);
+  const pts=[];
+  for(let m=0;m<=1440;m+=15){
+    let before=null,after=null;
+    for(let i=0;i<all.length;i++){
+      if(all[i].minute<=m)before=all[i];
+      if(all[i].minute>=m&&!after)after=all[i];
+    }
+    let h;
+    if(!before&&after)h=after.height;
+    else if(before&&!after)h=before.height;
+    else if(before.minute===m)h=before.height;
+    else{
+      const t=(m-before.minute)/(after.minute-before.minute);
+      h=(before.height+after.height)/2-(after.height-before.height)/2*Math.cos(Math.PI*t);
+    }
+    pts.push({minute:m,height:h,time:new Date(d0.getTime()+m*60000)});
+  }
+  return pts;
+}
+
 async function fetchSG(loc,date){
   const ld=lD(date);
   const year=date.getFullYear();

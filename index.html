@@ -504,10 +504,10 @@ async function fetchSG(loc,date){
     }
   }catch(e){}
 
-  // Fetch: od včeraj do +12 dni (zagotovi podatke za danes)
+  // 1 API klic za 14 dni → keširaj VSE dni hkrati
   const d0=new Date(date.getFullYear(),date.getMonth(),date.getDate());
-  const reqStart=new Date(d0.getTime()-86400000); // včeraj
-  const reqEnd=new Date(d0.getTime()+12*86400000); // +12 dni
+  const reqStart=new Date(d0.getTime()-86400000);
+  const reqEnd=new Date(d0.getTime()+13*86400000);
   const start=Math.floor(reqStart.getTime()/1000);
   const end=Math.floor(reqEnd.getTime()/1000);
   const timeout=ms=>new Promise((_,r)=>setTimeout(()=>r(new Error('Timeout')),ms));
@@ -522,36 +522,51 @@ async function fetchSG(loc,date){
   if(data.errors)throw new Error(Object.values(data.errors).join(', '));
 
   const allExtr=data.data||[];
-  console.log('SG: pridobljenih '+allExtr.length+' ekstremov za '+ld);
+  console.log('SG: '+allExtr.length+' ekstremov, keširam vse dni...');
 
-  // Filtriraj za izbrani dan
-  const d1=new Date(d0.getTime()+86400000);
-  const exs=allExtr.filter(e=>{
+  // Grupiraj ekstrema po dnevu in keširaj vsak dan posebej
+  const dayGroups={};
+  allExtr.forEach(e=>{
     const t=new Date(e.time);
-    return t>=d0&&t<d1;
-  }).map(e=>{
-    const d=new Date(e.time),m=Math.round((d-d0)/60000);
-    return{minute:Math.max(0,Math.min(1440,m)),height:parseFloat(e.height),time:d,type:e.type==='high'?'high':'low'};
+    // Ugotovi kateri lokalni dan
+    const localDate=new Date(t.getFullYear(),t.getMonth(),t.getDate());
+    const k=lD(localDate);
+    if(!dayGroups[k])dayGroups[k]=[];
+    dayGroups[k].push(e);
   });
 
-  console.log('SG: '+exs.length+' ekstremov za '+ld);
-
-  const pts=reconstructCurve(exs,d0);
-  const r={pts,exs,src:'stormglass'};
-  tCache[dayKey]=r;
-
-  // Shrani v localStorage (za naslednje 24h)
-  if(exs.length>0){try{
-    // Počisti stare dnevne keše
-    const today=lD(new Date());
-    Object.keys(localStorage).filter(k=>k.startsWith('sgd_')&&k!==dayKey&&k<'sgd_'+loc.id+'_'+today).forEach(k=>localStorage.removeItem(k));
-    localStorage.setItem(dayKey,JSON.stringify({
+  // Shrani vsak dan v localStorage
+  Object.entries(dayGroups).forEach(([dk,exArr])=>{
+    const dk2='sgd_'+loc.id+'_'+dk;
+    if(localStorage.getItem(dk2))return; // ne prepiši obstoječega
+    const dayDate=new Date(dk.substring(0,4),dk.substring(4,6)-1,dk.substring(6,8));
+    const d0day=dayDate;
+    const exs=exArr.map(e=>{
+      const d=new Date(e.time),m=Math.round((d-d0day)/60000);
+      return{minute:Math.max(0,Math.min(1440,m)),height:parseFloat(e.height),time:d.toISOString(),type:e.type==='high'?'high':'low'};
+    });
+    const pts=reconstructCurve(exs.map(e=>({...e,time:new Date(e.time)})),d0day);
+    try{localStorage.setItem(dk2,JSON.stringify({
       pts:pts.map(p=>({...p,time:p.time.toISOString()})),
-      exs:exs.map(e=>({...e,time:e.time.toISOString()})),
-      src:'stormglass'
-    }));
-  }catch(e){}}
-  return r;
+      exs,src:'stormglass'
+    }));}catch(er){}
+  });
+  console.log('SG: '+Object.keys(dayGroups).length+' dni zakeširanih');
+
+  // Vrni podatke za zahtevani dan
+  const dk=dayKey;
+  const s2=localStorage.getItem(dk);
+  if(s2){
+    const p=JSON.parse(s2);
+    if(p&&p.exs&&p.exs.length>0){
+      p.pts=p.pts.map(x=>({...x,time:new Date(x.time)}));
+      p.exs=p.exs.map(x=>({...x,time:new Date(x.time)}));
+      tCache[dk]=p;
+      return p;
+    }
+  }
+  // Dan ni v rezultatih (izven okna)
+  throw new Error('Dan ni v Stormglass podatkih');
 }
 
 

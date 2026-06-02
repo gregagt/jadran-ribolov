@@ -460,69 +460,59 @@ function interpolateTide(lat,lon){
 
 async function fetchSG(loc,date){
   const ld=lD(date);
-  const cacheKey='sg2_'+loc.id+'_'+ld;
-  // In-memory
-  if(tCache[cacheKey])return tCache[cacheKey];
-  // localStorage
+  const year=date.getFullYear();
+  const yearKey='sg_year_'+loc.id+'_'+year;
+  const dayKey='sg2_'+loc.id+'_'+ld;
+
+  // Najprej preveri in-memory keš za ta dan
+  if(tCache[dayKey])return tCache[dayKey];
+
+  // Preveri localStorage letni keš
+  let yearData=null;
   try{
-    const s=localStorage.getItem(cacheKey);
-    if(s){const p=JSON.parse(s);p.pts=p.pts.map(x=>({...x,time:new Date(x.time)}));p.exs=p.exs.map(x=>({...x,time:new Date(x.time)}));tCache[cacheKey]=p;return p;}
+    const s=localStorage.getItem(yearKey);
+    if(s){yearData=JSON.parse(s);console.log('SG: letni keš naložen, '+yearData.length+' ekstremov');}
   }catch(e){}
 
-  // Pridobi ekstrema iz Netlify Function (1 klic/lokacijo/leto)
-  const timeout=ms=>new Promise((_,r)=>setTimeout(()=>r(new Error('Timeout')),ms));
-  const url=`/api/tides?lat=${loc.lat}&lng=${loc.lon}&date=${ld}`;
-  const res=await Promise.race([fetch(url),timeout(15000)]);
-  if(!res.ok)throw new Error('API HTTP '+res.status);
-  const data=await res.json();
-  if(data.error)throw new Error(data.error);
+  // Če nimamo letnih podatkov → 1 API klic za celo leto
+  if(!yearData){
+    const d0=new Date(year+'-01-01T00:00:00+02:00');
+    const d1=new Date((year+1)+'-01-01T00:00:00+02:00');
+    const start=Math.floor(d0.getTime()/1000);
+    const end=Math.floor(d1.getTime()/1000);
+    const timeout=ms=>new Promise((_,r)=>setTimeout(()=>r(new Error('Timeout')),ms));
 
-  const d0=new Date(date.getFullYear(),date.getMonth(),date.getDate());
+    const res=await Promise.race([
+      fetch(`https://api.stormglass.io/v2/tide/extremes/point?lat=${loc.lat}&lng=${loc.lon}&start=${start}&end=${end}`,
+        {headers:{'Authorization':sgKey}}),
+      timeout(20000)
+    ]);
+    if(!res.ok)throw new Error('SG HTTP '+res.status);
+    const data=await res.json();
+    if(data.errors)throw new Error(Object.values(data.errors).join(', '));
 
-  // Parsiraj ekstrema
-  const exs=(data.extremes||[]).map(e=>{
-    const d=new Date(e.time),m=Math.round((d-d0)/60000);
-    return m>=-120&&m<=1560?{minute:Math.max(0,Math.min(1440,m)),height:e.height,time:d,type:e.type}:null;
-  }).filter(Boolean);
+    yearData=(data.data||[]).map(e=>({time:e.time,height:parseFloat(e.height),type:e.type==='high'?'high':'low'}));
+    console.log('SG: naloženih '+yearData.length+' ekstremov za '+year);
 
-  // Rekonstruiraj krivuljo plime iz ekstremov (kosinus interpolacija)
-  const pts=reconstructCurve(exs,d0);
-
-  const r={pts,exs,src:'stormglass'};
-  tCache[cacheKey]=r;
-  try{
-    // Počisti star keš in shrani
-    Object.keys(localStorage).filter(k=>k.startsWith('sg2_')&&k!==cacheKey).forEach(k=>localStorage.removeItem(k));
-    localStorage.setItem(cacheKey,JSON.stringify({pts:pts.map(p=>({...p,time:p.time.toISOString()})),exs:exs.map(e=>({...e,time:e.time.toISOString()})),src:'stormglass'}));
-  }catch(e){}
-  return r;
-}
-
-// Rekonstruira gladko krivuljo plime iz točk ekstremov
-function reconstructCurve(exs, d0){
-  if(!exs||exs.length<2)return[];
-  // Razširi z ocenjenimi točkami izven dneva za gladke robove
-  const all=[...exs].sort((a,b)=>a.minute-b.minute);
-  const pts=[];
-  for(let m=0;m<=1440;m+=15){
-    // Najdi sosednji ekstrem pred in po
-    let before=null,after=null;
-    for(let i=0;i<all.length;i++){
-      if(all[i].minute<=m)before=all[i];
-      if(all[i].minute>=m&&!after)after=all[i];
-    }
-    let h;
-    if(!before&&after)h=after.height;
-    else if(before&&!after)h=before.height;
-    else if(before.minute===m)h=before.height;
-    else{
-      // Kosinus interpolacija med dvema ekstremoma
-      const t=(m-before.minute)/(after.minute-before.minute);
-      h=(before.height+after.height)/2-(after.height-before.height)/2*Math.cos(Math.PI*t);
-    }
-    pts.push({minute:m,height:h,time:new Date(d0.getTime()+m*60000)});
+    // Shrani letni keš
+    try{
+      Object.keys(localStorage).filter(k=>k.startsWith('sg_year_')&&k!==yearKey).forEach(k=>localStorage.removeItem(k));
+      localStorage.setItem(yearKey,JSON.stringify(yearData));
+    }catch(e){console.warn('Keš ni shranjen:',e);}
   }
-  return pts;
+
+  // Filtriraj ekstrema za izbrani dan
+  const d0=new Date(date.getFullYear(),date.getMonth(),date.getDate());
+  const d1=new Date(d0.getTime()+86400000);
+  const exs=yearData
+    .filter(e=>new Date(e.time)>=d0&&new Date(e.time)<d1)
+    .map(e=>{const d=new Date(e.time),m=Math.round((d-d0)/60000);
+      return{minute:Math.max(0,Math.min(1440,m)),height:e.height,time:d,type:e.type};});
+
+  const pts=reconstructCurve(exs,d0);
+  const r={pts,exs,src:'stormglass'};
+  tCache[dayKey]=r;
+  return r;
 }
 
 

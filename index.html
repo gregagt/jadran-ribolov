@@ -176,6 +176,10 @@ button{cursor:pointer;font-family:inherit}button:focus{outline:none}a{color:#38b
 <div id="stars"></div>
 
 <!-- CHART FS -->
+<div id="ov-fw" class="ovl">
+  <div class="ovl-hdr"><div><div class="ovl-ttl">🎣 Ribolovni časi</div><div class="ovl-sub" id="fw-ov-date"></div></div><button class="cls-btn" onclick="Z('ov-fw')">✕ Zapri</button></div>
+  <div style="padding:16px;overflow-y:auto"><div id="fw-list-ov"></div></div>
+</div>
 <div id="ov-chart" class="ovl">
   <div class="ovl-hdr"><div><div class="ovl-ttl">🌊 Plima &amp; Ribolov</div><div class="ovl-sub" id="fs-date"></div></div><button class="cls-btn" onclick="Z('ov-chart')">✕ Zapri</button></div>
   <div class="ovl-body">
@@ -317,8 +321,8 @@ button{cursor:pointer;font-family:inherit}button:focus{outline:none}a{color:#38b
 
   <div id="v-t">
     <div class="tgrid">
-      <div class="card">
-        <div class="clbl" onclick="O('ov-fw')" style="cursor:pointer">🎣 Ribolov <span style="float:right;color:#334155;font-size:10px">časi ›</span></div>
+      <div class="card" onclick="O('ov-fw')" style="cursor:pointer">
+        <div class="clbl">🎣 Ribolov <span style="float:right;color:#334155;font-size:10px">časi ›</span></div>
         <div style="text-align:center">
           <svg viewBox="0 0 100 100" style="width:84px;height:84px">
             <circle cx="50" cy="50" r="38" fill="none" stroke="#1e3a5f" stroke-width="8"/>
@@ -1044,7 +1048,8 @@ buildLocs();updateApiUI();Z('ov-map');render();
 function O(id){
   const el=document.getElementById(id);if(!el)return;
   el.classList.add('on');document.body.style.position='fixed';document.body.style.width='100%';
-  if(id==='ov-ferry'){renderFerry();toggleSched(false);}
+  if(id==='ov-fw'){const fwd=document.getElementById('fw-ov-date');if(fwd)fwd.textContent=fmtDate(selDate);const flo=document.getElementById('fw-list-ov'),fl=document.getElementById('fw-list');if(flo&&fl)flo.innerHTML=fl.innerHTML;}
+  else if(id==='ov-ferry'){renderFerry();toggleSched(false);}
   else if(id==='ov-ferry-all'){buildFerryAll();}
   else if(id==='ov-map'&&!_ferryMode){
     if(!window.L){const sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';sc.onload=initLocMap;document.head.appendChild(sc);}

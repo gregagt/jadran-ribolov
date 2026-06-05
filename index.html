@@ -348,6 +348,12 @@ button{cursor:pointer;font-family:inherit}button:focus{outline:none}a{color:#38b
     <div class="card">
       <div class="clbl">🌊 Graf plime in oseke <span id="chart-loc-lbl" style="color:#64748b;font-size:11px;float:right;font-family:monospace;text-transform:none;letter-spacing:0"></span></div>
       <div class="src-row" id="src-row"></div>
+      <div style="display:flex;gap:5px;margin-bottom:8px">
+        <button onclick="setTideSrc('izor')" id="src-btn-izor" style="flex:1;font-size:10px;font-family:monospace;padding:5px 4px;border-radius:6px;border:1px solid #1e3a5f;background:#0a1628;color:#94a3b8;cursor:pointer">🇭🇷 IZOR</button>
+        <button onclick="setTideSrc('stormglass')" id="src-btn-stormglass" style="flex:1;font-size:10px;font-family:monospace;padding:5px 4px;border-radius:6px;border:1px solid #1e3a5f;background:#0a1628;color:#94a3b8;cursor:pointer">🌊 SG</button>
+        <button onclick="setTideSrc('harmonic')" id="src-btn-harmonic" style="flex:1;font-size:10px;font-family:monospace;padding:5px 4px;border-radius:6px;border:1px solid #1e3a5f;background:#0a1628;color:#94a3b8;cursor:pointer">📐 HARM.</button>
+        <button onclick="setTideSrc('auto')" id="src-btn-auto" style="flex:1;font-size:10px;font-family:monospace;padding:5px 4px;border-radius:6px;border:1px solid #3b82f6;background:#1d4ed8;color:#fff;cursor:pointer">⚡ AUTO</button>
+      </div>
       <div style="width:100%;overflow-x:auto"><svg id="chart-sm" viewBox="0 0 600 155" style="width:100%;height:auto;display:block"></svg></div>
       <div class="cnote" id="cnote" style="display:none">── trenutni čas</div>
       <button class="smb" onclick="O('ov-chart')" style="margin-top:10px"><div class="smb-l"><span>📊</span><span>Pokaži več — detajlni graf z ribolovnimi %</span></div><span style="font-size:18px;color:#60a5fa">›</span></button>

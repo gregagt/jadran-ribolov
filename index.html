@@ -349,9 +349,8 @@ button{cursor:pointer;font-family:inherit}button:focus{outline:none}a{color:#38b
       <div class="clbl">🌊 Graf plime in oseke <span id="chart-loc-lbl" style="color:#64748b;font-size:11px;float:right;font-family:monospace;text-transform:none;letter-spacing:0"></span></div>
       <div class="src-row" id="src-row"></div>
       <div style="display:flex;gap:5px;margin-bottom:8px">
-        <button onclick="setTideSrc('izor')" id="src-btn-izor" style="flex:1;font-size:10px;font-family:monospace;padding:5px 4px;border-radius:6px;border:1px solid #1e3a5f;background:#0a1628;color:#94a3b8;cursor:pointer">🇭🇷 IZOR</button>
-        <button onclick="setTideSrc('stormglass')" id="src-btn-stormglass" style="flex:1;font-size:10px;font-family:monospace;padding:5px 4px;border-radius:6px;border:1px solid #1e3a5f;background:#0a1628;color:#94a3b8;cursor:pointer">🌊 SG</button>
-        <button onclick="setTideSrc('harmonic')" id="src-btn-harmonic" style="flex:1;font-size:10px;font-family:monospace;padding:5px 4px;border-radius:6px;border:1px solid #1e3a5f;background:#0a1628;color:#94a3b8;cursor:pointer">📐 HARM.</button>
+        <button onclick="setTideSrc('tidesatlas')" id="src-btn-tidesatlas" style="flex:1;font-size:10px;font-family:monospace;padding:5px 4px;border-radius:6px;border:1px solid #1e3a5f;background:#0a1628;color:#94a3b8;cursor:pointer">🌊 TidesAtlas</button>
+        <button onclick="setTideSrc('harmonic')" id="src-btn-harmonic" style="flex:1;font-size:10px;font-family:monospace;padding:5px 4px;border-radius:6px;border:1px solid #1e3a5f;background:#0a1628;color:#94a3b8;cursor:pointer">📐 Harmonični</button>
         <button onclick="setTideSrc('auto')" id="src-btn-auto" style="flex:1;font-size:10px;font-family:monospace;padding:5px 4px;border-radius:6px;border:1px solid #3b82f6;background:#1d4ed8;color:#fff;cursor:pointer">⚡ AUTO</button>
       </div>
       <div style="width:100%;overflow-x:auto"><svg id="chart-sm" viewBox="0 0 600 155" style="width:100%;height:auto;display:block"></svg></div>
@@ -429,7 +428,7 @@ let tCache={}, wCache={}, fcCache={};
 let tideSrcOverride='auto';
 function setTideSrc(src){
   tideSrcOverride=src;
-  ['izor','stormglass','harmonic','auto'].forEach(s=>{
+  ['tidesatlas','harmonic','auto'].forEach(s=>{
     const b=document.getElementById('src-btn-'+s);if(!b)return;
     const a=s===src;
     b.style.background=a?'#1d4ed8':'#0a1628';
@@ -475,6 +474,66 @@ function interpolateTide(lat,lon){
 }
 
 
+
+const TA_KEY='ta_90304450b340e081b15310494d1cf767a217a234f90016ec9094c9c1b5c7';
+const TA_PORTS={'pag':'pag','zadar':'zadar','split':'split','dubrovnik':'dubrovnik','pula':'pula','cervar':'pula','rovinj':'rovinj'};
+
+async function fetchTA(loc,date){
+  const ld=lD(date);
+  const ckey='ta_'+loc.id+'_'+ld;
+  if(tCache[ckey])return tCache[ckey];
+  try{
+    const s=localStorage.getItem(ckey);
+    if(s){const p=JSON.parse(s);if(p&&p.exs&&p.exs.length>0){p.pts=p.pts.map(x=>({...x,time:new Date(x.time)}));p.exs=p.exs.map(x=>({...x,time:new Date(x.time)}));tCache[ckey]=p;return p;}}
+  }catch(e){}
+
+  const port=TA_PORTS[loc.id]||'split';
+  const timeout=ms=>new Promise((_,r)=>setTimeout(()=>r(new Error('Timeout')),ms));
+  // Fetch 14 days at once → cache all days
+  const res=await Promise.race([
+    fetch(`https://tidesatlas.com/api/v1/tides?port=${port}&date=${ld}&days=14`,
+      {headers:{'X-API-Key':TA_KEY}}),
+    timeout(15000)
+  ]);
+  if(!res.ok)throw new Error('TA HTTP '+res.status);
+  const data=await res.json();
+  if(!data.extremes||!data.extremes.length)throw new Error('TA: ni ekstremov');
+
+  console.log('TA: '+data.extremes.length+' ekstremov za '+port);
+
+  // Group by day and cache each day
+  const dayGroups={};
+  data.extremes.forEach(e=>{
+    const d=new Date(e.datetime);
+    const dk=lD(new Date(d.getFullYear(),d.getMonth(),d.getDate()));
+    if(!dayGroups[dk])dayGroups[dk]=[];
+    dayGroups[dk].push(e);
+  });
+
+  Object.entries(dayGroups).forEach(([dk,evs])=>{
+    const ck='ta_'+loc.id+'_'+dk;
+    if(localStorage.getItem(ck))return;
+    const d0=new Date(dk+'T00:00:00');
+    const exs=evs.map(e=>{
+      const d=new Date(e.datetime),m=Math.round((d-d0)/60000);
+      return{minute:Math.max(0,Math.min(1440,m)),height:e.height_m,time:d.toISOString(),type:e.type==='high'?'high':'low'};
+    });
+    const pts=reconstructCurve(exs.map(e=>({...e,time:new Date(e.time)})),d0);
+    try{localStorage.setItem(ck,JSON.stringify({pts:pts.map(p=>({...p,time:p.time.toISOString()})),exs,src:'tidesatlas'}));}catch(er){}
+  });
+
+  // Return today's data
+  const d0=new Date(date.getFullYear(),date.getMonth(),date.getDate());
+  const todayEvs=dayGroups[ld]||[];
+  if(!todayEvs.length)throw new Error('TA: ni za '+ld);
+  const exs=todayEvs.map(e=>{
+    const d=new Date(e.datetime),m=Math.round((d-d0)/60000);
+    return{minute:Math.max(0,Math.min(1440,m)),height:e.height_m,time:new Date(e.datetime),type:e.type==='high'?'high':'low'};
+  });
+  const pts=reconstructCurve(exs,d0);
+  const r={pts,exs,src:'tidesatlas'};
+  tCache[ckey]=r;return r;
+}
 const IZOR_ST={'split':'4586','pag':'5417','zadar':'5417','dubrovnik':'1381','pula':'2761','cervar':'2761','rovinj':'4114'};
 
 function reconstructCurve(exs,d0){
@@ -506,10 +565,17 @@ async function fetchIZOR(loc,date){
   let text='';
   try{const r=await Promise.race([fetch(izorUrl,{mode:'cors'}),timeout(8000)]);if(r.ok)text=await r.text();}catch(e){}
   if(!text){
-    const proxy=`https://corsproxy.io/?${encodeURIComponent(izorUrl)}`;
-    const r=await Promise.race([fetch(proxy),timeout(15000)]);
-    if(!r.ok)throw new Error('IZOR HTTP '+r.status);
-    text=await r.text();
+    const proxies=[
+      `https://api.allorigins.win/raw?url=${encodeURIComponent(izorUrl)}`,
+      `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(izorUrl)}`,
+      `https://corsproxy.io/?${encodeURIComponent(izorUrl)}`
+    ];
+    for(const proxy of proxies){
+      try{const r=await Promise.race([fetch(proxy),timeout(10000)]);
+        if(r.ok){const t=await r.text();if(t&&t.includes('High Tide')){text=t;break;}}
+      }catch(pe){}
+    }
+    if(!text)throw new Error('IZOR: vsi proxy-ji blokirani');
   }
   if(!text)throw new Error('IZOR: prazen odgovor');
   const re2=/(\d{4}-\d{2}-\d{2})\s+(\d{1,2}:\d{2})\s*(AM|PM)\s+CEST\s+([\d.]+)\s+meters\s+(High Tide|Low Tide)/g;
@@ -1145,6 +1211,7 @@ async function render(){
   const sr=document.getElementById('src-row');
   const cll=document.getElementById('chart-loc-lbl');if(cll)cll.textContent=loc.name;
   if(sr){if(td.src==='stormglass')sr.innerHTML='<div class="src-dot" style="background:#4ade80"></div><div class="src-txt">STORMGLASS — FES2014 MODEL (±5 MIN)</div>';
+  else if(td.src==='tidesatlas')sr.innerHTML='<div class="src-dot" style="background:#4ade80"></div><div class="src-txt">TIDESATLAS — URADNI PODATKI (±2 MIN)</div>';
   else if(td.src==='izor')sr.innerHTML='<div class="src-dot" style="background:#4ade80"></div><div class="src-txt">IZOR — URADNI HRVAŠKI PODATKI</div>';
   else if(td.src==='stormglass')sr.innerHTML='<div class="src-dot" style="background:#4ade80"></div><div class="src-txt">STORMGLASS — FES2014 (±5 MIN)</div>';
   else if(td.src==='worldtides')sr.innerHTML='<div class="src-dot" style="background:#4ade80"></div><div class="src-txt">WORLDTIDES — URADNI PODATKI (±5 MIN)</div>';

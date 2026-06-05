@@ -350,8 +350,8 @@ button{cursor:pointer;font-family:inherit}button:focus{outline:none}a{color:#38b
       <div class="src-row" id="src-row"></div>
       <div style="display:flex;gap:5px;margin-bottom:8px">
         <button onclick="setTideSrc('tidesatlas')" id="src-btn-tidesatlas" style="flex:1;font-size:10px;font-family:monospace;padding:5px 4px;border-radius:6px;border:1px solid #1e3a5f;background:#0a1628;color:#94a3b8;cursor:pointer">🌊 TidesAtlas</button>
-        <button onclick="setTideSrc('harmonic')" id="src-btn-harmonic" style="flex:1;font-size:10px;font-family:monospace;padding:5px 4px;border-radius:6px;border:1px solid #1e3a5f;background:#0a1628;color:#94a3b8;cursor:pointer">📐 Harmonični</button>
-        <button onclick="setTideSrc('auto')" id="src-btn-auto" style="flex:1;font-size:10px;font-family:monospace;padding:5px 4px;border-radius:6px;border:1px solid #3b82f6;background:#1d4ed8;color:#fff;cursor:pointer">⚡ AUTO</button>
+        <button onclick="setTideSrc('harmonic')" id="src-btn-harmonic" style="flex:1;font-size:10px;font-family:monospace;padding:5px 4px;border-radius:6px;border:1px solid #3b82f6;background:#1d4ed8;color:#fff;cursor:pointer">📐 Harmonični</button>
+        <button onclick="setTideSrc('auto')" id="src-btn-auto" style="flex:1;font-size:10px;font-family:monospace;padding:5px 4px;border-radius:6px;border:1px solid #334155;background:#0a1628;color:#60a5fa;cursor:pointer">⚡ AUTO</button>
       </div>
       <div style="width:100%;overflow-x:auto"><svg id="chart-sm" viewBox="0 0 600 155" style="width:100%;height:auto;display:block"></svg></div>
       <div class="cnote" id="cnote" style="display:none">── trenutni čas</div>
@@ -425,7 +425,7 @@ let selLoc=LOCS[0];
 let calY=selDate.getFullYear(), calM=selDate.getMonth();
 let _pts=[], _exs=[], _rid=0;
 let tCache={}, wCache={}, fcCache={};
-let tideSrcOverride='auto';
+let tideSrcOverride='harmonic';
 function setTideSrc(src){
   tideSrcOverride=src;
   ['tidesatlas','harmonic','auto'].forEach(s=>{

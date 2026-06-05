@@ -1093,6 +1093,34 @@ function saveCfg(){
 }
 
 // ── Main render ───────────────────────────────────────────────────
+function fScore(t,exs,date){
+  const p=moonPhase(date),md=Math.min(p,29.53-p,Math.abs(p-14.77)),mb=Math.max(0,30-md*8);
+  const h=t.getHours()+t.getMinutes()/60,dd=((h>=5&&h<=7)||(h>=19&&h<=21))?15:0;
+  let tb=0;for(const e of exs){const dh=Math.abs((t-e.time)/3600000);if(dh<2.5)tb=Math.max(tb,25-dh*8);}
+  return Math.min(100,Math.round(30+mb*.5+tb+dd));
+}
+
+function getMoon(d){const p=moonPhase(d);for(const m of MOONS)if(p<=m.max)return{...m,p};return{...MOONS[MOONS.length-1],p};}
+
+// ── Fishing score ─────────────────────────────────────────────────
+
+function wDir(d){return['S','SSV','SV','VSV','V','VJV','JV','JJV','J','JJZ','JZ','ZJZ','Z','ZSZ','SZ','SSZ'][Math.round(d/22.5)%16];}
+
+function bft(k){if(k<6)return'1 Bft';if(k<12)return'2 Bft';if(k<20)return'3 Bft';if(k<29)return'4 Bft';if(k<39)return'5 Bft';if(k<50)return'6 Bft';return'7+ Bft';}
+
+function moonPhase(d){const diff=(d-new Date(2000,0,6,18,14,0))/86400000;return((diff%29.53058867)+29.53058867)%29.53058867;}
+const MOONS=[{max:1.5,n:'Mlaj',i:'🌑'},{max:7.4,n:'Raščerb.',i:'🌒'},{max:14.75,n:'Polmesec ↗',i:'🌓'},{max:16.25,n:'Polna luna',i:'🌕'},{max:22.1,n:'Polmesec ↘',i:'🌖'},{max:28,n:'Tč. 3/4',i:'🌘'},{max:30,n:'Mlaj (pred)',i:'🌑'}];
+
+function dayScore(date,exs){return fScore(new Date(date.getFullYear(),date.getMonth(),date.getDate(),6),exs,date);}
+
+// ── Weather ───────────────────────────────────────────────────────
+
+function wArr(d){return['↓','↙','←','↖','↑','↗','→','↘'][Math.round(d/45)%8];}
+
+function wmo(c){const m={0:['☀️','Jasno'],1:['🌤️','Pretežno jasno'],2:['⛅','Delno oblačno'],3:['☁️','Oblačno'],45:['🌫️','Megla'],51:['🌦️','Rosica'],61:['🌧️','Rahel dež'],63:['🌧️','Dež'],65:['🌧️','Močan dež'],71:['🌨️','Sneg'],80:['🌦️','Plohe'],81:['🌧️','Plohe'],82:['⛈️','Plohe'],95:['⛈️','Nevihta']};return m[c]||['🌡️','Neznano'];}
+
+function wCol(s){return s>40?'#f87171':s>25?'#fb923c':'#4ade80';}
+
 async function render(){
   const myID=++_rid,date=new Date(selDate.getTime()),loc=selLoc;
   const today=new Date();today.setHours(0,0,0,0);

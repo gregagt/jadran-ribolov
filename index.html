@@ -491,9 +491,9 @@ async function fetchTA(loc,date){
   // Fetch 14 days at once
   let res;
   try{
-    res=await fetch(`https://tidesatlas.com/api/v1/tides?port=${port}&date=${ld}&days=14`,
-      {headers:{'X-API-Key':TA_KEY},mode:'cors',cache:'no-store'});
-  }catch(fe){throw new Error('Failed to fetch (CORS?): '+fe.message);}
+    res=await fetch(`https://tidesatlas.com/api/v1/tides?port=${port}&date=${ld}&days=7`,
+      {headers:{'X-API-Key':TA_KEY}});
+  }catch(fe){throw new Error('Network: '+fe.message);}
   if(!res.ok)throw new Error('TA HTTP '+res.status);
   const data=await res.json();
   if(data.error)throw new Error('TA napaka: '+JSON.stringify(data.error));
@@ -648,8 +648,8 @@ async function getTides(loc,date){
   if(tideSrcOverride==='tidesatlas'){try{return await fetchTA(loc,date);}catch(e){const h=buildHarmonic(loc,date);h.apiErr='TA: '+e.message;return h;}}
   // Auto: TidesAtlas → harmonični
   try{return await fetchTA(loc,date);}catch(e1){
-    console.log('TA:',e1.message);
-    const h=buildHarmonic(loc,date);h.apiErr='TA: '+e1.message.substring(0,40);return h;
+    console.log('TA fail:',e1.message);
+    return buildHarmonic(loc,date);
   }
 }
 

@@ -426,6 +426,18 @@ let selLoc=LOCS[0];
 let calY=selDate.getFullYear(), calM=selDate.getMonth();
 let _pts=[], _exs=[], _rid=0;
 let tCache={}, wCache={}, fcCache={};
+let tideSrcOverride='auto';
+function setTideSrc(src){
+  tideSrcOverride=src;
+  ['izor','stormglass','harmonic','auto'].forEach(s=>{
+    const b=document.getElementById('src-btn-'+s);if(!b)return;
+    const a=s===src;
+    b.style.background=a?'#1d4ed8':'#0a1628';
+    b.style.color=a?'#fff':'#94a3b8';
+    b.style.borderColor=a?'#3b82f6':'#1e3a5f';
+  });
+  tCache={};render();
+}
 let apiKey=''; try{apiKey=localStorage.getItem('wt_key')||'';}catch(e){}
 const SG_KEY_DEFAULT='d79adcc6-5b6e-11f1-b099-0242ac120004-d79add20-5b6e-11f1-b099-0242ac120004';
 let sgKey=SG_KEY_DEFAULT; try{const sk=localStorage.getItem('sg_key');if(sk&&sk.length>20)sgKey=sk;}catch(e){}

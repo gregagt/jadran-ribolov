@@ -1,4 +1,27 @@
-<!DOCTYPE html>
+<div class="card" onclick="showTab('c')" style="cursor:pointer">
+        <div class="clbl">🌙 Luna &amp; ☀️ Sonce <span style="float:right;color:#64748b;font-size:10px">tapni ›</span></div>
+        <div style="display:flex;gap:10px;margin-top:6px">
+          <div style="flex:1;text-align:center;border-right:1px solid #1e3a5f;padding-right:10px">
+            <span style="font-size:38px;display:block;margin-bottom:3px" id="moon-ico">🌕</span>
+            <div style="color:#cbd5e1;font-size:12px;font-weight:600" id="moon-name"></div>
+            <div style="color:#94a3b8;font-size:10px;margin-top:2px" id="moon-phase"></div>
+            <div style="color:#4ade80;font-size:9px;margin-top:3px" id="moon-tip"></div>
+            <div style="margin-top:8px;line-height:2">
+              <div style="font-size:11px;color:#94a3b8">↑ <span style="color:#e2e8f0;font-family:monospace" id="moon-rise">--:--</span></div>
+              <div style="font-size:11px;color:#94a3b8">↓ <span style="color:#e2e8f0;font-family:monospace" id="moon-set">--:--</span></div>
+            </div>
+          </div>
+          <div style="flex:1;text-align:center;padding-left:4px">
+            <span style="font-size:38px;display:block;margin-bottom:3px">☀️</span>
+            <div style="color:#fbbf24;font-size:12px;font-weight:600">Sonce</div>
+            <div style="color:#94a3b8;font-size:10px;margin-top:2px" id="day-len">--h --m</div>
+            <div style="margin-top:8px;line-height:2">
+              <div style="font-size:11px;color:#94a3b8">↑ <span style="color:#fbbf24;font-family:monospace" id="sun-rise">--:--</span></div>
+              <div style="font-size:11px;color:#94a3b8">↓ <span style="color:#f97316;font-family:monospace" id="sun-set">--:--</span></div>
+            </div>
+          </div>
+        </div>
+      </div><!DOCTYPE html>
 <html lang="sl">
 <head>
 <meta charset="UTF-8">
@@ -336,6 +359,10 @@ button{cursor:pointer;font-family:inherit}button:focus{outline:none}a{color:#38b
         <div style="color:#cbd5e1;font-size:13px;text-align:center" id="moon-name"></div>
         <div style="color:#94a3b8;font-size:10px;text-align:center;margin-top:3px" id="moon-phase"></div>
         <div style="color:#94a3b8;font-size:9px;text-align:center;margin-top:6px;line-height:1.5" id="moon-tip"></div>
+        <div id="sun-times" style="margin-top:8px;display:flex;justify-content:center;gap:12px">
+          <div style="text-align:center"><div style="font-size:16px">🌅</div><div style="font-size:12px;color:#fbbf24;font-family:monospace" id="sun-rise">--:--</div></div>
+          <div style="text-align:center"><div style="font-size:16px">🌇</div><div style="font-size:12px;color:#f97316;font-family:monospace" id="sun-set">--:--</div></div>
+        </div>
       </div>
     </div>
 
@@ -660,7 +687,7 @@ async function fetchW(loc,date){
   const ld=lD(date),ck=loc.id+'_'+ld;if(wCache[ck])return wCache[ck];
   try{
     const ctrl=new AbortController(),t=setTimeout(()=>ctrl.abort(),10000);
-    const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&daily=weathercode,temperature_2m_max,temperature_2m_min,windspeed_10m_max,winddirection_10m_dominant,precipitation_sum&timezone=Europe%2FZagreb&forecast_days=7`,{signal:ctrl.signal});
+    const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&daily=weathercode,temperature_2m_max,temperature_2m_min,windspeed_10m_max,winddirection_10m_dominant,precipitation_sum,sunrise,sunset,moonrise,moonset&timezone=Europe%2FZagreb&forecast_days=7`,{signal:ctrl.signal});
     clearTimeout(t);if(!r.ok)throw new Error('HTTP '+r.status);const wd=await r.json();
     let mt=null;try{const ctrl2=new AbortController(),t2=setTimeout(()=>ctrl2.abort(),8000);const r2=await fetch(`https://marine-api.open-meteo.com/v1/marine?latitude=${loc.lat}&longitude=${loc.lon}&daily=sea_surface_temperature_mean&timezone=Europe%2FZagreb&forecast_days=7`,{signal:ctrl2.signal});clearTimeout(t2);if(r2.ok)mt=await r2.json();}catch(e){}
     const idx=wd.daily?.time?.indexOf(ld)??-1;if(idx===-1)return{err:'Datum ni v napovedi'};
@@ -710,7 +737,7 @@ async function fetchFC(loc){
   try{
     const ctrl=new AbortController();setTimeout(()=>ctrl.abort(),12000);
     let wr,mr;
-    try{const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&daily=weathercode,temperature_2m_max,temperature_2m_min,windspeed_10m_max,winddirection_10m_dominant,precipitation_sum&timezone=Europe%2FZagreb&forecast_days=10`,{signal:ctrl.signal});wr={ok:r.ok,r};}catch(e){wr={ok:false};}
+    try{const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&daily=weathercode,temperature_2m_max,temperature_2m_min,windspeed_10m_max,winddirection_10m_dominant,precipitation_sum,sunrise,sunset,moonrise,moonset&timezone=Europe%2FZagreb&forecast_days=10`,{signal:ctrl.signal});wr={ok:r.ok,r};}catch(e){wr={ok:false};}
     try{const r=await fetch(`https://marine-api.open-meteo.com/v1/marine?latitude=${loc.lat}&longitude=${loc.lon}&daily=sea_surface_temperature_mean&timezone=Europe%2FZagreb&forecast_days=10`,{signal:ctrl.signal});mr={ok:r.ok,r};}catch(e){mr={ok:false};}
     if(!wr.ok)throw new Error('Napaka pri nalaganju');
     const wd=await wr.r.json(),md=mr.ok?await mr.r.json():null;
@@ -1196,7 +1223,27 @@ async function render(){
   const wc=document.getElementById('w-content');
   if(wc)wc.innerHTML='<div style="text-align:center;color:#64748b;font-size:11px;padding:16px;letter-spacing:2px">⟳ NALAGANJE...</div>';
   fetchW(loc,date).then(d=>{if(myID===_rid){renderW(d,date);const wll=document.getElementById('w-loc-lbl');if(wll)wll.textContent=loc.name;}});
-  fetchFC(loc).then(()=>{if(myID===_rid)renderStrip(null);});
+  fetchFC(loc).then(()=>{if(myID===_rid){renderStrip(null);
+    // Show sunrise/sunset for selected date
+    const ld=lD(date),fc=fcCache[loc.id];
+    if(fc&&fc.w){
+      const di=fc.w.time.indexOf(ld);
+      if(di>=0){
+        const sr=fc.w.sunrise?.[di],ss=fc.w.sunset?.[di];
+        const rise=document.getElementById('sun-rise'),sset=document.getElementById('sun-set');
+        if(rise&&sr)rise.textContent=new Date(sr).toLocaleTimeString('sl-SI',{hour:'2-digit',minute:'2-digit'});
+        if(sset&&ss)sset.textContent=new Date(ss).toLocaleTimeString('sl-SI',{hour:'2-digit',minute:'2-digit'});
+        // Moonrise/moonset
+        const mr=fc.w.moonrise?.[di],ms=fc.w.moonset?.[di];
+        const mrise=document.getElementById('moon-rise'),mset=document.getElementById('moon-set');
+        if(mrise&&mr)mrise.textContent=new Date(mr).toLocaleTimeString('sl-SI',{hour:'2-digit',minute:'2-digit'});
+        if(mset&&ms)mset.textContent=new Date(ms).toLocaleTimeString('sl-SI',{hour:'2-digit',minute:'2-digit'});
+        // Day length
+        const dl=document.getElementById('day-len');
+        if(dl&&sr&&ss){const h=Math.floor((new Date(ss)-new Date(sr))/3600000),m=Math.floor(((new Date(ss)-new Date(sr))%3600000)/60000);dl.textContent='dan: '+h+'h '+m+'m';}
+      }
+    }
+  }});
   const cs=document.getElementById('chart-sm');
   if(cs)cs.innerHTML='<text x="50%" y="50%" text-anchor="middle" fill="#334155" font-size="10" font-family="monospace">⟳ NALAGANJE...</text>';
   const td=await getTides(loc,date);

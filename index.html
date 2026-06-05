@@ -1,27 +1,4 @@
-<div class="card" onclick="showTab('c')" style="cursor:pointer">
-        <div class="clbl">🌙 Luna &amp; ☀️ Sonce <span style="float:right;color:#64748b;font-size:10px">tapni ›</span></div>
-        <div style="display:flex;gap:10px;margin-top:6px">
-          <div style="flex:1;text-align:center;border-right:1px solid #1e3a5f;padding-right:10px">
-            <span style="font-size:38px;display:block;margin-bottom:3px" id="moon-ico">🌕</span>
-            <div style="color:#cbd5e1;font-size:12px;font-weight:600" id="moon-name"></div>
-            <div style="color:#94a3b8;font-size:10px;margin-top:2px" id="moon-phase"></div>
-            <div style="color:#4ade80;font-size:9px;margin-top:3px" id="moon-tip"></div>
-            <div style="margin-top:8px;line-height:2">
-              <div style="font-size:11px;color:#94a3b8">↑ <span style="color:#e2e8f0;font-family:monospace" id="moon-rise">--:--</span></div>
-              <div style="font-size:11px;color:#94a3b8">↓ <span style="color:#e2e8f0;font-family:monospace" id="moon-set">--:--</span></div>
-            </div>
-          </div>
-          <div style="flex:1;text-align:center;padding-left:4px">
-            <span style="font-size:38px;display:block;margin-bottom:3px">☀️</span>
-            <div style="color:#fbbf24;font-size:12px;font-weight:600">Sonce</div>
-            <div style="color:#94a3b8;font-size:10px;margin-top:2px" id="day-len">--h --m</div>
-            <div style="margin-top:8px;line-height:2">
-              <div style="font-size:11px;color:#94a3b8">↑ <span style="color:#fbbf24;font-family:monospace" id="sun-rise">--:--</span></div>
-              <div style="font-size:11px;color:#94a3b8">↓ <span style="color:#f97316;font-family:monospace" id="sun-set">--:--</span></div>
-            </div>
-          </div>
-        </div>
-      </div><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="sl">
 <head>
 <meta charset="UTF-8">
@@ -354,15 +331,16 @@ button{cursor:pointer;font-family:inherit}button:focus{outline:none}a{color:#38b
         <button onclick="O('ov-fw')" class="smb" style="margin-top:8px"><div class="smb-l"><span>🎣</span><span>Ribolovni časi</span></div><span style="font-size:18px;color:#60a5fa">›</span></button>
       </div>
       <div class="card" onclick="showTab('c')" style="cursor:pointer">
-        <div class="clbl">🌙 Luna <span style="float:right;color:#64748b;font-size:10px">tapni ›</span></div>
-        <span style="font-size:44px;display:block;text-align:center;margin:3px 0 5px" id="moon-ico">🌕</span>
-        <div style="color:#cbd5e1;font-size:13px;text-align:center" id="moon-name"></div>
-        <div style="color:#94a3b8;font-size:10px;text-align:center;margin-top:3px" id="moon-phase"></div>
-        <div style="color:#94a3b8;font-size:9px;text-align:center;margin-top:6px;line-height:1.5" id="moon-tip"></div>
-        <div id="sun-times" style="margin-top:8px;display:flex;justify-content:center;gap:12px">
-          <div style="text-align:center"><div style="font-size:16px">🌅</div><div style="font-size:12px;color:#fbbf24;font-family:monospace" id="sun-rise">--:--</div></div>
-          <div style="text-align:center"><div style="font-size:16px">🌇</div><div style="font-size:12px;color:#f97316;font-family:monospace" id="sun-set">--:--</div></div>
+        <div class="clbl">🌙 Luna &amp; ☀️ Sonce <span style="float:right;color:#64748b;font-size:10px">tapni ›</span></div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          <span style="font-size:40px" id="moon-ico">🌕</span>
+          <div>
+            <div style="color:#cbd5e1;font-size:12px;font-weight:600" id="moon-name"></div>
+            <div style="color:#94a3b8;font-size:10px" id="moon-phase"></div>
+            <div style="color:#4ade80;font-size:9px;margin-top:2px" id="moon-tip"></div>
+          </div>
         </div>
+        <div id="sun-moon-chips" style="display:flex;flex-wrap:wrap;gap:6px"></div>
       </div>
     </div>
 
@@ -1226,18 +1204,22 @@ async function render(){
   fetchFC(loc).then(()=>{if(myID===_rid){renderStrip(null);
     // Show sunrise/sunset for selected date
     const ld=lD(date),fc=fcCache[loc.id];
+    console.log('FC data:', fc?'ok':'null', fc&&fc.w?'w:ok':'w:null', fc&&fc.w&&fc.w.sunrise?'sunrise:'+fc.w.sunrise[0]:'no sunrise');
     if(fc&&fc.w){
-      const di=fc.w.time.indexOf(ld);
+      const di=fc.w.time?fc.w.time.indexOf(ld):-1;
+      console.log('FC date index:', di, 'for', ld);
       if(di>=0){
         const sr=fc.w.sunrise?.[di],ss=fc.w.sunset?.[di];
-        const rise=document.getElementById('sun-rise'),sset=document.getElementById('sun-set');
-        if(rise&&sr)rise.textContent=new Date(sr).toLocaleTimeString('sl-SI',{hour:'2-digit',minute:'2-digit'});
-        if(sset&&ss)sset.textContent=new Date(ss).toLocaleTimeString('sl-SI',{hour:'2-digit',minute:'2-digit'});
-        // Moonrise/moonset
         const mr=fc.w.moonrise?.[di],ms=fc.w.moonset?.[di];
-        const mrise=document.getElementById('moon-rise'),mset=document.getElementById('moon-set');
-        if(mrise&&mr)mrise.textContent=new Date(mr).toLocaleTimeString('sl-SI',{hour:'2-digit',minute:'2-digit'});
-        if(mset&&ms)mset.textContent=new Date(ms).toLocaleTimeString('sl-SI',{hour:'2-digit',minute:'2-digit'});
+        const t=s=>s?(s.includes('T')?s.split('T')[1].substring(0,5):s):'--:--';
+        const chips=document.getElementById('sun-moon-chips');
+        if(chips){
+          const chip=(ico,label,time,bg,br,col)=>`<div style="display:flex;align-items:center;gap:5px;background:${bg};border:1px solid ${br};border-radius:8px;padding:5px 10px"><span style="font-size:16px">${ico}</span><div><div style="font-family:'Playfair Display',serif;font-size:15px;color:#e2e8f0;line-height:1">${time}</div><div style="font-size:10px;color:${col}">${label}</div></div></div>`;
+          chips.innerHTML=chip('🌅','vzide',t(sr),'#1a1200','#78350f','#fbbf24')+chip('🌇','zaide',t(ss),'#180a00','#7c2d12','#f97316')+(mr?chip('🌕','vzide',t(mr),'#0f1e35','#1e3a5f','#94a3b8'):'')+(ms?chip('🌑','zaide',t(ms),'#0a1628','#1e2a3f','#64748b'):'');
+        }
+        const mrise=null,mset=null;
+        if(mrise&&mr)mrise.textContent=mr.includes('T')?mr.split('T')[1].substring(0,5):mr;
+        if(mset&&ms)mset.textContent=ms.includes('T')?ms.split('T')[1].substring(0,5):ms;
         // Day length
         const dl=document.getElementById('day-len');
         if(dl&&sr&&ss){const h=Math.floor((new Date(ss)-new Date(sr))/3600000),m=Math.floor(((new Date(ss)-new Date(sr))%3600000)/60000);dl.textContent='dan: '+h+'h '+m+'m';}

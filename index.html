@@ -476,7 +476,7 @@ function interpolateTide(lat,lon){
 
 
 const TA_KEY='ta_90304450b340e081b15310494d1cf767a217a234f90016ec9094c9c1b5c7';
-const TA_PORTS={'pag':'pag','zadar':'zadar','split':'split','dubrovnik':'dubrovnik','pula':'pula','cervar':'pula','rovinj':'rovinj'};
+const TA_PORTS={'pag':'zadar','zadar':'zadar','split':'split','dubrovnik':'dubrovnik','pula':'pula','cervar':'pula','rovinj':'rovinj'};
 
 async function fetchTA(loc,date){
   const ld=lD(date);
@@ -488,16 +488,16 @@ async function fetchTA(loc,date){
   }catch(e){}
 
   const port=TA_PORTS[loc.id]||'split';
-  const timeout=ms=>new Promise((_,r)=>setTimeout(()=>r(new Error('Timeout')),ms));
-  // Fetch 14 days at once → cache all days
-  const res=await Promise.race([
-    fetch(`https://tidesatlas.com/api/v1/tides?port=${port}&date=${ld}&days=14`,
-      {headers:{'X-API-Key':TA_KEY}}),
-    timeout(15000)
-  ]);
+  // Fetch 14 days at once
+  let res;
+  try{
+    res=await fetch(`https://tidesatlas.com/api/v1/tides?port=${port}&date=${ld}&days=14`,
+      {headers:{'X-API-Key':TA_KEY},mode:'cors',cache:'no-store'});
+  }catch(fe){throw new Error('Failed to fetch (CORS?): '+fe.message);}
   if(!res.ok)throw new Error('TA HTTP '+res.status);
   const data=await res.json();
-  if(!data.extremes||!data.extremes.length)throw new Error('TA: ni ekstremov');
+  if(data.error)throw new Error('TA napaka: '+JSON.stringify(data.error));
+  if(!data.extremes||!data.extremes.length)throw new Error('TA: ni ekstremov za '+port);
 
   console.log('TA: '+data.extremes.length+' ekstremov za '+port);
 
@@ -644,18 +644,12 @@ async function fetchWT(loc,date){
   const r={pts,exs,src:'worldtides'};tCache[ck]=r;return r;
 }
 async function getTides(loc,date){
-  // Manual source override
   if(tideSrcOverride==='harmonic')return buildHarmonic(loc,date);
-  if(tideSrcOverride==='stormglass'){try{return await fetchSG(loc,date);}catch(e){const h=buildHarmonic(loc,date);h.apiErr='SG: '+e.message;return h;}}
-  if(tideSrcOverride==='izor'){try{return await fetchIZOR(loc,date);}catch(e){const h=buildHarmonic(loc,date);h.apiErr='IZOR: '+e.message;return h;}}
-  // Auto: IZOR → SG → harmonic
-  try{return await fetchIZOR(loc,date);}catch(e1){
-    console.log('IZOR:',e1.message);
-    try{return await fetchSG(loc,date);}catch(e2){
-      console.log('SG:',e2.message);
-      if(apiKey){try{return await fetchWT(loc,date);}catch(e3){}}
-      const h=buildHarmonic(loc,date);h.apiErr='IZOR: '+e1.message.substring(0,50);return h;
-    }
+  if(tideSrcOverride==='tidesatlas'){try{return await fetchTA(loc,date);}catch(e){const h=buildHarmonic(loc,date);h.apiErr='TA: '+e.message;return h;}}
+  // Auto: TidesAtlas → harmonični
+  try{return await fetchTA(loc,date);}catch(e1){
+    console.log('TA:',e1.message);
+    const h=buildHarmonic(loc,date);h.apiErr='TA: '+e1.message.substring(0,40);return h;
   }
 }
 

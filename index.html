@@ -332,15 +332,52 @@ button{cursor:pointer;font-family:inherit}button:focus{outline:none}a{color:#38b
       </div>
       <div class="card" onclick="showTab('c')" style="cursor:pointer">
         <div class="clbl">🌙 Luna &amp; ☀️ Sonce <span style="float:right;color:#64748b;font-size:10px">tapni ›</span></div>
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-          <span style="font-size:40px" id="moon-ico">🌕</span>
-          <div>
-            <div style="color:#cbd5e1;font-size:12px;font-weight:600" id="moon-name"></div>
-            <div style="color:#94a3b8;font-size:10px" id="moon-phase"></div>
+        <div style="display:flex;gap:10px;margin-top:6px">
+          <!-- Luna levo -->
+          <div style="flex:1;text-align:center;border-right:1px solid #1e3a5f;padding-right:8px">
+            <span style="font-size:38px;display:block;margin-bottom:3px" id="moon-ico">🌕</span>
+            <div style="color:#cbd5e1;font-size:11px;font-weight:600" id="moon-name"></div>
+            <div style="color:#94a3b8;font-size:10px;margin-top:1px" id="moon-phase"></div>
             <div style="color:#4ade80;font-size:9px;margin-top:2px" id="moon-tip"></div>
           </div>
+          <!-- Sonce desno -->
+          <div style="flex:1;text-align:center;padding-left:4px">
+            <svg viewBox="0 0 80 80" width="38" height="38" style="display:block;margin:0 auto 3px">
+              <circle cx="40" cy="40" r="36" fill="none" stroke="#fbbf2430" stroke-width="8"/>
+              <g stroke="#fbbf24" stroke-width="3" stroke-linecap="round">
+                <line x1="40" y1="5" x2="40" y2="14"/>
+                <line x1="40" y1="66" x2="40" y2="75"/>
+                <line x1="5" y1="40" x2="14" y2="40"/>
+                <line x1="66" y1="40" x2="75" y2="40"/>
+                <line x1="13" y1="13" x2="19" y2="19"/>
+                <line x1="61" y1="61" x2="67" y2="67"/>
+                <line x1="67" y1="13" x2="61" y2="19"/>
+                <line x1="13" y1="67" x2="19" y2="61"/>
+              </g>
+              <circle cx="40" cy="40" r="17" fill="#fbbf24"/>
+              <circle cx="40" cy="40" r="13" fill="#fde68a"/>
+            </svg>
+            <div style="color:#fbbf24;font-size:11px;font-weight:600">Sonce</div>
+            <div style="color:#94a3b8;font-size:10px;margin-top:2px" id="day-len">--h --m</div>
+            <div style="margin-top:8px;display:flex;flex-direction:column;gap:5px;align-items:center">
+              <div id="sun-rise-chip" style="display:flex;align-items:center;gap:5px;background:#1a1000;border:1px solid #78350f;border-radius:8px;padding:4px 8px;width:100%">
+                <span style="font-size:12px;color:#fbbf24">▲</span>
+                <div>
+                  <div style="font-family:'Playfair Display',serif;font-size:14px;color:#e2e8f0;line-height:1" id="sun-rise">--:--</div>
+                  <div style="font-size:10px;color:#fbbf24">vzide</div>
+                </div>
+              </div>
+              <div id="sun-set-chip" style="display:flex;align-items:center;gap:5px;background:#180800;border:1px solid #7c2d12;border-radius:8px;padding:4px 8px;width:100%">
+                <span style="font-size:12px;color:#f97316">▼</span>
+                <div>
+                  <div style="font-family:'Playfair Display',serif;font-size:14px;color:#e2e8f0;line-height:1" id="sun-set">--:--</div>
+                  <div style="font-size:10px;color:#f97316">zaide</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div id="sun-moon-chips" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+        <div id="sun-moon-chips" style="display:none"></div>
       </div>
     </div>
 
@@ -665,7 +702,7 @@ async function fetchW(loc,date){
   const ld=lD(date),ck=loc.id+'_'+ld;if(wCache[ck])return wCache[ck];
   try{
     const ctrl=new AbortController(),t=setTimeout(()=>ctrl.abort(),10000);
-    const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&daily=weathercode,temperature_2m_max,temperature_2m_min,windspeed_10m_max,winddirection_10m_dominant,precipitation_sum,sunrise,sunset,moonrise,moonset&timezone=Europe%2FZagreb&forecast_days=7`,{signal:ctrl.signal});
+    const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&daily=weathercode,temperature_2m_max,temperature_2m_min,windspeed_10m_max,winddirection_10m_dominant,precipitation_sum&timezone=Europe%2FZagreb&forecast_days=7`,{signal:ctrl.signal});
     clearTimeout(t);if(!r.ok)throw new Error('HTTP '+r.status);const wd=await r.json();
     let mt=null;try{const ctrl2=new AbortController(),t2=setTimeout(()=>ctrl2.abort(),8000);const r2=await fetch(`https://marine-api.open-meteo.com/v1/marine?latitude=${loc.lat}&longitude=${loc.lon}&daily=sea_surface_temperature_mean&timezone=Europe%2FZagreb&forecast_days=7`,{signal:ctrl2.signal});clearTimeout(t2);if(r2.ok)mt=await r2.json();}catch(e){}
     const idx=wd.daily?.time?.indexOf(ld)??-1;if(idx===-1)return{err:'Datum ni v napovedi'};
@@ -715,7 +752,7 @@ async function fetchFC(loc){
   try{
     const ctrl=new AbortController();setTimeout(()=>ctrl.abort(),12000);
     let wr,mr;
-    try{const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&daily=weathercode,temperature_2m_max,temperature_2m_min,windspeed_10m_max,winddirection_10m_dominant,precipitation_sum,sunrise,sunset,moonrise,moonset&timezone=Europe%2FZagreb&forecast_days=10`,{signal:ctrl.signal});wr={ok:r.ok,r};}catch(e){wr={ok:false};}
+    try{const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&daily=weathercode,temperature_2m_max,temperature_2m_min,windspeed_10m_max,winddirection_10m_dominant,precipitation_sum&timezone=Europe%2FZagreb&forecast_days=10`,{signal:ctrl.signal});wr={ok:r.ok,r};}catch(e){wr={ok:false};}
     try{const r=await fetch(`https://marine-api.open-meteo.com/v1/marine?latitude=${loc.lat}&longitude=${loc.lon}&daily=sea_surface_temperature_mean&timezone=Europe%2FZagreb&forecast_days=10`,{signal:ctrl.signal});mr={ok:r.ok,r};}catch(e){mr={ok:false};}
     if(!wr.ok)throw new Error('Napaka pri nalaganju');
     const wd=await wr.r.json(),md=mr.ok?await mr.r.json():null;
@@ -1186,6 +1223,27 @@ function wmo(c){const m={0:['☀️','Jasno'],1:['🌤️','Pretežno jasno'],2:
 
 function wCol(s){return s>40?'#f87171':s>25?'#fb923c':'#4ade80';}
 
+
+// Astronomski izračun vzida/zahoda sonca (natančnost ±5 min)
+function calcSunTimes(date, lat, lon){
+  const rad=Math.PI/180;
+  const jd=Math.floor(date/86400000)+2440588;
+  const n=jd-2451545;
+  const L=(280.46+0.9856474*n)%360;
+  const g=(357.528+0.9856003*n)*rad;
+  const lam=(L+1.915*Math.sin(g)+0.02*Math.sin(2*g))*rad;
+  const eps=23.439*rad;
+  const sinD=Math.sin(eps)*Math.sin(lam);
+  const decl=Math.asin(sinD);
+  const eot=(L-Math.atan2(Math.tan(lam),Math.cos(eps))/rad)/15;
+  const cosH=(-Math.sin(-0.833*rad)-Math.sin(lat*rad)*sinD)/(Math.cos(lat*rad)*Math.cos(decl));
+  if(Math.abs(cosH)>1)return null;
+  const H=Math.acos(cosH)/rad;
+  const noon=12-eot-lon/15;
+  const rise=noon-H/15, set=noon+H/15;
+  const fmt=t=>{const h=Math.floor(t),m=Math.round((t-h)*60);return String(h).padStart(2,'0')+':'+String(m<0?m+60:m).padStart(2,'0');};
+  return{rise:fmt((rise+24)%24),set:fmt((set+24)%24)};
+}
 async function render(){
   const myID=++_rid,date=new Date(selDate.getTime()),loc=selLoc;
   const today=new Date();today.setHours(0,0,0,0);
@@ -1197,6 +1255,20 @@ async function render(){
   const moon=getMoon(date);
   const mi=document.getElementById('moon-ico'),mn=document.getElementById('moon-name'),mp=document.getElementById('moon-phase'),mt=document.getElementById('moon-tip');
   if(mi)mi.textContent=moon.i;if(mn)mn.textContent=moon.n;if(mp)mp.textContent='Faza: '+moon.p.toFixed(1)+' dni';
+  // Sun chips
+  const sunT=calcSunTimes(date.getTime(),loc.lat,loc.lon);
+  const chips=document.getElementById('sun-moon-chips');
+  // Set sunrise/sunset directly in sun column
+  const srEl=document.getElementById('sun-rise'),ssEl=document.getElementById('sun-set');
+  if(srEl&&sunT)srEl.textContent=sunT.rise;
+  if(ssEl&&sunT)ssEl.textContent=sunT.set;
+  // Day length
+  if(sunT){
+    const [sh,sm]=sunT.rise.split(':').map(Number),[eh,em]=sunT.set.split(':').map(Number);
+    const tot=(eh*60+em)-(sh*60+sm);
+    const dl=document.getElementById('day-len');
+    if(dl)dl.textContent=Math.floor(tot/60)+'h '+(tot%60)+'m';
+  }
   if(mt)mt.textContent=moon.p<2||Math.abs(moon.p-14.77)<1.5?'★ Idealno za ribolov!':moon.p>12&&moon.p<17.5?'Dober čas':'Povprečen čas';
   const wc=document.getElementById('w-content');
   if(wc)wc.innerHTML='<div style="text-align:center;color:#64748b;font-size:11px;padding:16px;letter-spacing:2px">⟳ NALAGANJE...</div>';
@@ -1204,20 +1276,11 @@ async function render(){
   fetchFC(loc).then(()=>{if(myID===_rid){renderStrip(null);
     // Show sunrise/sunset for selected date
     const ld=lD(date),fc=fcCache[loc.id];
-    console.log('FC data:', fc?'ok':'null', fc&&fc.w?'w:ok':'w:null', fc&&fc.w&&fc.w.sunrise?'sunrise:'+fc.w.sunrise[0]:'no sunrise');
     if(fc&&fc.w){
       const di=fc.w.time?fc.w.time.indexOf(ld):-1;
-      console.log('FC date index:', di, 'for', ld);
       if(di>=0){
-        const sr=fc.w.sunrise?.[di],ss=fc.w.sunset?.[di];
-        const mr=fc.w.moonrise?.[di],ms=fc.w.moonset?.[di];
-        const t=s=>s?(s.includes('T')?s.split('T')[1].substring(0,5):s):'--:--';
-        const chips=document.getElementById('sun-moon-chips');
-        if(chips){
-          const chip=(ico,label,time,bg,br,col)=>`<div style="display:flex;align-items:center;gap:5px;background:${bg};border:1px solid ${br};border-radius:8px;padding:5px 10px"><span style="font-size:16px">${ico}</span><div><div style="font-family:'Playfair Display',serif;font-size:15px;color:#e2e8f0;line-height:1">${time}</div><div style="font-size:10px;color:${col}">${label}</div></div></div>`;
-          chips.innerHTML=chip('🌅','vzide',t(sr),'#1a1200','#78350f','#fbbf24')+chip('🌇','zaide',t(ss),'#180a00','#7c2d12','#f97316')+(mr?chip('🌕','vzide',t(mr),'#0f1e35','#1e3a5f','#94a3b8'):'')+(ms?chip('🌑','zaide',t(ms),'#0a1628','#1e2a3f','#64748b'):'');
-        }
-        const mrise=null,mset=null;
+        // sun times now calculated in render()
+      const sr=null,ss=null,mr=null,ms=null;
         if(mrise&&mr)mrise.textContent=mr.includes('T')?mr.split('T')[1].substring(0,5):mr;
         if(mset&&ms)mset.textContent=ms.includes('T')?ms.split('T')[1].substring(0,5):ms;
         // Day length

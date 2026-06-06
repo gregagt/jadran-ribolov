@@ -383,7 +383,7 @@ button{cursor:pointer;font-family:inherit}button:focus{outline:none}a{color:#38b
     </div>
 
     <div class="card">
-      <div class="clbl" style="display:flex;align-items:center;gap:6px">🌊 Graf plime in oseke <span id="chart-loc-lbl" style="color:#94a3b8;font-size:11px;font-family:monospace;text-transform:none;letter-spacing:0;flex:1"></span><button onclick="O('ov-fw');event.stopPropagation()" style="background:#0f2a1e;border:1px solid #166534;border-radius:6px;padding:3px 8px;font-size:11px;color:#4ade80;cursor:pointer;flex-shrink:0">🎣 Ribolov</button></div>
+      <div class="clbl" style="display:flex;align-items:center;gap:6px">🌊 Graf plime in oseke <span id="chart-loc-lbl" style="color:#94a3b8;font-size:11px;font-family:monospace;text-transform:none;letter-spacing:0;flex:1"></span><button id="fw-score-btn" onclick="O('ov-fw');event.stopPropagation()" style="background:#0f2a1e;border:1px solid #166534;border-radius:6px;padding:3px 10px;font-size:11px;color:#4ade80;cursor:pointer;flex-shrink:0;font-family:monospace;letter-spacing:0.5px"><span style="font-size:16px">🎣</span> <span id="fw-score-lbl">—</span></button></div>
       <div class="src-row" id="src-row"></div>
       <div style="display:flex;gap:5px;margin-bottom:8px">
         <button onclick="setTideSrc('tidesatlas')" id="src-btn-tidesatlas" style="flex:1;font-size:10px;font-family:monospace;padding:5px 4px;border-radius:6px;border:1px solid #1e3a5f;background:#0a1628;color:#94a3b8;cursor:pointer">🌊 TidesAtlas</button>
@@ -1353,6 +1353,14 @@ async function render(){
   else if(td.apiErr)sr.innerHTML='<div class="src-dot" style="background:#f87171"></div><div class="src-txt" style="color:#f87171">⚠️ '+td.apiErr+' — harmonični model</div>';
   else sr.innerHTML='<div class="src-dot" style="background:#fbbf24"></div><div class="src-txt">HARMONIČNI MODEL (±1-2 URI)</div>';}
   const score=dayScore(date,_exs),circ=2*Math.PI*38,dash=(score/100)*circ,col=score>=75?'#4ade80':score>=50?'#fbbf24':'#f87171';
+  const fwBtn=document.getElementById('fw-score-btn');
+  if(fwBtn){
+    const lbl=score>=75?'Odlično':score>=60?'Dobro':score>=40?'Srednje':'Slabo';
+    const fl=document.getElementById('fw-score-lbl');if(fl)fl.textContent=lbl;
+    fwBtn.style.color=col;
+    fwBtn.style.borderColor=col+'60';
+    fwBtn.style.background=score>=75?'#0f2a1e':score>=50?'#1a1500':'#1a0505';
+  }
   const arc=document.getElementById('sc-arc');if(arc){arc.setAttribute('stroke-dasharray',dash.toFixed(1)+' '+circ.toFixed(1));arc.setAttribute('stroke',col);}
   const sn=document.getElementById('sc-num'),sl=document.getElementById('sc-lbl');
   if(sn){sn.textContent=score;sn.setAttribute('fill',col);}if(sl){sl.textContent=score>=75?'Odlično':score>=55?'Dobro':score>=40?'Srednje':'Slabo';sl.style.color=col;}

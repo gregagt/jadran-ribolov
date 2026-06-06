@@ -323,7 +323,10 @@ button{cursor:pointer;font-family:inherit}button:focus{outline:none}a{color:#38b
       <div class="clbl">⛅ Vreme &amp; Morje <span id="w-loc-lbl" style="color:#94a3b8;font-size:11px;float:right;font-family:monospace;text-transform:none;letter-spacing:0"></span></div>
       <div id="w-content"><div style="text-align:center;color:#64748b;font-size:11px;padding:16px;letter-spacing:2px">⟳ NALAGANJE...</div></div>
       <div id="w-strip" style="margin-top:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none"></div>
-      <button class="smb" onclick="openWF()" style="margin-top:8px"><div class="smb-l"><span>🗓️</span><span>Pokaži več — 10-dnevna napoved</span></div><span style="font-size:18px;color:#60a5fa">›</span></button>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="smb" onclick="openWF()" style="flex:1"><div class="smb-l"><span>🗓️</span><span>10-dnevna napoved</span></div><span style="font-size:18px;color:#60a5fa">›</span></button>
+        <button onclick="window.open('https://www.windy.com/?rain,44.44,15.06,8','_blank')" style="background:#0f1e35;border:1px solid #1e3a5f;border-radius:10px;padding:8px 14px;font-size:20px;cursor:pointer;flex-shrink:0" title="Rain radar — Windy">🌧️</button>
+      </div>
     </div>
 
     <div class="card" onclick="showTab('c')" style="cursor:pointer">

@@ -1336,11 +1336,11 @@ async function render(){
   const er=document.getElementById('extr-row');
   if(er){
     if(_exs&&_exs.length){
-      er.innerHTML=_exs.map(e=>`<div style="display:flex;align-items:center;gap:5px;background:${e.type==='high'?'#0f2a1e':'#0a1628'};border:1px solid ${e.type==='high'?'#166534':'#1e3a5f'};border-radius:8px;padding:5px 10px">
-        <span style="font-size:14px">${e.type==='high'?'▲':'▼'}</span>
+      er.innerHTML=_exs.map(e=>`<div style="display:flex;align-items:center;gap:3px;background:${e.type==='high'?'#0f2a1e':'#0a1628'};border:1px solid ${e.type==='high'?'#166534':'#1e3a5f'};border-radius:6px;padding:3px 7px">
+        <span style="font-size:11px">${e.type==='high'?'▲':'▼'}</span>
         <div>
-          <div style="font-family:'Playfair Display',serif;font-size:15px;color:#e2e8f0;line-height:1">${fmt(e.time)}</div>
-          <div style="font-size:11px;color:${e.type==='high'?'#4ade80':'#60a5fa'}">${fmtH(e.height)}</div>
+          <div style="font-family:'Playfair Display',serif;font-size:13px;color:#e2e8f0;line-height:1">${fmt(e.time)}</div>
+          <div style="font-size:10px;color:${e.type==='high'?'#4ade80':'#60a5fa'}">${fmtH(e.height)}</div>
         </div>
       </div>`).join('');
     } else er.innerHTML='';

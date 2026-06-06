@@ -316,73 +316,8 @@ button{cursor:pointer;font-family:inherit}button:focus{outline:none}a{color:#38b
   </div>
 
   <div id="v-t">
-    <div class="tgrid">
-      <div class="card">
-        <div class="clbl">🎣 Ribolov</div>
-        <div style="text-align:center">
-          <svg viewBox="0 0 100 100" style="width:84px;height:84px">
-            <circle cx="50" cy="50" r="38" fill="none" stroke="#1e3a5f" stroke-width="8"/>
-            <circle cx="50" cy="50" r="38" fill="none" id="sc-arc" stroke="#4ade80" stroke-width="8" stroke-linecap="round" stroke-dasharray="0 239" transform="rotate(-90 50 50)" style="transition:stroke-dasharray .6s"/>
-            <text x="50" y="46" text-anchor="middle" fill="#e2e8f0" font-size="18" font-family="'Playfair Display',serif" font-weight="700" id="sc-num">--</text>
-            <text x="50" y="58" text-anchor="middle" fill="#94a3b8" font-size="8" font-family="monospace">/100</text>
-          </svg>
-          <div style="font-size:13px;letter-spacing:1px;margin-top:2px" id="sc-lbl"></div>
-        </div>
-        <button onclick="O('ov-fw')" class="smb" style="margin-top:8px"><div class="smb-l"><span>🎣</span><span>Ribolovni časi</span></div><span style="font-size:18px;color:#60a5fa">›</span></button>
-      </div>
-      <div class="card" onclick="showTab('c')" style="cursor:pointer">
-        <div class="clbl">🌙 Luna &amp; ☀️ Sonce <span style="float:right;color:#64748b;font-size:10px">tapni ›</span></div>
-        <div style="display:flex;gap:8px;margin-top:6px;align-items:stretch">
-          <!-- Luna -->
-          <div style="flex:1;display:flex;flex-direction:column;border-right:1px solid #1e3a5f;padding-right:6px">
-            <div style="text-align:center">
-              <span style="font-size:32px" id="moon-ico">🌕</span>
-              <div style="color:#cbd5e1;font-size:10px;font-weight:600;margin-top:2px" id="moon-name"></div>
-              <div style="color:#94a3b8;font-size:9px;margin-top:1px" id="moon-phase"></div>
-              <div style="color:#4ade80;font-size:9px;margin-top:1px" id="moon-tip"></div>
-            </div>
-            <div style="margin-top:auto;padding-top:8px;display:flex;flex-direction:column;gap:4px">
-              <div style="display:flex;align-items:center;gap:4px;background:#0f1e35;border:1px solid #1e3a5f;border-radius:6px;padding:3px 6px">
-                <span style="font-size:10px;color:#94a3b8">▲</span>
-                <div><div style="font-family:'Playfair Display',serif;font-size:13px;color:#e2e8f0;line-height:1" id="moon-rise">--:--</div><div style="font-size:9px;color:#94a3b8">vzide</div></div>
-              </div>
-              <div style="display:flex;align-items:center;gap:4px;background:#0a1628;border:1px solid #1e2a3f;border-radius:6px;padding:3px 6px">
-                <span style="font-size:10px;color:#64748b">▼</span>
-                <div><div style="font-family:'Playfair Display',serif;font-size:13px;color:#e2e8f0;line-height:1" id="moon-set">--:--</div><div style="font-size:9px;color:#64748b">zaide</div></div>
-              </div>
-            </div>
-          </div>
-          <!-- Sonce -->
-          <div style="flex:1;display:flex;flex-direction:column;padding-left:2px">
-            <div style="text-align:center">
-              <svg viewBox="0 0 80 80" width="32" height="32" style="display:block;margin:0 auto">
-                <circle cx="40" cy="40" r="36" fill="none" stroke="#fbbf2430" stroke-width="8"/>
-                <g stroke="#fbbf24" stroke-width="3" stroke-linecap="round">
-                  <line x1="40" y1="5" x2="40" y2="14"/><line x1="40" y1="66" x2="40" y2="75"/>
-                  <line x1="5" y1="40" x2="14" y2="40"/><line x1="66" y1="40" x2="75" y2="40"/>
-                  <line x1="13" y1="13" x2="19" y2="19"/><line x1="61" y1="61" x2="67" y2="67"/>
-                  <line x1="67" y1="13" x2="61" y2="19"/><line x1="13" y1="67" x2="19" y2="61"/>
-                </g>
-                <circle cx="40" cy="40" r="17" fill="#fbbf24"/><circle cx="40" cy="40" r="13" fill="#fde68a"/>
-              </svg>
-              <div style="color:#fbbf24;font-size:10px;font-weight:600;margin-top:2px">Sonce</div>
-              <div style="color:#94a3b8;font-size:9px;margin-top:1px" id="day-len">--h --m</div>
-            </div>
-            <div style="margin-top:auto;padding-top:8px;display:flex;flex-direction:column;gap:4px">
-              <div style="display:flex;align-items:center;gap:4px;background:#1a1000;border:1px solid #78350f;border-radius:6px;padding:3px 6px">
-                <span style="font-size:10px;color:#fbbf24">▲</span>
-                <div><div style="font-family:'Playfair Display',serif;font-size:13px;color:#e2e8f0;line-height:1" id="sun-rise">--:--</div><div style="font-size:9px;color:#fbbf24">vzide</div></div>
-              </div>
-              <div style="display:flex;align-items:center;gap:4px;background:#180800;border:1px solid #7c2d12;border-radius:6px;padding:3px 6px">
-                <span style="font-size:10px;color:#f97316">▼</span>
-                <div><div style="font-family:'Playfair Display',serif;font-size:13px;color:#e2e8f0;line-height:1" id="sun-set">--:--</div><div style="font-size:9px;color:#f97316">zaide</div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div id="sun-moon-chips" style="display:none"></div>
-      </div>
-    </div>
+    
+
 
     <div class="wcard">
       <div class="clbl">⛅ Vreme &amp; Morje <span id="w-loc-lbl" style="color:#94a3b8;font-size:11px;float:right;font-family:monospace;text-transform:none;letter-spacing:0"></span></div>
@@ -391,8 +326,61 @@ button{cursor:pointer;font-family:inherit}button:focus{outline:none}a{color:#38b
       <button class="smb" onclick="openWF()" style="margin-top:8px"><div class="smb-l"><span>🗓️</span><span>Pokaži več — 10-dnevna napoved</span></div><span style="font-size:18px;color:#60a5fa">›</span></button>
     </div>
 
+    <div class="card" onclick="showTab('c')" style="cursor:pointer">
+      <div class="clbl">🌙 Luna &amp; ☀️ Sonce <span style="float:right;color:#64748b;font-size:10px">tapni ›</span></div>
+      <div style="display:flex;gap:8px;margin-top:6px;align-items:stretch">
+        <!-- Luna -->
+        <div style="flex:1;display:flex;flex-direction:column;border-right:1px solid #1e3a5f;padding-right:6px">
+          <div style="text-align:center">
+            <span style="font-size:32px" id="moon-ico">🌕</span>
+            <div style="color:#cbd5e1;font-size:10px;font-weight:600;margin-top:2px" id="moon-name"></div>
+            <div style="color:#94a3b8;font-size:9px;margin-top:1px" id="moon-phase"></div>
+            <div style="color:#4ade80;font-size:9px;margin-top:1px" id="moon-tip"></div>
+          </div>
+          <div style="margin-top:auto;padding-top:8px;display:flex;flex-direction:column;gap:4px">
+            <div style="display:flex;align-items:center;gap:4px;background:#0f1e35;border:1px solid #1e3a5f;border-radius:6px;padding:3px 6px">
+              <span style="font-size:10px;color:#94a3b8">▲</span>
+              <div><div style="font-family:'Playfair Display',serif;font-size:13px;color:#e2e8f0;line-height:1" id="moon-rise">--:--</div><div style="font-size:9px;color:#94a3b8">vzide</div></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;background:#0a1628;border:1px solid #1e2a3f;border-radius:6px;padding:3px 6px">
+              <span style="font-size:10px;color:#64748b">▼</span>
+              <div><div style="font-family:'Playfair Display',serif;font-size:13px;color:#e2e8f0;line-height:1" id="moon-set">--:--</div><div style="font-size:9px;color:#64748b">zaide</div></div>
+            </div>
+          </div>
+        </div>
+        <!-- Sonce -->
+        <div style="flex:1;display:flex;flex-direction:column;padding-left:2px">
+          <div style="text-align:center">
+            <svg viewBox="0 0 80 80" width="32" height="32" style="display:block;margin:0 auto">
+              <circle cx="40" cy="40" r="36" fill="none" stroke="#fbbf2430" stroke-width="8"/>
+              <g stroke="#fbbf24" stroke-width="3" stroke-linecap="round">
+                <line x1="40" y1="5" x2="40" y2="14"/><line x1="40" y1="66" x2="40" y2="75"/>
+                <line x1="5" y1="40" x2="14" y2="40"/><line x1="66" y1="40" x2="75" y2="40"/>
+                <line x1="13" y1="13" x2="19" y2="19"/><line x1="61" y1="61" x2="67" y2="67"/>
+                <line x1="67" y1="13" x2="61" y2="19"/><line x1="13" y1="67" x2="19" y2="61"/>
+              </g>
+              <circle cx="40" cy="40" r="17" fill="#fbbf24"/><circle cx="40" cy="40" r="13" fill="#fde68a"/>
+            </svg>
+            <div style="color:#fbbf24;font-size:10px;font-weight:600;margin-top:2px">Sonce</div>
+            <div style="color:#94a3b8;font-size:9px;margin-top:1px" id="day-len">--h --m</div>
+          </div>
+          <div style="margin-top:auto;padding-top:8px;display:flex;flex-direction:column;gap:4px">
+            <div style="display:flex;align-items:center;gap:4px;background:#1a1000;border:1px solid #78350f;border-radius:6px;padding:3px 6px">
+              <span style="font-size:10px;color:#fbbf24">▲</span>
+              <div><div style="font-family:'Playfair Display',serif;font-size:13px;color:#e2e8f0;line-height:1" id="sun-rise">--:--</div><div style="font-size:9px;color:#fbbf24">vzide</div></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;background:#180800;border:1px solid #7c2d12;border-radius:6px;padding:3px 6px">
+              <span style="font-size:10px;color:#f97316">▼</span>
+              <div><div style="font-family:'Playfair Display',serif;font-size:13px;color:#e2e8f0;line-height:1" id="sun-set">--:--</div><div style="font-size:9px;color:#f97316">zaide</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="sun-moon-chips" style="display:none"></div>
+    </div>
+
     <div class="card">
-      <div class="clbl">🌊 Graf plime in oseke <span id="chart-loc-lbl" style="color:#94a3b8;font-size:11px;float:right;font-family:monospace;text-transform:none;letter-spacing:0"></span></div>
+      <div class="clbl" style="display:flex;align-items:center;gap:6px">🌊 Graf plime in oseke <span id="chart-loc-lbl" style="color:#94a3b8;font-size:11px;font-family:monospace;text-transform:none;letter-spacing:0;flex:1"></span><button onclick="O('ov-fw');event.stopPropagation()" style="background:#0f2a1e;border:1px solid #166534;border-radius:6px;padding:3px 8px;font-size:11px;color:#4ade80;cursor:pointer;flex-shrink:0">🎣 Ribolov</button></div>
       <div class="src-row" id="src-row"></div>
       <div style="display:flex;gap:5px;margin-bottom:8px">
         <button onclick="setTideSrc('tidesatlas')" id="src-btn-tidesatlas" style="flex:1;font-size:10px;font-family:monospace;padding:5px 4px;border-radius:6px;border:1px solid #1e3a5f;background:#0a1628;color:#94a3b8;cursor:pointer">🌊 TidesAtlas</button>

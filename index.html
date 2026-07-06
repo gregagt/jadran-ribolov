@@ -207,23 +207,25 @@ button{cursor:pointer;font-family:inherit}button:focus{outline:none}a{color:#38b
 <!-- FERRY -->
 <div id="ov-ferry" class="ovl">
   <div class="ovl-hdr">
-    <div style="flex:1;min-width:0"><div class="ovl-ttl">⛴️ Trajekt Prizna – Žigljen</div><div class="ovl-sub">JADROLINIJA · LINIJA 9052 <button onclick="toggleSched()" id="btn-sched" style="background:#1e3a5f;border:1px solid #334155;color:#38bdf8;border-radius:6px;padding:3px 9px;font-size:10px;font-family:monospace;cursor:pointer">Pokaži urnik ›</button></div></div>
+    <div style="flex:1;min-width:0"><div class="ovl-ttl">⛴️ Trajekt Prizna – Žigljen</div><div class="ovl-sub">JADROLINIJA · LINIJA 9052</div></div>
     <button class="cls-btn" onclick="Z('ov-ferry')">✕ Zapri</button>
   </div>
   <div class="ovl-body">
-    <div style="display:flex;align-items:center;gap:10px;background:#040e1c;border-radius:9px;padding:9px 12px;margin-bottom:10px"><span style="font-size:22px">⏱️</span><div style="flex:1"><div style="color:#e2e8f0;font-size:13px">Čas prečkanja</div><div style="color:#38bdf8;font-size:13px;margin-top:2px">~15 minut · razdalja 3,5 km</div></div><div style="text-align:right"><div style="color:#4ade80;font-size:13px;font-family:monospace">NON-STOP</div><div style="color:#94a3b8;font-size:10px">v sezoni</div></div></div>
-    <div id="sched-body" style="display:none">
-      <div style="display:flex;gap:6px;margin-bottom:12px">
-        <button class="season-btn on" onclick="setFS('summer')" id="fs-summer">☀️ Sezona</button>
-        <button class="season-btn" onclick="setFS('winter')" id="fs-winter">❄️ Izven sezone</button>
+    <div style="display:flex;align-items:center;gap:10px;background:#040e1c;border-radius:10px;padding:12px;margin-bottom:14px">
+      <span style="font-size:40px">⛴️</span>
+      <div>
+        <div style="color:#e2e8f0;font-size:16px;font-family:'Playfair Display',serif">Prizna – Žigljen</div>
+        <div style="color:#94a3b8;font-size:12px;margin-top:2px">~15 min · Jadrolinija L9052</div>
       </div>
-      <div class="ferry-dir"><div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="font-size:18px">🚢</span><div style="font-family:'Playfair Display',serif;font-size:15px;color:#e2e8f0;flex:1">Prizna → Žigljen</div><span style="font-size:10px;color:#94a3b8;font-family:monospace">(celina → otok)</span></div><div class="ferry-times" id="ft-pz"></div></div>
-      <div class="ferry-dir"><div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="font-size:18px">🚢</span><div style="font-family:'Playfair Display',serif;font-size:15px;color:#e2e8f0;flex:1">Žigljen → Prizna</div><span style="font-size:10px;color:#94a3b8;font-family:monospace">(otok → celina)</span></div><div class="ferry-times" id="ft-zp"></div></div>
-      <div style="background:#0a1628;border-radius:9px;padding:9px 12px;border:1px solid #334155;font-size:10px;color:#94a3b8;line-height:1.6;margin-bottom:10px">⚠️ <strong style="color:#e2e8f0">Urnik je informativen</strong> — preverite na <a href="https://www.jadrolinija.hr" target="_blank">jadrolinija.hr</a></div>
-      <a href="https://www.jadrolinija.hr/vozni-red/brodske-linije" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#1d4ed8,#1e40af);border:1px solid #3b82f6;border-radius:10px;padding:11px;color:#fff;font-size:12px;font-family:monospace;text-decoration:none;margin-bottom:8px">🌐 URADNI URNIK — JADROLINIJA.HR</a>
-      <a href="tel:+38521338333" style="display:flex;align-items:center;justify-content:center;gap:8px;background:#0a1628;border:1px solid #1e3a5f;border-radius:10px;padding:10px;color:#94a3b8;font-size:12px;font-family:monospace;text-decoration:none;margin-bottom:8px">📞 JADROLINIJA: +385 21 338 333</a>
     </div>
-    <button onclick="Z('ov-ferry');O('ov-ferry-all')" style="width:100%;background:linear-gradient(135deg,#0d2238,#081624);border:1.5px solid #1e4060;border-radius:10px;padding:11px;color:#38bdf8;font-size:12px;font-family:monospace;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;letter-spacing:1px;margin-top:4px">⛴️ OSTALE HRVAŠKE TRAJEKTNE LINIJE ›</button>
+    <div style="background:#0f1e35;border:1px solid #1e3a5f;border-radius:10px;padding:14px;text-align:center;margin-bottom:12px">
+      <div style="color:#94a3b8;font-size:11px;font-family:monospace;margin-bottom:8px">URADNI URNIK JADROLINIJA</div>
+      <button onclick="window.open('https://www.jadrolinija.hr/vozni-red/trajektne-linije/prizna-zigljen-9052','_blank')" class="smb">
+        <div class="smb-l"><span>📋</span><span>Odpri urnik v novem oknu</span></div>
+        <span style="font-size:18px;color:#60a5fa">›</span>
+      </button>
+    </div>
+    <div style="font-size:10px;color:#475569;text-align:center;font-family:monospace">Urniki se posodabljajo na uradni strani Jadrolinija</div>
   </div>
 </div>
 
@@ -407,7 +409,7 @@ button{cursor:pointer;font-family:inherit}button:focus{outline:none}a{color:#38b
         <div style="flex:1"><div style="color:#e2e8f0;font-family:'Playfair Display',serif;font-size:18px;margin-bottom:3px">Jadrolinija · Linija 9052</div><div id="ferry-lbl" style="color:#38bdf8;font-size:14px;font-family:monospace;margin-bottom:3px">⛴️ Prizna – Žigljen</div><div style="color:#94a3b8;font-size:12px">~15 min prečkanje</div></div>
       </div>
       <div style="display:flex;gap:8px;margin-top:10px">
-        <button class="smb" onclick="O('ov-ferry');toggleSched(true)" style="flex:1"><div class="smb-l"><span>🕐</span><span>Urnik odhodov</span></div><span style="font-size:18px;color:#60a5fa">›</span></button>
+        <button class="smb" onclick="O('ov-ferry')" style="flex:1"><div class="smb-l"><span>🕐</span><span>Urnik odhodov</span></div><span style="font-size:18px;color:#60a5fa">›</span></button>
         <button class="smb" onclick="openFerryMap()" style="flex:1"><div class="smb-l"><span>🗺️</span><span>Ostale linije</span></div><span style="font-size:18px;color:#60a5fa">›</span></button>
       </div>
     </div>
@@ -819,38 +821,12 @@ function openKnots(){
 }
 
 // ── Ferry Prizna ──────────────────────────────────────────────────
-const FERRY={summer:{pz:['05:00','06:00','07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00','00:00','01:00','02:00','03:00','04:00'],zp:['05:20','06:20','07:20','08:20','09:20','10:20','11:20','12:20','13:20','14:20','15:20','16:20','17:20','18:20','19:20','20:20','21:20','22:20','23:20','00:20','01:20','02:20','03:20','04:20']},winter:{pz:['06:00','08:00','10:00','12:00','14:00','16:00','18:00','20:00','22:00'],zp:['07:00','09:00','11:00','13:00','15:00','17:00','19:00','21:00','23:00']}};
-let fSezon='summer';
-function toggleSched(forceOpen){
-  const el=document.getElementById('sched-body'),btn=document.getElementById('btn-sched');if(!el)return;
-  const open=forceOpen!==undefined?forceOpen:(el.style.display==='none');
-  el.style.display=open?'block':'none';
-  if(btn)btn.textContent=open?'Skrij urnik ↑':'Pokaži urnik ›';
-  if(open)renderFerry();
-}
-function renderFerry(){
-  const now=new Date(),nowMin=now.getHours()*60+now.getMinutes(),sch=FERRY[fSezon];
-  ['pz','zp'].forEach(dir=>{
-    const el=document.getElementById('ft-'+dir);if(!el)return;
-    const times=sch[dir];let ni=-1;for(let i=0;i<times.length;i++){if(fMin(times[i])>nowMin){ni=i;break;}}
-    el.innerHTML=times.map((t,i)=>{const past=fMin(t)<nowMin&&i!==ni;return`<div class="ferry-time${i===ni?' next':past?' past':''}">${t}</div>`;}).join('');
-  });
-  const lbl=document.getElementById('ferry-lbl');
-  if(lbl){const pzT=sch.pz;let nt=null;for(const t of pzT){if(fMin(t)>nowMin){nt=t;break;}}
-    if(nt){const d=fMin(nt)-nowMin;lbl.textContent=`⛴️ Naslednji iz Prizne: ${nt} (čez ${Math.floor(d/60)>0?Math.floor(d/60)+'h ':''}${d%60}min)`;}
-    else lbl.textContent='⛴️ Naslednji: jutri ob '+pzT[0];}
-}
-function setFS(s){fSezon=s;const ss=document.getElementById('fs-summer'),sw=document.getElementById('fs-winter');if(ss)ss.className='season-btn'+(s==='summer'?' on':'');if(sw)sw.className='season-btn'+(s==='winter'?' on':'');renderFerry();}
 
-// ── Ferry all lines ────────────────────────────────────────────────
-const FERRY_LINES=[
-  {name:'Prizna – Žigljen',sub:'Pag · ~15 min',icon:'⚓',url:'https://www.jadrolinija.hr/vozni-red/trajektne-linije/prizna-zigljen-9052'},
-  {name:'Stinica – Mišnjak',sub:'Rab · ~15 min',icon:'⚓',url:'https://www.jadrolinija.hr/vozni-red/trajektne-linije/stinica-misnjak-9053'},
-  {name:'Valbiska – Merag',sub:'Cres · ~30 min',icon:'⚓',url:'https://www.jadrolinija.hr/vozni-red/trajektne-linije/valbiska-merag-9051'},
-  {name:'Drvenik – Sučuraj',sub:'Hvar · ~35 min',icon:'⚓',url:'https://www.jadrolinija.hr/vozni-red/trajektne-linije/drvenik-sudurad-9067'},
-  {name:'Split – Supetar',sub:'Brač · ~50 min',icon:'⚓',url:'https://www.jadrolinija.hr/vozni-red/trajektne-linije/split-supetar-9030'},
-  {name:'Split – Stari Grad',sub:'Hvar · ~2h',icon:'⚓',url:'https://www.jadrolinija.hr/vozni-red/trajektne-linije/split-stari-grad-hvar-9026'},
-];
+
+// Overlay open/close
+function O(id){const el=document.getElementById(id);if(el)el.classList.add('on');}
+function Z(id){const el=document.getElementById(id);if(el)el.classList.remove('on');}
+
 
 function renderFerry(){
   // Update ferry-lbl
@@ -869,6 +845,136 @@ function openFerryMap(){
   O('ov-ferry-all');
 }
 
+
+function buildLocs(){
+  const el=document.getElementById('locs');
+  if(el)el.innerHTML=LOCS.map(l=>`<button class="loc-btn${l.id===selLoc.id?' on':''}" onclick="pickLoc('${l.id}')">${l.flag} ${l.name}</button>`).join('');
+  const lf=document.getElementById('loc-flag'),ln=document.getElementById('loc-name'),lc=document.getElementById('loc-coords');
+  if(lf)lf.textContent=selLoc.flag;if(ln)ln.textContent=selLoc.name;if(lc)lc.textContent=`${selLoc.lat.toFixed(2)}°N · ${selLoc.lon.toFixed(2)}°E`;
+}
+
+function updateApiUI(){
+  const b=document.getElementById('api-bdg'),d=document.getElementById('cfg-dot'),t=document.getElementById('cfg-txt');
+  if(sgKey){
+    if(b)b.innerHTML='<span class="api-badge" style="background:#14532d;border:1px solid #166534;color:#4ade80">✅ Stormglass aktiven</span>';
+    if(d)d.style.background='#4ade80';if(t)t.textContent='Stormglass FES2014 aktiven (±5 min)';
+  }else if(apiKey){
+    if(b)b.innerHTML='<span class="api-badge" style="background:#14532d;border:1px solid #166534;color:#4ade80">✅ WorldTides aktiven</span>';
+    if(d)d.style.background='#4ade80';if(t)t.textContent='WorldTides aktiven (±5 min)';
+  }else{
+    if(b)b.innerHTML='<span class="api-badge" style="background:#2a0a0a;border:1px solid #7f1d1d;color:#f87171">⚙️ Harmonični model (±1-2 uri)</span>';
+    if(d)d.style.background='#fbbf24';if(t)t.textContent='Ni ključa — harmonični model (±1-2 uri)';
+  }
+}
+
+function confirmMapLoc(){
+  if(!_pendingLoc)return;
+  const{lat,lon,name,flag,locObj}=_pendingLoc;
+  selLoc=locObj||{id:'custom',name,lat:parseFloat(lat.toFixed(4)),lon:parseFloat(lon.toFixed(4)),flag:'📍',tide:interpolateTide(lat,lon)};
+  tCache={};wCache={};fcCache={};// Clear old empty keys from localStorage
+try{if(!localStorage.getItem('sg_key')||localStorage.getItem('sg_key').length<20){localStorage.removeItem('sg_key');sgKey=SG_KEY_DEFAULT;}}catch(e){}
+buildLocs();updateApiUI();Z('ov-map');render();
+}
+
+function saveCfg(){
+  sgKey=(document.getElementById('sg-inp').value||'').trim();
+  apiKey=(document.getElementById('api-inp').value||'').trim();
+  try{sgKey?localStorage.setItem('sg_key',sgKey):localStorage.removeItem('sg_key');}catch(e){}
+  try{apiKey?localStorage.setItem('wt_key',apiKey):localStorage.removeItem('wt_key');}catch(e){}
+  tCache={};updateApiUI();Z('ov-cfg');render();
+}
+
+function toggleSched(forceOpen){
+  const el=document.getElementById('sched-body'),btn=document.getElementById('btn-sched');if(!el)return;
+  const open=forceOpen!==undefined?forceOpen:(el.style.display==='none');
+  el.style.display=open?'block':'none';
+  if(btn)btn.textContent=open?'Skrij urnik ↑':'Pokaži urnik ›';
+  if(open)renderFerry();
+}
+
+function moonPhase(d){const diff=(d-new Date(2000,0,6,18,14,0))/86400000;return((diff%29.53058867)+29.53058867)%29.53058867;}
+function fScore(t,exs,date){
+  const p=moonPhase(date),md=Math.min(p,29.53-p,Math.abs(p-14.77)),mb=Math.max(0,30-md*8);
+  const h=t.getHours()+t.getMinutes()/60,dd=((h>=5&&h<=7)||(h>=19&&h<=21))?15:0;
+  let tb=0;for(const e of exs){const dh=Math.abs((t-e.time)/3600000);if(dh<2.5)tb=Math.max(tb,25-dh*8);}
+  return Math.min(100,Math.round(30+mb*.5+tb+dd));
+}
+function wmo(c){const m={0:['☀️','Jasno'],1:['🌤️','Pretežno jasno'],2:['⛅','Delno oblačno'],3:['☁️','Oblačno'],45:['🌫️','Megla'],51:['🌦️','Rosica'],61:['🌧️','Rahel dež'],63:['🌧️','Dež'],65:['🌧️','Močan dež'],71:['🌨️','Sneg'],80:['🌦️','Plohe'],81:['🌧️','Plohe'],82:['⛈️','Plohe'],95:['⛈️','Nevihta']};return m[c]||['🌡️','Neznano'];}
+function wDir(d){return['S','SSV','SV','VSV','V','VJV','JV','JJV','J','JJZ','JZ','ZJZ','Z','ZSZ','SZ','SSZ'][Math.round(d/22.5)%16];}
+function wArr(d){return['↓','↙','←','↖','↑','↗','→','↘'][Math.round(d/45)%8];}
+function wCol(s){return s>40?'#f87171':s>25?'#fb923c':'#4ade80';}
+function bft(k){if(k<6)return'1 Bft';if(k<12)return'2 Bft';if(k<20)return'3 Bft';if(k<29)return'4 Bft';if(k<39)return'5 Bft';if(k<50)return'6 Bft';return'7+ Bft';}
+
+
+// ── Luna & Ribolov ──────────────────────────────────────────
+function getMoon(d){const p=moonPhase(d);for(const m of MOONS)if(p<=m.max)return{...m,p};return{...MOONS[MOONS.length-1],p};}
+function dayScore(date,exs){return fScore(new Date(date.getFullYear(),date.getMonth(),date.getDate(),6),exs,date);}
+
+// ── Astronomski izračun sonca in lune ────────────────────────
+function calcSunTimes(date,lat,lon){
+  const rad=Math.PI/180;
+  const jd=Math.floor(date/86400000)+2440588;
+  const n=jd-2451545;
+  const L=(280.46+0.9856474*n)%360;
+  const g=(357.528+0.9856003*n)*rad;
+  const lam=(L+1.915*Math.sin(g)+0.02*Math.sin(2*g))*rad;
+  const eps=23.439*rad;
+  const sinD=Math.sin(eps)*Math.sin(lam);
+  const decl=Math.asin(sinD);
+  const eot=(L-Math.atan2(Math.tan(lam),Math.cos(eps))/rad)/15;
+  const cosH=(-Math.sin(-0.833*rad)-Math.sin(lat*rad)*sinD)/(Math.cos(lat*rad)*Math.cos(decl));
+  if(Math.abs(cosH)>1)return null;
+  const H=Math.acos(cosH)/rad;
+  const tz=-new Date(date).getTimezoneOffset()/60;
+  const noon=12-eot-lon/15+tz;
+  const rise=noon-H/15,set=noon+H/15;
+  const fmt=t=>{t=((t%24)+24)%24;const h=Math.floor(t),m=Math.round((t-h)*60);return String(h).padStart(2,'0')+':'+String(m>=60?m-60:m<0?m+60:m).padStart(2,'0');};
+  return{rise:fmt(rise),set:fmt(set)};
+}
+
+function moonPos(jd){
+  const r=Math.PI/180,d=jd-2451545;
+  const L=(218.316+13.176396*d)%360;
+  const M=(134.963+13.064993*d)*r;
+  const F=(93.272+13.229350*d)*r;
+  const lam=(L+6.289*Math.sin(M))*r;
+  const beta=5.128*Math.sin(F)*r;
+  const del=385001-20905*Math.cos(M);
+  const e=23.439*r;
+  const ra=Math.atan2(Math.sin(lam)*Math.cos(e)-Math.tan(beta)*Math.sin(e),Math.cos(lam));
+  const dec=Math.asin(Math.sin(beta)*Math.cos(e)+Math.cos(beta)*Math.sin(e)*Math.sin(lam));
+  return{ra,dec,del};
+}
+
+function moonAltAt(jd,lat,lon){
+  const r=Math.PI/180,{ra,dec,del}=moonPos(jd);
+  const gmst=(280.46061837+360.98564736629*(jd-2451545))*r;
+  const ha=gmst+lon*r-ra;
+  const h0=(0.7275*Math.asin(6378.14/del)-0.5667*r);
+  return Math.asin(Math.sin(lat*r)*Math.sin(dec)+Math.cos(lat*r)*Math.cos(dec)*Math.cos(ha))-h0;
+}
+
+function calcMoonTimes(date,lat,lon){
+  const tz=-new Date(date).getTimezoneOffset()/60;
+  const jd0=Math.floor(date/86400000)+2440588;
+  let prev=moonAltAt(jd0,lat,lon),rise=null,set2=null;
+  for(let h=1;h<=25;h++){
+    const cur=moonAltAt(jd0+h/24,lat,lon);
+    if(prev<0&&cur>=0&&rise===null)rise=h-cur/(cur-prev);
+    if(prev>=0&&cur<0&&set2===null)set2=h-cur/(cur-prev);
+    prev=cur;
+  }
+  const fmt=t=>{if(t===null)return'--:--';t=((t+tz)%24+24)%24;const h=Math.floor(t),m=Math.round((t-h)*60);return String(h).padStart(2,'0')+':'+String(m>=60?m-60:m<0?m+60:m).padStart(2,'0');};
+  return{rise:fmt(rise),set:fmt(set2)};
+}
+
+
+function pickLoc(id){
+  selLoc=LOCS.find(l=>l.id===id)||LOCS[0];
+  buildLocs();
+  const hs=document.getElementById('hdr-sub');if(hs)hs.textContent=selLoc.name+' · Jadransko morje';
+  tCache={};wCache={};fcCache={};render();
+}
 
 async function render(){
   const myID=++_rid,date=new Date(selDate.getTime()),loc=selLoc;

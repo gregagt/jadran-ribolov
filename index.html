@@ -576,6 +576,26 @@ async function fetchWT(loc,date){
   const r={pts,exs,src:'worldtides'};tCache[ck]=r;return r;
 }
 
+function reconstructCurve(exs,d0){
+  if(!exs||exs.length<2)return[];
+  const pts=[];
+  const sorted=[...exs].sort((a,b)=>a.minute-b.minute);
+  // Add boundary points
+  const first=sorted[0],last=sorted[sorted.length-1];
+  if(first.minute>0)sorted.unshift({minute:0,height:first.type==='high'?first.height-0.1:first.height+0.1,time:new Date(d0),type:first.type==='high'?'low':'high'});
+  if(last.minute<1440)sorted.push({minute:1440,height:last.type==='high'?last.height-0.1:last.height+0.1,time:new Date(d0.getTime()+1440*60000),type:last.type==='high'?'low':'high'});
+  for(let i=0;i<sorted.length-1;i++){
+    const a=sorted[i],b=sorted[i+1];
+    const steps=Math.max(1,Math.round((b.minute-a.minute)/15));
+    for(let j=0;j<=steps;j++){
+      const t=j/steps,m=Math.round(a.minute+(b.minute-a.minute)*t);
+      const h=a.height+(b.height-a.height)*(1-Math.cos(Math.PI*t))/2;
+      pts.push({minute:m,height:parseFloat(h.toFixed(3)),time:new Date(d0.getTime()+m*60000)});
+    }
+  }
+  return pts;
+}
+
 const TA_KEY='ta_90304450b340e081b15310494d1cf767a217a234f90016ec9094c9c1b5c7';
 const TA_PORTS={'pag':'zadar','zadar':'zadar','split':'split','dubrovnik':'dubrovnik','pula':'pula','cervar':'pula','rovinj':'rovinj'};
 

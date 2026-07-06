@@ -312,7 +312,18 @@ button{cursor:pointer;font-family:inherit}button:focus{outline:none}a{color:#38b
   </div>
 
   <div id="v-t">
-        <div class="card">
+        
+    </div
+
+
+    <div class="wcard">
+      <div class="clbl">⛅ Vreme &amp; Morje <span id="w-loc-lbl" style="color:#64748b;font-size:11px;float:right;font-family:monospace;text-transform:none;letter-spacing:0"></span></div>
+      <div id="w-content"><div style="text-align:center;color:#334155;font-size:11px;padding:16px;letter-spacing:2px">⟳ NALAGANJE...</div></div>
+      <div id="w-strip" style="margin-top:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none"></div>
+      <button class="smb" onclick="openWF()" style="margin-top:8px"><div class="smb-l"><span>🗓️</span><span>Pokaži več — 10-dnevna napoved</span></div><span style="font-size:18px;color:#60a5fa">›</span></button>
+    </div>
+
+    <div class="card">
         <div class="clbl">☀️ Sonce &amp; 🌙 Luna</div>
         <div style="display:flex;gap:10px;margin-top:6px;align-items:stretch">
           <!-- Sonce -->
@@ -363,15 +374,6 @@ button{cursor:pointer;font-family:inherit}button:focus{outline:none}a{color:#38b
           </div>
         </div>
       </div>
-    </div
-
-
-    <div class="wcard">
-      <div class="clbl">⛅ Vreme &amp; Morje <span id="w-loc-lbl" style="color:#64748b;font-size:11px;float:right;font-family:monospace;text-transform:none;letter-spacing:0"></span></div>
-      <div id="w-content"><div style="text-align:center;color:#334155;font-size:11px;padding:16px;letter-spacing:2px">⟳ NALAGANJE...</div></div>
-      <div id="w-strip" style="margin-top:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none"></div>
-      <button class="smb" onclick="openWF()" style="margin-top:8px"><div class="smb-l"><span>🗓️</span><span>Pokaži več — 10-dnevna napoved</span></div><span style="font-size:18px;color:#60a5fa">›</span></button>
-    </div>
 
     <div class="card">
       <div class="clbl">🌊 Graf plime in oseke <span id="chart-loc-lbl" style="color:#64748b;font-size:11px;float:right;font-family:monospace;text-transform:none;letter-spacing:0"></span></div>
@@ -382,6 +384,7 @@ button{cursor:pointer;font-family:inherit}button:focus{outline:none}a{color:#38b
       </div>
       <div style="width:100%;overflow-x:auto"><svg id="chart-sm" viewBox="0 0 600 155" style="width:100%;height:auto;display:block"></svg></div>
       <div class="cnote" id="cnote" style="display:none">── trenutni čas</div>
+      <div id="extr-row" style="display:flex;flex-wrap:wrap;gap:5px;margin-top:8px"></div>
       <button class="smb" onclick="O('ov-chart')" style="margin-top:10px"><div class="smb-l"><span>📊</span><span>Pokaži več — detajlni graf z ribolovnimi %</span></div><span style="font-size:18px;color:#60a5fa">›</span></button>
     </div>
 
@@ -1180,6 +1183,31 @@ function calcMoonTimes(date,lat,lon){
   return{rise:fmt(rise),set:fmt(set2)};
 }
 
+function renderExtrRow(exs){
+  const er=document.getElementById('extr-row');
+  if(!er||!exs||!exs.length)return;
+  er.innerHTML=exs.map(e=>`<div style="display:flex;align-items:center;gap:4px;background:${e.type==='high'?'#0f2a1e':'#0a1628'};border:1px solid ${e.type==='high'?'#166534':'#1e3a5f'};border-radius:6px;padding:3px 8px"><span style="font-size:12px">${e.type==='high'?'▲':'▼'}</span><div><div style="font-family:'Playfair Display',serif;font-size:14px;color:#e2e8f0;line-height:1">${fmt(e.time)}</div><div style="font-size:10px;color:${e.type==='high'?'#4ade80':'#60a5fa'}">${fmtH(e.height)}</div></div></div>`).join('');
+}
+
+async function updateTAExtremes(loc,date){
+  const ld=lD(date),ckey='ta_extr_'+loc.id+'_'+ld;
+  if(tCache[ckey]){renderExtrRow(tCache[ckey]);return;}
+  try{
+    const port=(TA_PORTS&&TA_PORTS[loc.id])||'split';
+    const res=await fetch('https://tidesatlas.com/api/v1/tides?port='+port+'&date='+ld+'&days=1',{headers:{'X-API-Key':TA_KEY}});
+    if(!res.ok)return;
+    const data=await res.json();
+    if(!data.extremes||!data.extremes.length)return;
+    const d0=new Date(date.getFullYear(),date.getMonth(),date.getDate());
+    const exs=data.extremes.filter(e=>e.datetime.startsWith(ld)).map(e=>{
+      const d=new Date(e.datetime),m=Math.round((d-d0)/60000);
+      return{minute:Math.max(0,Math.min(1440,m)),height:e.height_m,time:d,type:e.type==='high'?'high':'low'};
+    });
+    tCache[ckey]=exs;
+    renderExtrRow(exs);
+  }catch(e){}
+}
+
 async function render(){
   const myID=++_rid,date=new Date(selDate.getTime()),loc=selLoc;
   const today=new Date();today.setHours(0,0,0,0);
@@ -1207,6 +1235,10 @@ async function render(){
   _pts=td.pts;_exs=td.exs;
   const sr=document.getElementById('src-row');
   const cll=document.getElementById('chart-loc-lbl');if(cll)cll.textContent=loc.name;
+  // Show extremes immediately from tide data (harmonic or TA)
+  renderExtrRow(_exs);
+  // Then try TidesAtlas for more accurate data
+  updateTAExtremes(loc,date);
   if(sr){if(td.src==='stormglass')sr.innerHTML='<div class="src-dot" style="background:#4ade80"></div><div class="src-txt">STORMGLASS — FES2014 MODEL (±5 MIN)</div>';
   else if(td.src==='worldtides')sr.innerHTML='<div class="src-dot" style="background:#4ade80"></div><div class="src-txt">WORLDTIDES — URADNI PODATKI (±5 MIN)</div>';
   else if(td.apiErr)sr.innerHTML='<div class="src-dot" style="background:#f87171"></div><div class="src-txt" style="color:#f87171">⚠️ '+td.apiErr+' — harmonični model</div>';

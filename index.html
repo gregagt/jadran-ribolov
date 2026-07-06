@@ -399,13 +399,9 @@ button{cursor:pointer;font-family:inherit}button:focus{outline:none}a{color:#38b
     <div style="display:none"><div id="fw-list"></div></div>
 
     <div class="kcard">
-      <div class="clbl" style="color:#4ade80">🪢 Ribiški vozli</div>
-      <div style="display:flex;align-items:center;gap:14px;padding:2px 0 4px">
-        <div style="font-size:44px">🪢</div>
-        <div style="flex:1"><div style="color:#e2e8f0;font-family:'Playfair Display',serif;font-size:18px;margin-bottom:4px">5 ribiških vozlov</div><div style="color:#4ade80;font-size:13px">Palomar · Rapala · Clinch · Uni · San Diego</div></div>
-        <div style="background:#166534;border-radius:10px;padding:10px 12px;color:#4ade80;font-size:22px">›</div>
-      </div>
-      <button class="smb green" onclick="openKnots()" style="margin-top:10px"><div class="smb-l"><span>🪢</span><span>Pokaži več — slike vozlov</span></div><span style="font-size:18px;color:#4ade80">›</span></button>
+      <div class="clbl" style="color:#38bdf8">⚓ Trajekti — Urniki</div>
+      <div style="font-size:10px;color:#64748b;margin-bottom:10px;font-family:monospace">Uradni urniki Jadrolinija</div>
+      <div id="ferry-btns" style="display:flex;flex-direction:column;gap:8px"></div>
     </div>
 
     <div class="ferry-card">
@@ -851,434 +847,34 @@ function renderFerry(){
 function setFS(s){fSezon=s;const ss=document.getElementById('fs-summer'),sw=document.getElementById('fs-winter');if(ss)ss.className='season-btn'+(s==='summer'?' on':'');if(sw)sw.className='season-btn'+(s==='winter'?' on':'');renderFerry();}
 
 // ── Ferry all lines ────────────────────────────────────────────────
-const FERRY_ALL=[
-  {region:'⚓ Kvarner',lines:[
-    {name:'Prizna – Žigljen',sub:'Pag',time:'~15 min',op:'Jadrolinija · L9052',badge:'Non-stop v sezoni',
-     pz:['05:00','06:00','07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00','00:00'],
-     zp:['05:20','06:20','07:20','08:20','09:20','10:20','11:20','12:20','13:20','14:20','15:20','16:20','17:20','18:20','19:20','20:20','21:20','22:20','23:20','00:20']},
-    {name:'Stinica – Mišnjak',sub:'Rab',time:'~15 min',op:'Jadrolinija · L9064',
-     pz:['06:00','07:00','08:00','09:30','11:00','12:30','14:00','15:30','17:00','18:30','20:00','21:30','23:00'],
-     zp:['06:30','07:30','08:30','10:00','11:30','13:00','14:30','16:00','17:30','19:00','20:30','22:00','23:30']},
-    {name:'Brestova – Porozina',sub:'Cres',time:'~35 min',op:'Jadrolinija · L9055',
-     pz:['05:30','07:00','08:30','10:00','11:30','13:00','14:30','16:00','17:30','19:00','20:30','22:00'],
-     zp:['06:15','07:45','09:15','10:45','12:15','13:45','15:15','16:45','18:15','19:45','21:15','22:45']},
-    {name:'Valbiska – Merag',sub:'Krk–Cres',time:'~30 min',op:'Jadrolinija · L9056',
-     pz:['06:00','08:00','10:00','12:00','14:00','16:00','18:00','20:00','22:00'],
-     zp:['06:40','08:40','10:40','12:40','14:40','16:40','18:40','20:40','22:40']},
-  ]},
-  {region:'⚓ Zadar',lines:[
-    {name:'Zadar – Preko',sub:'Ugljan',time:'~20 min',op:'Jadrolinija · L9030',badge:'Pogost',
-     pz:['05:30','06:30','07:30','08:30','09:30','10:30','12:00','13:30','15:00','16:30','18:00','19:30','21:00','22:30'],
-     zp:['06:00','07:00','08:00','09:00','10:00','11:00','12:30','14:00','15:30','17:00','18:30','20:00','21:30','23:00']},
-    {name:'Biograd – Tkon',sub:'Pašman',time:'~20 min',op:'Jadrolinija · L9031',
-     pz:['06:00','08:00','10:00','12:00','14:00','16:00','18:00','20:00','22:00'],
-     zp:['06:30','08:30','10:30','12:30','14:30','16:30','18:30','20:30','22:30']},
-  ]},
-  {region:'⚓ Šibenik',lines:[
-    {name:'Šibenik – Zlarin – Prvić – Vodice',sub:'otoki',time:'~45 min',op:'Jadrolinija · L9046',
-     pz:['06:30','09:00','12:00','15:00','18:00','20:30'],
-     zp:['07:30','10:00','13:00','16:00','19:00','21:30'],
-     note:'Postanki: Zlarin → Prvić Šepurina → Prvić Luka → Vodice'},
-  ]},
-  {region:'⚓ Split',lines:[
-    {name:'Split – Supetar',sub:'Brač ⭐',time:'~50 min',op:'Jadrolinija · L9027',badge:'Najprometnješa',
-     pz:['05:00','07:00','08:30','10:00','11:30','13:00','14:30','16:00','17:30','19:00','20:30','22:00','23:30'],
-     zp:['06:00','08:00','09:30','11:00','12:30','14:00','15:30','17:00','18:30','20:00','21:30','23:00','00:30']},
-    {name:'Split – Rogač',sub:'Šolta',time:'~1 h',op:'Jadrolinija · L9028',
-     pz:['06:00','09:00','12:00','15:00','18:00','21:00'],
-     zp:['07:10','10:10','13:10','16:10','19:10','22:10']},
-    {name:'Split – Stari Grad',sub:'Hvar',time:'~2 h',op:'Jadrolinija · L9025',
-     pz:['06:00','09:00','12:30','16:00','20:00','23:00'],
-     zp:['05:00','08:00','11:00','14:30','18:00','22:00']},
-    {name:'Split – Vis',sub:'',time:'~2.5 h',op:'Jadrolinija · L9021',
-     pz:['07:00','14:30','21:00'],
-     zp:['05:00','12:00','18:00']},
-    {name:'Split – Vela Luka',sub:'Korčula',time:'~2.5 h',op:'Jadrolinija · L9022',
-     pz:['06:00','13:00','20:00'],
-     zp:['05:00','11:30','18:00'],
-     note:'Postanki: Hvar in Vela Luka'},
-    {name:'Drvenik – Sućuraj',sub:'Hvar',time:'~35 min',op:'Jadrolinija · L9034',
-     pz:['07:00','09:00','11:00','13:00','15:00','17:00','19:00','21:00'],
-     zp:['07:45','09:45','11:45','13:45','15:45','17:45','19:45','21:45']},
-    {name:'Makarska – Sumartin',sub:'Brač',time:'~1 h',op:'Jadrolinija · L9032',
-     pz:['06:30','09:00','12:00','15:00','18:00','21:00'],
-     zp:['05:30','07:30','10:00','13:00','16:00','19:30']},
-  ]},
-  {region:'⚓ Pelješac & Dubrovnik',lines:[
-    {name:'Ploče – Trpanj',sub:'Pelješac',time:'~1 h',op:'Jadrolinija · L9035',
-     pz:['07:00','09:30','12:00','15:00','18:00','20:30'],
-     zp:['06:00','08:00','10:30','13:00','16:00','19:00']},
-    {name:'Orebić – Dominče',sub:'Korčula',time:'~15 min',op:'Jadrolinija · L9039',
-     pz:['06:00','07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00'],
-     zp:['06:20','07:20','08:20','09:20','10:20','11:20','12:20','13:20','14:20','15:20','16:20','17:20','18:20','19:20','20:20','21:20','22:20']},
-    {name:'Dubrovnik – Koločep – Lopud – Šipan',sub:'otoki',time:'~1.5 h',op:'Jadrolinija · L9044',
-     pz:['07:00','09:00','12:00','15:00','18:00','21:00'],
-     zp:['06:00','08:30','11:00','14:00','17:00','20:00'],
-     note:'Postanki: Koločep → Lopud → Šipanska Luka'},
-  ]},
-  {region:'⚡ Hitri katamarani (Krilo)',lines:[
-    {name:'Split – Hvar – Korčula – Lastovo',sub:'',time:'~2 h',op:'Krilo',badge:'Rezervacija obvezna',
-     pz:['08:00','17:00'],zp:['06:00','15:30'],note:'krilo.hr · Sezonska linija'},
-    {name:'Split – Brač – Hvar – Vis',sub:'',time:'~2.5 h',op:'Krilo',
-     pz:['09:00','18:00'],zp:['06:30','16:00'],note:'Sezonska linija'},
-  ]},
+const FERRY_LINES=[
+  {name:'Prizna – Žigljen',sub:'Pag · ~15 min',icon:'⚓',url:'https://www.jadrolinija.hr/vozni-red/brodske-linije/9052'},
+  {name:'Stinica – Mišnjak',sub:'Rab · ~15 min',icon:'⚓',url:'https://www.jadrolinija.hr/vozni-red/brodske-linije/9053'},
+  {name:'Valbiska – Merag',sub:'Cres · ~30 min',icon:'⚓',url:'https://www.jadrolinija.hr/vozni-red/brodske-linije/9051'},
+  {name:'Drvenik – Sučuraj',sub:'Hvar · ~35 min',icon:'⚓',url:'https://www.jadrolinija.hr/vozni-red/brodske-linije/9061'},
+  {name:'Split – Supetar',sub:'Brač · ~50 min',icon:'⚓',url:'https://www.jadrolinija.hr/vozni-red/brodske-linije/9030'},
+  {name:'Split – Stari Grad',sub:'Hvar · ~2h',icon:'⚓',url:'https://www.jadrolinija.hr/vozni-red/brodske-linije/9026'},
 ];
 
-function buildFerryAll(){
-  const el=document.getElementById('fl-body');if(!el)return;
-  const nowMin=new Date().getHours()*60+new Date().getMinutes();
-  const dirBlock=(dirName,times)=>{
-    if(!times||!times.length)return'';
-    const ni=times.findIndex(t=>fMin(t)>nowMin);
-    return`<div style="margin-bottom:10px">
-      <div style="font-family:'Playfair Display',serif;font-size:14px;color:#e2e8f0;margin-bottom:5px">${dirName}</div>
-      <div class="fl-times-wrap">${times.map((t,i)=>`<span class="fl-time${i===ni?' next':''}">${t}</span>`).join('')}</div>
-    </div>`;
-  };
-  let h='<div style="background:#0a1628;border:1px solid #334155;border-radius:9px;padding:9px 12px;margin-bottom:12px;font-size:12px;color:#94a3b8;line-height:1.6">⚠️ Urniki so <strong style="color:#e2e8f0">orientacijski</strong> — preverite na <a href="https://www.jadrolinija.hr/vozni-red" target="_blank" style="color:#38bdf8">jadrolinija.hr</a></div>';
-  FERRY_ALL.forEach(reg=>{
-    h+=`<div class="fl-region"><div class="fl-region-title">${reg.region}</div>`;
-    reg.lines.forEach(line=>{
-      const parts=line.name.split(' – ');
-      const portA=parts[0].trim();
-      const portB=parts[parts.length-1].trim();
-      const revName=parts.slice().reverse().join(' – ');
-      h+=`<div class="fl-card">
-        <div class="fl-meta" style="margin-bottom:8px">
-          <span class="fl-badge" style="background:#14532d;color:#4ade80">${line.time}</span>
-          <span class="fl-badge" style="background:#0f1e35;color:#60a5fa">${line.op}</span>
-          ${line.badge?`<span class="fl-badge" style="background:#7c2d12;color:#fb923c">${line.badge}</span>`:''}
-          ${line.sub?`<span class="fl-badge" style="background:#0f2a1e;color:#86efac">${line.sub}</span>`:''}
-        </div>
-        <div style="border-left:3px solid #1e4060;padding-left:10px;margin-bottom:8px">
-          ${dirBlock(line.name,line.pz)}
-        </div>
-        ${line.zp?`<div style="border-left:3px solid #1e3a5f;padding-left:10px;margin-bottom:4px">${dirBlock(revName,line.zp)}</div>`:''}
-        ${line.note?`<div class="fl-note">ℹ️ ${line.note}</div>`:''}
-      </div>`;
-    });
-    h+='</div>';
-  });
-  h+=`<div style="text-align:center;margin-top:8px"><a href="https://www.jadrolinija.hr/vozni-red/brodske-linije" target="_blank" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#1d4ed8,#1e40af);border:1px solid #3b82f6;border-radius:10px;padding:11px 20px;color:#fff;font-size:12px;font-family:monospace;text-decoration:none;letter-spacing:1px">🌐 JADROLINIJA.HR — URADNI URNIKI</a></div>`;
-  el.innerHTML=h;
+let _ferryUrl='';
+function openFerryLine(url){
+  _ferryUrl=url;
+  const fi=document.getElementById('ferry-iframe');
+  if(fi)fi.src=url;
+  O('ov-ferry-line');
 }
 
-// ── Ferry map ─────────────────────────────────────────────────────
-const FERRY_ROUTES=[
-  {name:'Prizna–Žigljen',sub:'Pag',col:'#38bdf8',
-   coords:[[44.602,14.970],[44.581,14.949]],
-   pz:['05:00','06:00','07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00','00:00'],
-   zp:['05:20','06:20','07:20','08:20','09:20','10:20','11:20','12:20','13:20','14:20','15:20','16:20','17:20','18:20','19:20','20:20','21:20','22:20','23:20','00:20']},
-  {name:'Stinica–Mišnjak',sub:'Rab',col:'#7dd3fc',
-   coords:[[44.720,14.891],[44.706,14.861]],
-   pz:['06:00','07:00','09:30','11:00','12:30','14:00','15:30','17:00','18:30','20:00','21:30','23:00'],
-   zp:['06:30','07:30','10:00','11:30','13:00','14:30','16:00','17:30','19:00','20:30','22:00','23:30']},
-  {name:'Brestova–Porozina',sub:'Cres',col:'#60a5fa',
-   coords:[[45.169,14.220],[45.112,14.312]],
-   pz:['05:30','07:00','08:30','10:00','11:30','13:00','14:30','16:00','17:30','19:00','20:30','22:00'],
-   zp:['06:15','07:45','09:15','10:45','12:15','13:45','15:15','16:45','18:15','19:45','21:15','22:45']},
-  {name:'Valbiska–Merag',sub:'Krk–Cres',col:'#60a5fa',
-   coords:[[45.028,14.497],[44.980,14.448]],
-   pz:['06:00','08:00','10:00','12:00','14:00','16:00','18:00','20:00','22:00'],
-   zp:['06:40','08:40','10:40','12:40','14:40','16:40','18:40','20:40','22:40']},
-  {name:'Zadar–Preko',sub:'Ugljan',col:'#fbbf24',
-   coords:[[44.119,15.231],[44.089,15.189]],
-   pz:['05:30','06:30','07:30','08:30','09:30','10:30','12:00','13:30','15:00','16:30','18:00','19:30','21:00','22:30'],
-   zp:['06:00','07:00','08:00','09:00','10:00','11:00','12:30','14:00','15:30','17:00','18:30','20:00','21:30','23:00']},
-  {name:'Biograd–Tkon',sub:'Pašman',col:'#fbbf24',
-   coords:[[43.939,15.446],[43.921,15.414]],
-   pz:['06:00','08:00','10:00','12:00','14:00','16:00','18:00','20:00','22:00'],
-   zp:['06:30','08:30','10:30','12:30','14:30','16:30','18:30','20:30','22:30']},
-  {name:'Šibenik–Zlarin–Prvić–Vodice',sub:'otoki',col:'#fb923c',
-   coords:[[43.735,15.889],[43.700,15.858],[43.716,15.810],[43.744,15.779],[43.772,15.778]],
-   pz:['06:30','09:00','12:00','15:00','18:00','20:30'],
-   zp:['07:30','10:00','13:00','16:00','19:00','21:30']},
-  {name:'Split–Supetar',sub:'Brač',col:'#4ade80',
-   coords:[[43.508,16.440],[43.384,16.552]],
-   pz:['05:00','07:00','08:30','10:00','11:30','13:00','14:30','16:00','17:30','19:00','20:30','22:00','23:30'],
-   zp:['06:00','08:00','09:30','11:00','12:30','14:00','15:30','17:00','18:30','20:00','21:30','23:00','00:30']},
-  {name:'Split–Rogač',sub:'Šolta',col:'#34d399',
-   coords:[[43.508,16.440],[43.450,16.350],[43.382,16.277]],
-   pz:['06:00','09:00','12:00','15:00','18:00','21:00'],
-   zp:['07:10','10:10','13:10','16:10','19:10','22:10']},
-  {name:'Split–Stari Grad',sub:'Hvar',col:'#6ee7b7',
-   coords:[[43.508,16.440],[43.420,16.490],[43.300,16.530],[43.183,16.594]],
-   pz:['06:00','09:00','12:30','16:00','20:00','23:00'],
-   zp:['05:00','08:00','11:00','14:30','18:00','22:00']},
-  {name:'Split–Vis',sub:'',col:'#a7f3d0',
-   coords:[[43.508,16.440],[43.380,16.350],[43.200,16.250],[43.062,16.180]],
-   pz:['07:00','14:30','21:00'],
-   zp:['05:00','12:00','18:00']},
-  {name:'Split–Vela Luka',sub:'Korčula',col:'#86efac',
-   coords:[[43.508,16.440],[43.350,16.490],[43.150,16.630],[43.050,16.700],[42.967,16.715]],
-   pz:['06:00','13:00','20:00'],
-   zp:['05:00','11:30','18:00']},
-  {name:'Drvenik–Sućuraj',sub:'Hvar',col:'#a78bfa',
-   coords:[[43.155,17.249],[43.124,17.189]],
-   pz:['07:00','09:00','11:00','13:00','15:00','17:00','19:00','21:00'],
-   zp:['07:45','09:45','11:45','13:45','15:45','17:45','19:45','21:45']},
-  {name:'Makarska–Sumartin',sub:'Brač',col:'#c4b5fd',
-   coords:[[43.296,17.019],[43.283,16.871]],
-   pz:['06:30','09:00','12:00','15:00','18:00','21:00'],
-   zp:['05:30','07:30','10:00','13:00','16:00','19:30']},
-  {name:'Ploče–Trpanj',sub:'Pelješac',col:'#f97316',
-   coords:[[43.055,17.437],[42.982,17.274]],
-   pz:['07:00','09:30','12:00','15:00','18:00','20:30'],
-   zp:['06:00','08:00','10:30','13:00','16:00','19:00']},
-  {name:'Orebić–Dominče',sub:'Korčula',col:'#fb923c',
-   coords:[[42.977,17.187],[42.961,17.138]],
-   pz:['06:00','07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00'],
-   zp:['06:20','07:20','08:20','09:20','10:20','11:20','12:20','13:20','14:20','15:20','16:20','17:20','18:20','19:20','20:20','21:20','22:20']},
-  {name:'Dubrovnik–otoki',sub:'Koločep–Lopud–Šipan',col:'#fda4af',
-   coords:[[42.654,18.082],[42.687,17.963],[42.682,17.932],[42.726,17.872]],
-   pz:['07:00','09:00','12:00','15:00','18:00','21:00'],
-   zp:['06:00','08:30','11:00','14:00','17:00','20:00']},
-];
-let _map=null,_mapMarker=null,_pendingLoc=null,_ferryMode=false,_ferryPoly=[];
-
-function openFerryMap(){
-  _ferryMode=true;
-  O('ov-map');
-  const t=document.getElementById('map-ttl'),s=document.getElementById('map-sub');
-  if(t)t.textContent='🗺️ Trajektne linije';if(s)s.textContent='TAPNI LINIJO ZA URNIK ODHODOV';
-  if(!window.L){const sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';sc.onload=initFerryMap;document.head.appendChild(sc);}
-  else setTimeout(initFerryMap,100);
-}
-function initFerryMap(){
-  _ferryPoly.forEach(p=>{try{_map&&_map.removeLayer(p);}catch(e){}});_ferryPoly=[];
-  if(!_map){
-    const el=document.getElementById('leaflet-map');if(!el||!window.L)return;
-    _map=L.map('leaflet-map',{center:[43.8,16.0],zoom:7});
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:18}).addTo(_map);
-  }else{_map.setView([43.8,16.0],7);_map.invalidateSize();}
-  _map.off('click');
-  const nowMin=new Date().getHours()*60+new Date().getMinutes();
-  FERRY_ROUTES.forEach(route=>{
-    const makeChips=(times,label,reverse)=>{
-      const ni=times.findIndex(t=>fMin(t)>nowMin);
-      const chips=times.map((t,i)=>`<span style="display:inline-block;background:${i===ni?'#1d4ed8':'#040e1c'};border:1px solid ${i===ni?'#3b82f6':'#334155'};border-radius:4px;padding:3px 7px;font-size:12px;font-family:monospace;color:${i===ni?'#fff':'#e2e8f0'};margin:2px">${t}</span>`).join('');
-      return`<div style="margin-bottom:8px"><div style="font-family:'Playfair Display',serif;font-size:13px;color:#e2e8f0;margin-bottom:4px">${label}</div><div style="display:flex;flex-wrap:wrap;gap:2px">${chips}</div></div>`;
-    };
-    const parts=route.name.split('–').map(s=>s.trim());
-    const revName=parts.slice().reverse().join(' – ');
-    const popup=`<div style="background:#0a1628;border-radius:8px;padding:12px 14px;min-width:220px;max-width:280px">
-      <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;padding-bottom:7px;border-bottom:1px solid #1e3a5f">
-        <span style="font-size:18px">⛴️</span>
-        <div><div style="font-family:'Playfair Display',serif;font-size:15px;color:#e2e8f0">${route.name}</div>${route.sub?`<div style="color:#4ade80;font-size:11px">${route.sub}</div>`:''}</div>
-      </div>
-      ${makeChips(route.pz,route.name)}
-      ${route.zp?makeChips(route.zp,revName):''}
-    </div>`;
-    // Invisible hit area (60% bigger snap = weight 8, but use 20 for easy mobile tap)
-    const hitPl=L.polyline(route.coords,{color:route.col,weight:20,opacity:0,interactive:true}).addTo(_map);
-    hitPl.bindPopup(popup,{className:'ferry-popup',maxWidth:260});
-    _ferryPoly.push(hitPl);
-    // Visual line
-    const pl=L.polyline(route.coords,{color:route.col,weight:5,opacity:0.85,interactive:false}).addTo(_map);
-    _ferryPoly.push(pl);
-    route.coords.forEach(c=>{const icon=L.divIcon({html:`<div style="background:${route.col};border:2px solid #020c1b;border-radius:50%;width:10px;height:10px"></div>`,className:'',iconSize:[10,10],iconAnchor:[5,5]});const m=L.marker(c,{icon}).addTo(_map);m.on('click',()=>pl.openPopup());_ferryPoly.push(m);});
-  });
-  const mi=document.getElementById('map-info'),mc=document.getElementById('map-coords'),mb=document.getElementById('map-btn');
-  if(mi)mi.textContent='Tapni trajektno linijo za urnik';if(mc)mc.textContent='';if(mb)mb.style.display='none';
+function renderFerry(){
+  const fb=document.getElementById('ferry-btns');
+  if(!fb)return;
+  fb.innerHTML=FERRY_LINES.map(l=>`
+    <button onclick="openFerryLine('${l.url}')" class="smb">
+      <div class="smb-l"><span>${l.icon}</span><div><div style="font-size:13px">${l.name}</div><div style="font-size:10px;color:#94a3b8">${l.sub}</div></div></div>
+      <span style="font-size:18px;color:#60a5fa">›</span>
+    </button>`).join('');
 }
 
-// ── Location map ──────────────────────────────────────────────────
-function initLocMap(){
-  if(!_map){
-    const el=document.getElementById('leaflet-map');if(!el||!window.L)return;
-    _map=L.map('leaflet-map',{center:[44.0,15.5],zoom:7});
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:18}).addTo(_map);
-  }else{_map.setView([44.0,15.5],7);_map.invalidateSize();}
-  _map.off('click');
-  LOCS.forEach(loc=>{
-    const sel=loc.id===selLoc.id;
-    const icon=L.divIcon({html:`<div style="background:${sel?'#1d4ed8':'#0f1e35'};border:2px solid ${sel?'#60a5fa':'#334155'};border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 8px rgba(0,0,0,.5)">${loc.flag}</div>`,className:'',iconSize:[34,34],iconAnchor:[17,17]});
-    L.marker([loc.lat,loc.lon],{icon}).addTo(_map).bindTooltip(`<b>${loc.name}</b>`,{permanent:false,direction:'top',className:'leaflet-tooltip-dark'}).on('click',()=>setMapPending(loc.lat,loc.lon,loc.name,loc.flag,loc));
-  });
-  _map.on('click',e=>setMapPending(e.latlng.lat,e.latlng.lng,null,null,null));
-  const mi=document.getElementById('map-info'),mc=document.getElementById('map-coords'),mb=document.getElementById('map-btn');
-  if(mi)mi.textContent=selLoc.flag+' '+selLoc.name;if(mc)mc.textContent=`${selLoc.lat.toFixed(4)}°N · ${selLoc.lon.toFixed(4)}°E`;if(mb)mb.style.display='none';
-}
-function setMapPending(lat,lon,name,flag,locObj){
-  if(_mapMarker){try{_map.removeLayer(_mapMarker);}catch(e){}}_mapMarker=null;
-  if(!locObj){
-    const icon=L.divIcon({html:`<div style="background:#1d4ed8;border:2px solid #60a5fa;border-radius:50% 50% 50% 0;transform:rotate(-45deg);width:28px;height:28px;box-shadow:0 2px 8px rgba(0,0,0,.5)"></div>`,className:'',iconSize:[28,28],iconAnchor:[14,28]});
-    _mapMarker=L.marker([lat,lon],{icon}).addTo(_map);
-    name=`${lat.toFixed(3)}°N, ${lon.toFixed(3)}°E`;flag='📍';
-  }
-  _pendingLoc={lat,lon,name,flag,locObj};
-  const mi=document.getElementById('map-info'),mc=document.getElementById('map-coords'),mb=document.getElementById('map-btn');
-  if(mi)mi.textContent=(flag?flag+' ':'')+name;if(mc)mc.textContent=`${lat.toFixed(4)}°N · ${lon.toFixed(4)}°E`;if(mb)mb.style.display='block';
-}
-function confirmMapLoc(){
-  if(!_pendingLoc)return;
-  const{lat,lon,name,flag,locObj}=_pendingLoc;
-  selLoc=locObj||{id:'custom',name,lat:parseFloat(lat.toFixed(4)),lon:parseFloat(lon.toFixed(4)),flag:'📍',tide:interpolateTide(lat,lon)};
-  tCache={};wCache={};fcCache={};// Clear old empty keys from localStorage
-try{if(!localStorage.getItem('sg_key')||localStorage.getItem('sg_key').length<20){localStorage.removeItem('sg_key');sgKey=SG_KEY_DEFAULT;}}catch(e){}
-buildLocs();updateApiUI();Z('ov-map');render();
-}
 
-// ── Overlay ───────────────────────────────────────────────────────
-function O(id){
-  const el=document.getElementById(id);if(!el)return;
-  el.classList.add('on');document.body.style.position='fixed';document.body.style.width='100%';
-  if(id==='ov-fw'){const flo=document.getElementById('fw-list-ov'),fl=document.getElementById('fw-list');if(flo&&fl)flo.innerHTML=fl.innerHTML;}
-  else if(id==='ov-ferry'){renderFerry();toggleSched(false);}
-  else if(id==='ov-ferry-all'){buildFerryAll();}
-  else if(id==='ov-map'&&!_ferryMode){
-    if(!window.L){const sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';sc.onload=initLocMap;document.head.appendChild(sc);}
-    else setTimeout(initLocMap,100);
-  }
-  else if(id==='ov-cfg'){const sgi=document.getElementById('sg-inp'),ai=document.getElementById('api-inp');if(sgi)sgi.value=sgKey;if(ai)ai.value=apiKey;}
-  else if(id==='ov-chart'){
-    const date=new Date(selDate.getTime()),today=new Date();today.setHours(0,0,0,0);
-    const isToday=date.getTime()===today.getTime(),curMin=isToday?new Date().getHours()*60+new Date().getMinutes():null;
-    const fd=document.getElementById('fs-date'),cfs=document.getElementById('chart-fs');
-    if(fd)fd.textContent=WD[date.getDay()]+', '+date.getDate()+'. '+MN[date.getMonth()]+' '+date.getFullYear()+' · '+selLoc.name;
-    if(cfs)cfs.innerHTML=buildSVG(_pts,_exs,curMin,700,260,true,date);
-    let bars='';for(let h=0;h<24;h+=2){const t=new Date(date.getFullYear(),date.getMonth(),date.getDate(),h),sc=fScore(t,_exs,date),c=sc>=75?'#4ade80':sc>=55?'#fbbf24':sc>=40?'#fb923c':'#f87171',l=sc>=75?'Odlično':sc>=60?'Zelo dobro':sc>=50?'Dobro':sc>=40?'Srednje':'Slabo';bars+=`<div class="ft-row"><div class="ft-t">${String(h).padStart(2,'0')}:00</div><div class="ft-bw"><div class="ft-b" style="width:${sc}%;background:linear-gradient(90deg,${c}99,${c})"><span class="ft-p">${sc}%</span></div></div><div style="font-size:11px;color:${c};width:60px;flex-shrink:0;text-align:right">${l}</div></div>`;}
-    const fb=document.getElementById('fs-bars'),fe=document.getElementById('fs-ext');
-    if(fb)fb.innerHTML=bars;
-    if(fe)fe.innerHTML=_exs.map(e=>`<div class="ext-it" style="border-left:3px solid ${e.type==='high'?'#fbbf24':'#60a5fa'}"><div style="font-size:15px;color:${e.type==='high'?'#fcd34d':'#7dd3fc'};font-weight:700;margin-bottom:6px">${e.type==='high'?'▲ VISOKA PLIMA':'▼ NIZKA OSEKA'}</div><div style="font-family:'Playfair Display',serif;font-size:28px;color:#fff;font-weight:700">${fmt(e.time)}</div><div style="font-size:15px;color:#86efac;margin-top:3px">${fmtH(e.height)}</div></div>`).join('');
-  }
-}
-function Z(id){
-  const el=document.getElementById(id);if(!el)return;
-  el.classList.remove('on');document.body.style.position='';document.body.style.width='';
-  if(id==='ov-map'&&_ferryMode){
-    _ferryMode=false;
-    _ferryPoly.forEach(p=>{try{_map&&_map.removeLayer(p);}catch(e){}});_ferryPoly=[];
-    const t=document.getElementById('map-ttl'),s=document.getElementById('map-sub');
-    if(t)t.textContent='🗺️ Izberi lokacijo';if(s)s.textContent='TAPNI NA KARTI ZA POLJUBNO LOKACIJO';
-  }
-}
-document.addEventListener('keydown',e=>{if(e.key==='Escape')['ov-chart','ov-wf','ov-knots','ov-cfg','ov-map','ov-inst','ov-ferry','ov-ferry-all'].forEach(Z);});
-
-// ── Location helpers ──────────────────────────────────────────────
-function buildLocs(){
-  const el=document.getElementById('locs');
-  if(el)el.innerHTML=LOCS.map(l=>`<button class="loc-btn${l.id===selLoc.id?' on':''}" onclick="pickLoc('${l.id}')">${l.flag} ${l.name}</button>`).join('');
-  const lf=document.getElementById('loc-flag'),ln=document.getElementById('loc-name'),lc=document.getElementById('loc-coords');
-  if(lf)lf.textContent=selLoc.flag;if(ln)ln.textContent=selLoc.name;if(lc)lc.textContent=`${selLoc.lat.toFixed(2)}°N · ${selLoc.lon.toFixed(2)}°E`;
-}
-function pickLoc(id){
-  selLoc=LOCS.find(l=>l.id===id)||LOCS[0];
-  buildLocs();
-  const hs=document.getElementById('hdr-sub');if(hs)hs.textContent=selLoc.name+' · Jadransko morje';
-  tCache={};wCache={};fcCache={};render();
-}
-function updateApiUI(){
-  const b=document.getElementById('api-bdg'),d=document.getElementById('cfg-dot'),t=document.getElementById('cfg-txt');
-  if(sgKey){
-    if(b)b.innerHTML='<span class="api-badge" style="background:#14532d;border:1px solid #166534;color:#4ade80">✅ Stormglass aktiven</span>';
-    if(d)d.style.background='#4ade80';if(t)t.textContent='Stormglass FES2014 aktiven (±5 min)';
-  }else if(apiKey){
-    if(b)b.innerHTML='<span class="api-badge" style="background:#14532d;border:1px solid #166534;color:#4ade80">✅ WorldTides aktiven</span>';
-    if(d)d.style.background='#4ade80';if(t)t.textContent='WorldTides aktiven (±5 min)';
-  }else{
-    if(b)b.innerHTML='<span class="api-badge" style="background:#2a0a0a;border:1px solid #7f1d1d;color:#f87171">⚙️ Harmonični model (±1-2 uri)</span>';
-    if(d)d.style.background='#fbbf24';if(t)t.textContent='Ni ključa — harmonični model (±1-2 uri)';
-  }
-}
-function saveCfg(){
-  sgKey=(document.getElementById('sg-inp').value||'').trim();
-  apiKey=(document.getElementById('api-inp').value||'').trim();
-  try{sgKey?localStorage.setItem('sg_key',sgKey):localStorage.removeItem('sg_key');}catch(e){}
-  try{apiKey?localStorage.setItem('wt_key',apiKey):localStorage.removeItem('wt_key');}catch(e){}
-  tCache={};updateApiUI();Z('ov-cfg');render();
-}
-
-// ── Main render ───────────────────────────────────────────────────
-function fScore(t,exs,date){
-  const p=moonPhase(date),md=Math.min(p,29.53-p,Math.abs(p-14.77)),mb=Math.max(0,30-md*8);
-  const h=t.getHours()+t.getMinutes()/60,dd=((h>=5&&h<=7)||(h>=19&&h<=21))?15:0;
-  let tb=0;for(const e of exs){const dh=Math.abs((t-e.time)/3600000);if(dh<2.5)tb=Math.max(tb,25-dh*8);}
-  return Math.min(100,Math.round(30+mb*.5+tb+dd));
-}
-
-function getMoon(d){const p=moonPhase(d);for(const m of MOONS)if(p<=m.max)return{...m,p};return{...MOONS[MOONS.length-1],p};}
-
-// ── Fishing score ─────────────────────────────────────────────────
-
-function wDir(d){return['S','SSV','SV','VSV','V','VJV','JV','JJV','J','JJZ','JZ','ZJZ','Z','ZSZ','SZ','SSZ'][Math.round(d/22.5)%16];}
-
-function bft(k){if(k<6)return'1 Bft';if(k<12)return'2 Bft';if(k<20)return'3 Bft';if(k<29)return'4 Bft';if(k<39)return'5 Bft';if(k<50)return'6 Bft';return'7+ Bft';}
-
-function moonPhase(d){const diff=(d-new Date(2000,0,6,18,14,0))/86400000;return((diff%29.53058867)+29.53058867)%29.53058867;}
-const MOONS=[{max:1.5,n:'Mlaj',i:'🌑'},{max:7.4,n:'Raščerb.',i:'🌒'},{max:14.75,n:'Polmesec ↗',i:'🌓'},{max:16.25,n:'Polna luna',i:'🌕'},{max:22.1,n:'Polmesec ↘',i:'🌖'},{max:28,n:'Tč. 3/4',i:'🌘'},{max:30,n:'Mlaj (pred)',i:'🌑'}];
-
-function dayScore(date,exs){return fScore(new Date(date.getFullYear(),date.getMonth(),date.getDate(),6),exs,date);}
-
-// ── Weather ───────────────────────────────────────────────────────
-
-function wArr(d){return['↓','↙','←','↖','↑','↗','→','↘'][Math.round(d/45)%8];}
-
-function wmo(c){const m={0:['☀️','Jasno'],1:['🌤️','Pretežno jasno'],2:['⛅','Delno oblačno'],3:['☁️','Oblačno'],45:['🌫️','Megla'],51:['🌦️','Rosica'],61:['🌧️','Rahel dež'],63:['🌧️','Dež'],65:['🌧️','Močan dež'],71:['🌨️','Sneg'],80:['🌦️','Plohe'],81:['🌧️','Plohe'],82:['⛈️','Plohe'],95:['⛈️','Nevihta']};return m[c]||['🌡️','Neznano'];}
-
-function wCol(s){return s>40?'#f87171':s>25?'#fb923c':'#4ade80';}
-
-
-
-// Izračun pozicije lune
-function moonPos(jd){
-  const r=Math.PI/180,d=jd-2451545;
-  const L=(218.316+13.176396*d)%360;
-  const M=(134.963+13.064993*d)*r;
-  const F=(93.272+13.229350*d)*r;
-  const lam=(L+6.289*Math.sin(M))*r;
-  const beta=5.128*Math.sin(F)*r;
-  const del=385001-20905*Math.cos(M);
-  const e=23.439*r;
-  const ra=Math.atan2(Math.sin(lam)*Math.cos(e)-Math.tan(beta)*Math.sin(e),Math.cos(lam));
-  const dec=Math.asin(Math.sin(beta)*Math.cos(e)+Math.cos(beta)*Math.sin(e)*Math.sin(lam));
-  return{ra,dec,del};
-}
-
-function moonAltAt(jd,lat,lon){
-  const r=Math.PI/180,{ra,dec,del}=moonPos(jd);
-  const gmst=(280.46061837+360.98564736629*(jd-2451545))*r;
-  const ha=gmst+lon*r-ra;
-  const h0=(0.7275*Math.asin(6378.14/del)-0.5667*r);
-  return Math.asin(Math.sin(lat*r)*Math.sin(dec)+Math.cos(lat*r)*Math.cos(dec)*Math.cos(ha))-h0;
-}
-
-function calcMoonTimes(date,lat,lon){
-  const tz=-new Date(date).getTimezoneOffset()/60;
-  const jd0=Math.floor(date/86400000)+2440588;
-  let prev=moonAltAt(jd0,lat,lon),rise=null,set2=null;
-  for(let h=1;h<=25;h++){
-    const cur=moonAltAt(jd0+h/24,lat,lon);
-    if(prev<0&&cur>=0&&rise===null)rise=h-cur/(cur-prev);
-    if(prev>=0&&cur<0&&set2===null)set2=h-cur/(cur-prev);
-    prev=cur;
-  }
-  const fmt=t=>{if(t===null)return'--:--';t=((t+tz)%24+24)%24;const h=Math.floor(t),m=Math.round((t-h)*60);return String(h).padStart(2,'0')+':'+String(m>=60?m-60:m<0?m+60:m).padStart(2,'0');};
-  return{rise:fmt(rise),set:fmt(set2)};
-}
-
-// Astronomski izračun vzida/zahoda sonca (natančnost ±5 min)
-function calcSunTimes(date, lat, lon){
-  const rad=Math.PI/180;
-  const jd=Math.floor(date/86400000)+2440588;
-  const n=jd-2451545;
-  const L=(280.46+0.9856474*n)%360;
-  const g=(357.528+0.9856003*n)*rad;
-  const lam=(L+1.915*Math.sin(g)+0.02*Math.sin(2*g))*rad;
-  const eps=23.439*rad;
-  const sinD=Math.sin(eps)*Math.sin(lam);
-  const decl=Math.asin(sinD);
-  const eot=(L-Math.atan2(Math.tan(lam),Math.cos(eps))/rad)/15;
-  const cosH=(-Math.sin(-0.833*rad)-Math.sin(lat*rad)*sinD)/(Math.cos(lat*rad)*Math.cos(decl));
-  if(Math.abs(cosH)>1)return null;
-  const H=Math.acos(cosH)/rad;
-  // UTC čas polnoči + lokalni časovni pas
-  const tz=-new Date(date).getTimezoneOffset()/60; // npr. +2 za CEST
-  const noon=12-eot-lon/15+tz;
-  const rise=noon-H/15, set=noon+H/15;
-  const fmt=t=>{t=(t%24+24)%24;const h=Math.floor(t),m=Math.round((t-h)*60);return String(h).padStart(2,'0')+':'+String(m>=60?m-60:m).padStart(2,'0');};
-  return{rise:fmt(rise),set:fmt(set)};
-}
 async function render(){
   const myID=++_rid,date=new Date(selDate.getTime()),loc=selLoc;
   const today=new Date();today.setHours(0,0,0,0);
@@ -1439,6 +1035,17 @@ renderFerry();
         </button>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- FERRY LINE OVERLAY -->
+<div id="ov-ferry-line" class="ovl">
+  <div class="ovl-hdr">
+    <div><div class="ovl-ttl">⚓ Urnik Jadrolinija</div></div>
+    <button class="cls-btn" onclick="Z('ov-ferry-line')">✕ Zapri</button>
+  </div>
+  <div style="padding:0;flex:1;display:flex;flex-direction:column">
+    <iframe id="ferry-iframe" src="" style="flex:1;width:100%;border:none;min-height:80vh" loading="lazy"></iframe>
   </div>
 </div>
 </body>

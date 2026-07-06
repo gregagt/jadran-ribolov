@@ -11,7 +11,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Courier+Prime&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%}
+html,body{height:100%;font-size:13px}
+/* Type scale: 9→label, 11→caption, 13→body, 15→value, 18→heading, 24→title */
 body{background:linear-gradient(160deg,#020c1b,#071a35 50%,#030d1e);background-attachment:fixed;color:#e2e8f0;font-family:'Courier Prime',monospace;padding-bottom:80px;overflow-x:hidden}
 button{cursor:pointer;font-family:inherit}button:focus{outline:none}a{color:#38bdf8}
 #app{max-width:660px;margin:0 auto;padding:0 13px;position:relative;z-index:1}
@@ -42,10 +43,10 @@ button{cursor:pointer;font-family:inherit}button:focus{outline:none}a{color:#38b
 .dnav-btn:active{background:#1e3a5f}
 .ddisp{text-align:center;flex:1}
 .ddisp .wday{color:#64748b;font-size:12px;letter-spacing:2px;text-transform:uppercase}
-.ddisp .dstr{color:#e2e8f0;font-family:'Playfair Display',serif;font-size:17px;margin-top:2px}
+.ddisp .dstr{color:#e2e8f0;font-family:'Playfair Display',serif;font-size:15px;margin-top:2px}
 .today-b{display:inline-block;background:#1d4ed8;color:#93c5fd;font-size:9px;padding:2px 6px;border-radius:4px;margin-top:3px;letter-spacing:1px}
 /* Cards */
-.card{background:linear-gradient(135deg,#0d1f38,#0a1628);border-radius:14px;padding:14px;border:1px solid #1e3a5f;margin-bottom:12px}
+.card{font-size:13px;background:linear-gradient(135deg,#0d1f38,#0a1628);border-radius:14px;padding:14px;border:1px solid #1e3a5f;margin-bottom:12px}
 .clbl{font-size:12px;color:#38bdf8;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px}
 .tgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
 /* Weather card */
@@ -61,13 +62,13 @@ button{cursor:pointer;font-family:inherit}button:focus{outline:none}a{color:#38b
 /* Chart */
 .src-row{display:flex;align-items:center;gap:6px;margin-bottom:7px}
 .src-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.src-txt{font-size:12px;color:#64748b}
+.src-txt{font-size:11px;color:#94a3b8;font-family:monospace;letter-spacing:0.5px}
 .cnote{text-align:right;color:#f472b6;font-size:10px;margin-top:-4px}
 /* Extremes */
 .ext-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .ext-it{background:#0a1628;border-radius:9px;padding:9px 11px}
 /* Fishing windows */
-.fw{background:#0a1628;border-radius:9px;padding:10px 12px;display:flex;align-items:center;gap:10px;margin-bottom:7px;border:1px solid #1e3a5f}
+.fw{font-size:13px;background:#0a1628;border-radius:9px;padding:10px 12px;display:flex;align-items:center;gap:10px;margin-bottom:7px;border:1px solid #1e3a5f}
 .fw.hi{border-color:#92400e}
 .fw-inf{flex:1}
 .fw-bdg{background:#1e3a5f;border-radius:7px;padding:5px 9px;color:#38bdf8;font-size:12px;text-align:center;flex-shrink:0;line-height:1.5}
@@ -118,7 +119,7 @@ button{cursor:pointer;font-family:inherit}button:focus{outline:none}a{color:#38b
 .cal-d.tod{background:#1e3a5f;border-color:#334155}
 .cal-d.sel{background:#1d4ed8;border-color:#60a5fa;color:#fff}
 .cal-d:active{opacity:.7}
-.cal-dot{position:absolute;top:1px;right:3px;font-size:7px;color:#fbbf24}
+.cal-dot{position:absolute;top:1px;right:3px;font-size:9px;color:#fbbf24}
 /* Overlay */
 .ovl{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:200;background:#020c1b;flex-direction:column;animation:fadeIn .22s ease}
 .ovl.on{display:flex}
@@ -158,12 +159,12 @@ button{cursor:pointer;font-family:inherit}button:focus{outline:none}a{color:#38b
 .inst-section{margin-bottom:16px}
 .inst-title{display:flex;align-items:center;gap:8px;font-family:'Playfair Display',serif;font-size:20px;color:#38bdf8;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #1e3a5f}
 .inst-item{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;background:#040e1c;border-radius:9px;padding:9px 11px}
-.inst-ico{font-size:20px;flex-shrink:0;margin-top:1px}
+.inst-ico{font-size:22px;flex-shrink:0;margin-top:1px}
 .inst-txt b{color:#e2e8f0;font-size:15px;display:block;margin-bottom:2px}
 .inst-txt span{color:#64748b;font-size:13px;line-height:1.5}
 .ibadge{display:inline-block;background:#1d4ed8;color:#93c5fd;font-size:9px;padding:2px 7px;border-radius:4px;font-family:monospace;letter-spacing:1px;margin-left:6px;vertical-align:middle}
 /* Footer */
-.ftr{text-align:center;margin-top:20px;color:#1e3a5f;font-size:9px;letter-spacing:2px;line-height:2}
+.ftr{text-align:center;margin-top:20px;color:#64748b;font-size:11px;letter-spacing:2px;line-height:2}
 #ibanner{display:none;position:fixed;bottom:0;left:0;right:0;z-index:100;background:linear-gradient(135deg,#1d4ed8,#1e40af);padding:12px 16px;align-items:center;gap:10px;border-top:1px solid #3b82f6}
 #ibanner.on{display:flex}
 #ibanner p{flex:1;font-size:12px;color:#e0f2fe}
@@ -184,6 +185,7 @@ button{cursor:pointer;font-family:inherit}button:focus{outline:none}a{color:#38b
       <span style="display:flex;align-items:center;gap:4px;font-size:10px;color:#94a3b8"><span class="ldot" style="background:#60a5fa"></span>Nizka</span>
       <span style="display:flex;align-items:center;gap:4px;font-size:10px;color:#94a3b8"><span class="ldot" style="background:#f472b6"></span>Zdaj</span>
     </div>
+    <div id="extr-row" style="display:flex;flex-wrap:wrap;gap:6px;margin:10px 0"></div>
     <div class="ftl"><div class="ftl-lbl">🎣 Ribolov po urah</div><div id="fs-bars"></div></div>
     <div style="margin-top:10px"><div style="font-size:10px;color:#38bdf8;letter-spacing:3px;text-transform:uppercase;margin-bottom:7px">📊 Plima / Oseka</div><div class="ext-grid" id="fs-ext"></div></div>
   </div>
@@ -382,14 +384,13 @@ button{cursor:pointer;font-family:inherit}button:focus{outline:none}a{color:#38b
         <button onclick="setTideSrc('harmonic')" id="src-btn-harmonic" style="flex:1;font-size:10px;font-family:monospace;padding:5px 4px;border-radius:6px;border:1px solid #3b82f6;background:#1d4ed8;color:#fff;cursor:pointer">📐 Harmonični</button>
         <button onclick="setTideSrc('auto')" id="src-btn-auto" style="flex:1;font-size:10px;font-family:monospace;padding:5px 4px;border-radius:6px;border:1px solid #1e3a5f;background:#0a1628;color:#94a3b8;cursor:pointer">⚡ AUTO</button>
       </div>
-      <div id="extr-row" style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px"></div>
       <div style="width:100%;overflow-x:auto"><svg id="chart-sm" viewBox="0 0 600 155" style="width:100%;height:auto;display:block"></svg></div>
       <div class="cnote" id="cnote" style="display:none">── trenutni čas</div>
       <button class="smb" onclick="O('ov-chart')" style="margin-top:10px"><div class="smb-l"><span>📊</span><span>Pokaži več — detajlni graf z ribolovnimi %</span></div><span style="font-size:18px;color:#60a5fa">›</span></button>
     </div>
 
     <div class="card"><div class="clbl">📊 Plima / Oseka</div><div class="ext-grid" id="ext-grid"></div></div>
-    <div class="card"><div class="clbl">🐟 Najboljši čas za ribolov</div><div id="fw-list"></div></div>
+    
 
     <div class="kcard">
       <div class="clbl" style="color:#4ade80">🪢 Ribiški vozli</div>
@@ -417,7 +418,7 @@ button{cursor:pointer;font-family:inherit}button:focus{outline:none}a{color:#38b
       <div style="display:flex;align-items:center;gap:12px"><span style="font-size:32px">📖</span><div style="flex:1"><div style="font-family:'Playfair Display',serif;font-size:16px;color:#e2e8f0;margin-bottom:3px">Navodila za uporabo</div><div style="color:#64748b;font-size:11px">Kako brati graf · Ribolovna ocena · API ključ</div></div><span style="color:#334155;font-size:22px">›</span></div>
     </div>
 
-    <div class="ftr">JADRAN FISHING TIDES · JADRANSKO MORJE<br><span style="font-size:8px">Podatki so orientacijski</span></div>
+    <div class="ftr">JADRAN FISHING TIDES · JADRANSKO MORJE<br><span style="font-size:9px">Podatki so orientacijski</span></div>
   </div>
 
   <div id="v-c" style="display:none">
@@ -653,7 +654,7 @@ function renderW(data,date){
   if(!data||data.oor||diff<0||diff>6){el.innerHTML=`<div style="color:#334155;font-size:11px;padding:10px;text-align:center">📅 Napoved samo za naslednjih 7 dni</div>`;return;}
   if(data.err){el.innerHTML=`<div style="color:#475569;font-size:11px;padding:10px;text-align:center">${data.err}<br><button onclick="retryW()" style="background:#1d4ed8;border:1px solid #3b82f6;color:#fff;border-radius:7px;padding:6px 14px;font-size:11px;font-family:monospace;cursor:pointer;margin-top:8px">⟳ Poskusi znova</button></div>`;return;}
   const[ico,desc]=wmo(data.code),wc=wCol(data.ws);
-  el.innerHTML=`<div class="w-main"><div class="w-ico">${ico}</div><div><div style="font-family:'Playfair Display',serif;font-size:32px;line-height:1">${Math.round(data.tMax)}° <span style="color:#64748b;font-size:17px">/ ${Math.round(data.tMin)}°</span></div><div style="color:#94a3b8;font-size:13px;margin-top:3px">${desc.toUpperCase()}</div></div></div><div class="w-grid"><div class="w-it"><div class="w-itl">💨 Veter</div><div class="w-itv" style="color:${wc}">${Math.round(data.ws)}</div><div class="w-itu">km/h · ${bft(data.ws)}</div></div><div class="w-it"><div class="w-itl">${wArr(data.wd)} Smer</div><div class="w-itv">${wDir(data.wd)}</div><div class="w-itu">${Math.round(data.wd)}°</div></div><div class="w-it"><div class="w-itl">🌧️ Padavine</div><div class="w-itv">${data.pr!=null?data.pr.toFixed(1):'--'}</div><div class="w-itu">mm/dan</div></div></div>${data.sea!=null?`<div style="margin-top:7px"><div class="sea-b"><span style="font-size:17px">🌊</span><span style="color:#38bdf8;font-family:'Playfair Display',serif;font-size:19px">${data.sea.toFixed(1)}°C</span><span style="color:#64748b;font-size:10px">temperatura morja</span></div></div>`:''}`;
+  el.innerHTML=`<div class="w-main"><div class="w-ico">${ico}</div><div><div style="font-family:'Playfair Display',serif;font-size:32px;line-height:1">${Math.round(data.tMax)}° <span style="color:#64748b;font-size:15px">/ ${Math.round(data.tMin)}°</span></div><div style="color:#94a3b8;font-size:13px;margin-top:3px">${desc.toUpperCase()}</div></div></div><div class="w-grid"><div class="w-it"><div class="w-itl">💨 Veter</div><div class="w-itv" style="color:${wc}">${Math.round(data.ws)}</div><div class="w-itu">km/h · ${bft(data.ws)}</div></div><div class="w-it"><div class="w-itl">${wArr(data.wd)} Smer</div><div class="w-itv">${wDir(data.wd)}</div><div class="w-itu">${Math.round(data.wd)}°</div></div><div class="w-it"><div class="w-itl">🌧️ Padavine</div><div class="w-itv">${data.pr!=null?data.pr.toFixed(1):'--'}</div><div class="w-itu">mm/dan</div></div></div>${data.sea!=null?`<div style="margin-top:7px"><div class="sea-b"><span style="font-size:15px">🌊</span><span style="color:#38bdf8;font-family:'Playfair Display',serif;font-size:18px">${data.sea.toFixed(1)}°C</span><span style="color:#64748b;font-size:10px">temperatura morja</span></div></div>`:''}`;
 }
 function retryW(){wCache={};const el=document.getElementById('w-content');if(el)el.innerHTML='<div style="text-align:center;color:#334155;font-size:11px;padding:16px">⟳ NALAGANJE...</div>';fetchW(selLoc,selDate).then(d=>renderW(d,selDate));}
 
@@ -711,7 +712,7 @@ async function openWF(force){
   data.w.time.forEach((ds,i)=>{
     const d=new Date(ds+'T12:00:00'),it=d.getTime()===today.getTime(),is=d.getTime()===selDate.getTime();
     const[ico,desc]=wmo(data.w.weathercode[i]),ws=Math.round(data.w.windspeed_10m_max[i]),wc=wCol(ws),pr=data.w.precipitation_sum[i]??0;
-    h+=`<div class="wf-day${it?' tod':is?' sel':''}" onclick="selFromFC('${ds}')" style="cursor:pointer"><div style="flex-shrink:0;width:50px"><div style="color:#94a3b8;font-size:9px;letter-spacing:1px;text-transform:uppercase">${it?'Danes':sd[d.getDay()]}</div><div style="color:#e2e8f0;font-family:'Playfair Display',serif;font-size:16px;margin-top:1px">${d.getDate()}. ${sm[d.getMonth()]}</div></div><div style="font-size:28px;flex-shrink:0;width:36px;text-align:center">${ico}</div><div style="flex:1;min-width:0"><div style="color:#cbd5e1;font-size:11px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${desc}</div><div style="display:flex;align-items:center;gap:4px;font-size:10px"><span style="color:${wc}">${wArr(data.w.winddirection_10m_dominant[i])} ${ws} km/h</span><span style="color:#475569">${wDir(data.w.winddirection_10m_dominant[i])}</span></div>${pr>.2?`<div style="font-size:9px;color:#60a5fa;margin-top:2px">🌧️ ${pr.toFixed(1)} mm</div>`:''}</div><div style="text-align:right;flex-shrink:0"><div style="font-family:'Playfair Display',serif;font-size:17px;color:#e2e8f0">${Math.round(data.w.temperature_2m_max[i])}°</div><div style="font-family:'Playfair Display',serif;font-size:12px;color:#64748b">${Math.round(data.w.temperature_2m_min[i])}°</div>${seas[i]!=null?`<div style="font-size:9px;color:#38bdf8;margin-top:2px">🌊${seas[i].toFixed(1)}°</div>`:''}</div></div>`;
+    h+=`<div class="wf-day${it?' tod':is?' sel':''}" onclick="selFromFC('${ds}')" style="cursor:pointer"><div style="flex-shrink:0;width:50px"><div style="color:#94a3b8;font-size:9px;letter-spacing:1px;text-transform:uppercase">${it?'Danes':sd[d.getDay()]}</div><div style="color:#e2e8f0;font-family:'Playfair Display',serif;font-size:16px;margin-top:1px">${d.getDate()}. ${sm[d.getMonth()]}</div></div><div style="font-size:28px;flex-shrink:0;width:36px;text-align:center">${ico}</div><div style="flex:1;min-width:0"><div style="color:#cbd5e1;font-size:11px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${desc}</div><div style="display:flex;align-items:center;gap:4px;font-size:10px"><span style="color:${wc}">${wArr(data.w.winddirection_10m_dominant[i])} ${ws} km/h</span><span style="color:#475569">${wDir(data.w.winddirection_10m_dominant[i])}</span></div>${pr>.2?`<div style="font-size:9px;color:#60a5fa;margin-top:2px">🌧️ ${pr.toFixed(1)} mm</div>`:''}</div><div style="text-align:right;flex-shrink:0"><div style="font-family:'Playfair Display',serif;font-size:15px;color:#e2e8f0">${Math.round(data.w.temperature_2m_max[i])}°</div><div style="font-family:'Playfair Display',serif;font-size:12px;color:#64748b">${Math.round(data.w.temperature_2m_min[i])}°</div>${seas[i]!=null?`<div style="font-size:9px;color:#38bdf8;margin-top:2px">🌊${seas[i].toFixed(1)}°</div>`:''}</div></div>`;
   });
   el.innerHTML=h;
 }
@@ -1232,12 +1233,11 @@ async function render(){
   if(cs)cs.innerHTML=buildSVG(_pts,_exs,curMin,600,155,false,date);
   const cn=document.getElementById('cnote');if(cn)cn.style.display=isToday?'block':'none';
   const eg=document.getElementById('ext-grid');
-  if(eg)eg.innerHTML=_exs.map(e=>`<div class="ext-it" style="border-left:3px solid ${e.type==='high'?'#fbbf24':'#60a5fa'}"><div style="font-size:9px;color:${e.type==='high'?'#fcd34d':'#7dd3fc'};font-weight:700;margin-bottom:5px">${e.type==='high'?'▲ VISOKA PLIMA':'▼ NIZKA OSEKA'}</div><div style="font-family:'Playfair Display',serif;font-size:19px;color:#e2e8f0">${fmt(e.time)}</div><div style="font-size:10px;color:#64748b;margin-top:2px">${fmtH(e.height)}</div></div>`).join('');
+  if(eg)eg.innerHTML=_exs.map(e=>`<div class="ext-it" style="border-left:3px solid ${e.type==='high'?'#fbbf24':'#60a5fa'}"><div style="font-size:9px;color:${e.type==='high'?'#fcd34d':'#7dd3fc'};font-weight:700;margin-bottom:5px">${e.type==='high'?'▲ VISOKA PLIMA':'▼ NIZKA OSEKA'}</div><div style="font-family:'Playfair Display',serif;font-size:18px;color:#e2e8f0">${fmt(e.time)}</div><div style="font-size:10px;color:#64748b;margin-top:2px">${fmtH(e.height)}</div></div>`).join('');
   const hiE=_exs.filter(e=>e.type==='high'),loE=_exs.filter(e=>e.type==='low');
   let fw='';
-  if(hiE.length){fw+='<div style="font-size:22px;color:#4ade80;font-weight:700;margin-bottom:8px">✅ Najboljši časi</div>';fw+=hiE.map(e=>{const b=new Date(e.time.getTime()-90*60000),a=new Date(e.time.getTime()+90*60000);return`<div class="fw hi"><div style="font-size:20px;flex-shrink:0">🎣</div><div class="fw-inf"><div style="color:#fff;font-size:17px;margin-bottom:4px;font-weight:700">${fmt(b)} – ${fmt(a)}</div><div style="color:#86efac;font-size:16px;margin-top:3px;font-family:monospace">Vrh ob ${fmt(e.time)} · ${fmtH(e.height)}</div></div><div class="fw-bdg">3h<br>okno</div></div>`;}).join('');}
-  if(loE.length){fw+='<div style="font-size:22px;color:#f87171;font-family:\'Playfair Display\',serif;font-weight:700;margin:12px 0 8px">❌ Najslabši časi</div>';fw+=loE.map(e=>{const b=new Date(e.time.getTime()-60*60000),a=new Date(e.time.getTime()+60*60000);return`<div class="fw"><div style="font-size:20px;flex-shrink:0">😴</div><div class="fw-inf"><div style="color:#fff;font-size:17px;margin-bottom:4px;font-weight:700">${fmt(b)} – ${fmt(a)}</div><div style="color:#86efac;font-size:16px;margin-top:3px;font-family:monospace">Oseka ob ${fmt(e.time)} · ${fmtH(e.height)}</div></div><div class="fw-bdg" style="color:#f87171">2h<br>okno</div></div>`;}).join('');}
-  const fl=document.getElementById('fw-list');if(fl)fl.innerHTML=fw;
+  if(hiE.length){fw+='<div style="font-size:15px;color:#4ade80;font-weight:700;margin-bottom:8px">✅ Najboljši časi</div>';fw+=hiE.map(e=>{const b=new Date(e.time.getTime()-90*60000),a=new Date(e.time.getTime()+90*60000);return`<div class="fw hi"><div style="font-size:22px;flex-shrink:0">🎣</div><div class="fw-inf"><div style="color:#fff;font-size:15px;margin-bottom:4px;font-weight:700">${fmt(b)} – ${fmt(a)}</div><div style="color:#86efac;font-size:13px;margin-top:3px;font-family:monospace">Vrh ob ${fmt(e.time)} · ${fmtH(e.height)}</div></div><div class="fw-bdg">3h<br>okno</div></div>`;}).join('');}
+  if(loE.length){fw+='<div style="font-size:15px;color:#f87171;font-family:\'Playfair Display\',serif;font-weight:700;margin:12px 0 8px">❌ Najslabši časi</div>';fw+=loE.map(e=>{const b=new Date(e.time.getTime()-60*60000),a=new Date(e.time.getTime()+60*60000);return`<div class="fw"><div style="font-size:22px;flex-shrink:0">😴</div><div class="fw-inf"><div style="color:#fff;font-size:15px;margin-bottom:4px;font-weight:700">${fmt(b)} – ${fmt(a)}</div><div style="color:#86efac;font-size:13px;margin-top:3px;font-family:monospace">Oseka ob ${fmt(e.time)} · ${fmtH(e.height)}</div></div><div class="fw-bdg" style="color:#f87171">2h<br>okno</div></div>`;}).join('');}
   const flo=document.getElementById('fw-list-ov');if(flo)flo.innerHTML=fw;
 }
 

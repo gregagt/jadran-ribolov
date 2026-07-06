@@ -398,11 +398,7 @@ button{cursor:pointer;font-family:inherit}button:focus{outline:none}a{color:#38b
     </div>
     <div style="display:none"><div id="fw-list"></div></div>
 
-    <div class="kcard">
-      <div class="clbl" style="color:#38bdf8">⚓ Trajekti — Urniki</div>
-      <div style="font-size:10px;color:#64748b;margin-bottom:10px;font-family:monospace">Uradni urniki Jadrolinija</div>
-      <div id="ferry-btns" style="display:flex;flex-direction:column;gap:8px"></div>
-    </div>
+    
 
     <div class="ferry-card">
       <div class="clbl">⛴️ Trajekt Prizna – Žigljen</div>
@@ -848,25 +844,29 @@ function setFS(s){fSezon=s;const ss=document.getElementById('fs-summer'),sw=docu
 
 // ── Ferry all lines ────────────────────────────────────────────────
 const FERRY_LINES=[
-  {name:'Prizna – Žigljen',sub:'Pag · ~15 min',icon:'⚓',url:'https://www.jadrolinija.hr/vozni-red/brodske-linije/9052'},
-  {name:'Stinica – Mišnjak',sub:'Rab · ~15 min',icon:'⚓',url:'https://www.jadrolinija.hr/vozni-red/brodske-linije/9053'},
-  {name:'Valbiska – Merag',sub:'Cres · ~30 min',icon:'⚓',url:'https://www.jadrolinija.hr/vozni-red/brodske-linije/9051'},
-  {name:'Drvenik – Sučuraj',sub:'Hvar · ~35 min',icon:'⚓',url:'https://www.jadrolinija.hr/vozni-red/brodske-linije/9061'},
-  {name:'Split – Supetar',sub:'Brač · ~50 min',icon:'⚓',url:'https://www.jadrolinija.hr/vozni-red/brodske-linije/9030'},
-  {name:'Split – Stari Grad',sub:'Hvar · ~2h',icon:'⚓',url:'https://www.jadrolinija.hr/vozni-red/brodske-linije/9026'},
+  {name:'Prizna – Žigljen',sub:'Pag · ~15 min',icon:'⚓',url:'https://www.jadrolinija.hr/vozni-red/trajektne-linije/prizna-zigljen-9052'},
+  {name:'Stinica – Mišnjak',sub:'Rab · ~15 min',icon:'⚓',url:'https://www.jadrolinija.hr/vozni-red/trajektne-linije/stinica-misnjak-9053'},
+  {name:'Valbiska – Merag',sub:'Cres · ~30 min',icon:'⚓',url:'https://www.jadrolinija.hr/vozni-red/trajektne-linije/valbiska-merag-9051'},
+  {name:'Drvenik – Sučuraj',sub:'Hvar · ~35 min',icon:'⚓',url:'https://www.jadrolinija.hr/vozni-red/trajektne-linije/drvenik-sudurad-9067'},
+  {name:'Split – Supetar',sub:'Brač · ~50 min',icon:'⚓',url:'https://www.jadrolinija.hr/vozni-red/trajektne-linije/split-supetar-9030'},
+  {name:'Split – Stari Grad',sub:'Hvar · ~2h',icon:'⚓',url:'https://www.jadrolinija.hr/vozni-red/trajektne-linije/split-stari-grad-hvar-9026'},
 ];
 
 function renderFerry(){
-  const fb=document.getElementById('ferry-btns');
-  if(!fb)return;
-  fb.innerHTML=FERRY_LINES.map(l=>`
+  // Update ferry-lbl
+  const fl=document.getElementById('ferry-lbl');
+  if(fl)fl.innerHTML='<a href="https://www.jadrolinija.hr/vozni-red/trajektne-linije/prizna-zigljen-9052" target="_blank" style="color:#38bdf8;text-decoration:none">📋 Preveri urnik →</a>';
+}
+
+function openFerryMap(){
+  // Show ferry lines list in ov-ferry-all
+  const fb=document.getElementById('ferry-lines-list');
+  if(fb)fb.innerHTML=FERRY_LINES.map(l=>`
     <button onclick="window.open('${l.url}','_blank')" class="smb">
       <div class="smb-l"><span>${l.icon}</span><div><div style="font-size:13px">${l.name}</div><div style="font-size:10px;color:#94a3b8">${l.sub}</div></div></div>
       <span style="font-size:18px;color:#60a5fa">›</span>
     </button>`).join('');
-  // Update ferry-lbl
-  const fl=document.getElementById('ferry-lbl');
-  if(fl)fl.innerHTML='<a href="https://www.jadrolinija.hr/vozni-red/brodske-linije/9052" target="_blank" style="color:#38bdf8;text-decoration:none">📋 Preveri urnik →</a>';
+  O('ov-ferry-all');
 }
 
 

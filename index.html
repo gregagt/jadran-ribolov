@@ -312,16 +312,59 @@ button{cursor:pointer;font-family:inherit}button:focus{outline:none}a{color:#38b
   </div>
 
   <div id="v-t">
-    <div class="tgrid">
-      
-      <div class="card">
-        <div class="clbl">🌙 Luna</div>
-        <span style="font-size:44px;display:block;text-align:center;margin:3px 0 5px" id="moon-ico">🌕</span>
-        <div style="color:#cbd5e1;font-size:13px;text-align:center" id="moon-name"></div>
-        <div style="color:#64748b;font-size:10px;text-align:center;margin-top:3px" id="moon-phase"></div>
-        <div style="color:#475569;font-size:9px;text-align:center;margin-top:6px;line-height:1.5" id="moon-tip"></div>
+        <div class="card">
+        <div class="clbl">☀️ Sonce &amp; 🌙 Luna</div>
+        <div style="display:flex;gap:10px;margin-top:6px;align-items:stretch">
+          <!-- Sonce -->
+          <div style="flex:1;display:flex;flex-direction:column;border-right:1px solid #1e3a5f;padding-right:8px">
+            <div style="text-align:center">
+              <svg viewBox="0 0 80 80" width="36" height="36" style="display:block;margin:0 auto 3px">
+                <circle cx="40" cy="40" r="36" fill="none" stroke="#fbbf2430" stroke-width="8"/>
+                <g stroke="#fbbf24" stroke-width="3" stroke-linecap="round">
+                  <line x1="40" y1="5" x2="40" y2="14"/><line x1="40" y1="66" x2="40" y2="75"/>
+                  <line x1="5" y1="40" x2="14" y2="40"/><line x1="66" y1="40" x2="75" y2="40"/>
+                  <line x1="13" y1="13" x2="19" y2="19"/><line x1="61" y1="61" x2="67" y2="67"/>
+                  <line x1="67" y1="13" x2="61" y2="19"/><line x1="13" y1="67" x2="19" y2="61"/>
+                </g>
+                <circle cx="40" cy="40" r="17" fill="#fbbf24"/><circle cx="40" cy="40" r="13" fill="#fde68a"/>
+              </svg>
+              <div style="color:#fbbf24;font-size:11px;font-weight:600">Sonce</div>
+              <div style="color:#64748b;font-size:10px;margin-top:1px" id="day-len">--h --m</div>
+            </div>
+            <div style="margin-top:auto;padding-top:8px">
+              <div style="display:flex;align-items:center;gap:4px;background:#1a1000;border:1px solid #78350f;border-radius:6px;padding:4px 8px;margin-bottom:4px">
+                <span style="color:#fbbf24;font-size:11px">▲</span>
+                <div><div style="font-family:'Playfair Display',serif;font-size:14px;color:#e2e8f0;line-height:1" id="sun-rise">--:--</div><div style="font-size:9px;color:#fbbf24">vzide</div></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:4px;background:#180800;border:1px solid #7c2d12;border-radius:6px;padding:4px 8px">
+                <span style="color:#f97316;font-size:11px">▼</span>
+                <div><div style="font-family:'Playfair Display',serif;font-size:14px;color:#e2e8f0;line-height:1" id="sun-set">--:--</div><div style="font-size:9px;color:#f97316">zaide</div></div>
+              </div>
+            </div>
+          </div>
+          <!-- Luna -->
+          <div style="flex:1;display:flex;flex-direction:column">
+            <div style="text-align:center">
+              <span style="font-size:36px;display:block;margin-bottom:2px" id="moon-ico">🌕</span>
+              <div style="color:#cbd5e1;font-size:11px;font-weight:600" id="moon-name"></div>
+              <div style="color:#64748b;font-size:10px;margin-top:1px" id="moon-phase"></div>
+              <div style="color:#4ade80;font-size:9px;margin-top:1px" id="moon-tip"></div>
+            </div>
+            <div style="margin-top:auto;padding-top:8px">
+              <div style="display:flex;align-items:center;gap:4px;background:#0f1e35;border:1px solid #1e3a5f;border-radius:6px;padding:4px 8px;margin-bottom:4px">
+                <span style="color:#94a3b8;font-size:11px">▲</span>
+                <div><div style="font-family:'Playfair Display',serif;font-size:14px;color:#e2e8f0;line-height:1" id="moon-rise">--:--</div><div style="font-size:9px;color:#94a3b8">vzide</div></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:4px;background:#0a1628;border:1px solid #1e2a3f;border-radius:6px;padding:4px 8px">
+                <span style="color:#64748b;font-size:11px">▼</span>
+                <div><div style="font-family:'Playfair Display',serif;font-size:14px;color:#e2e8f0;line-height:1" id="moon-set">--:--</div><div style="font-size:9px;color:#64748b">zaide</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+    </div
+
 
     <div class="wcard">
       <div class="clbl">⛅ Vreme &amp; Morje <span id="w-loc-lbl" style="color:#64748b;font-size:11px;float:right;font-family:monospace;text-transform:none;letter-spacing:0"></span></div>
@@ -333,6 +376,10 @@ button{cursor:pointer;font-family:inherit}button:focus{outline:none}a{color:#38b
     <div class="card">
       <div class="clbl">🌊 Graf plime in oseke <span id="chart-loc-lbl" style="color:#64748b;font-size:11px;float:right;font-family:monospace;text-transform:none;letter-spacing:0"></span></div>
       <div class="src-row" id="src-row"></div>
+      <div style="display:flex;gap:5px;margin-bottom:8px">
+        <button onclick="setTideSrc('harmonic')" id="src-btn-harmonic" style="flex:1;font-size:10px;font-family:monospace;padding:5px 4px;border-radius:6px;border:1px solid #3b82f6;background:#1d4ed8;color:#fff;cursor:pointer">📐 Harmonični</button>
+        <button onclick="setTideSrc('tidesatlas')" id="src-btn-tidesatlas" style="flex:1;font-size:10px;font-family:monospace;padding:5px 4px;border-radius:6px;border:1px solid #1e3a5f;background:#0a1628;color:#94a3b8;cursor:pointer">🌊 TidesAtlas</button>
+      </div>
       <div style="width:100%;overflow-x:auto"><svg id="chart-sm" viewBox="0 0 600 155" style="width:100%;height:auto;display:block"></svg></div>
       <div class="cnote" id="cnote" style="display:none">── trenutni čas</div>
       <button class="smb" onclick="O('ov-chart')" style="margin-top:10px"><div class="smb-l"><span>📊</span><span>Pokaži več — detajlni graf z ribolovnimi %</span></div><span style="font-size:18px;color:#60a5fa">›</span></button>
@@ -411,6 +458,8 @@ let selLoc=LOCS[0];
 let calY=selDate.getFullYear(), calM=selDate.getMonth();
 let _pts=[], _exs=[], _rid=0;
 let tCache={}, wCache={}, fcCache={};
+let tideSrcOverride='harmonic';
+function setTideSrc(src){tideSrcOverride=src;['tidesatlas','harmonic','auto'].forEach(s=>{const b=document.getElementById('src-btn-'+s);if(b){b.style.background=s===src?'#1d4ed8':'#0a1628';b.style.color=s===src?'#fff':'#94a3b8';b.style.borderColor=s===src?'#3b82f6':'#1e3a5f';}});tCache={};render();}
 let apiKey=''; try{apiKey=localStorage.getItem('wt_key')||'';}catch(e){}
 const SG_KEY_DEFAULT='d79adcc6-5b6e-11f1-b099-0242ac120004-d79add20-5b6e-11f1-b099-0242ac120004';
 let sgKey=SG_KEY_DEFAULT; try{const sk=localStorage.getItem('sg_key');if(sk&&sk.length>20)sgKey=sk;}catch(e){}
@@ -522,11 +571,9 @@ async function fetchWT(loc,date){
   const r={pts,exs,src:'worldtides'};tCache[ck]=r;return r;
 }
 async function getTides(loc,date){
-  if(sgKey){try{return await fetchSG(loc,date);}catch(e){
-    if(apiKey){try{return await fetchWT(loc,date);}catch(e2){const h=buildHarmonic(loc,date);h.apiErr='SG: '+e.message;return h;}}
-    const h=buildHarmonic(loc,date);h.apiErr='Stormglass: '+e.message;return h;
-  }}
-  if(apiKey){try{return await fetchWT(loc,date);}catch(e){const h=buildHarmonic(loc,date);h.apiErr=e.message;return h;}}
+  if(tideSrcOverride==='harmonic')return buildHarmonic(loc,date);
+  if(tideSrcOverride==='tidesatlas'){try{return await fetchTA(loc,date);}catch(e){const h=buildHarmonic(loc,date);h.apiErr='TA: '+e.message;return h;}}
+  // AUTO: harmonic
   return buildHarmonic(loc,date);
 }
 
@@ -1050,6 +1097,49 @@ function saveCfg(){
 }
 
 // ── Main render ───────────────────────────────────────────────────
+// ── Astronomski izračun sonca in lune ──────────────────────────────
+function calcSunTimes(date,lat,lon){
+  const rad=Math.PI/180;
+  const jd=Math.floor(date/86400000)+2440588,n=jd-2451545;
+  const L=(280.46+0.9856474*n)%360,g=(357.528+0.9856003*n)*rad;
+  const lam=(L+1.915*Math.sin(g)+0.02*Math.sin(2*g))*rad,eps=23.439*rad;
+  const sinD=Math.sin(eps)*Math.sin(lam),decl=Math.asin(sinD);
+  const ra=Math.atan2(Math.sin(lam)*Math.cos(eps),Math.cos(lam));
+  const eot=(lam-ra)/rad/15;
+  const cosH=(-Math.sin(-0.833*rad)-Math.sin(lat*rad)*sinD)/(Math.cos(lat*rad)*Math.cos(decl));
+  if(Math.abs(cosH)>1)return null;
+  const H=Math.acos(cosH)/rad,tz=-new Date(date).getTimezoneOffset()/60;
+  const noon=12-eot-lon/15+tz,rise=noon-H/15,set=noon+H/15;
+  const fmt=t=>{t=((t%24)+24)%24;const h=Math.floor(t),m=Math.round((t-h)*60);return String(h).padStart(2,'0')+':'+String(m>=60?m-60:m<0?m+60:m).padStart(2,'0');};
+  return{rise:fmt(rise),set:fmt(set)};
+}
+function moonPos(jd){
+  const r=Math.PI/180,d=jd-2451545;
+  const L=(218.316+13.176396*d)%360,M=(134.963+13.064993*d)*r,F=(93.272+13.229350*d)*r;
+  const lam=(L+6.289*Math.sin(M))*r,beta=5.128*Math.sin(F)*r,del=385001-20905*Math.cos(M);
+  const e=23.439*r,ra=Math.atan2(Math.sin(lam)*Math.cos(e)-Math.tan(beta)*Math.sin(e),Math.cos(lam));
+  const dec=Math.asin(Math.sin(beta)*Math.cos(e)+Math.cos(beta)*Math.sin(e)*Math.sin(lam));
+  return{ra,dec,del};
+}
+function moonAltAt(jd,lat,lon){
+  const r=Math.PI/180,{ra,dec,del}=moonPos(jd);
+  const gmst=(280.46061837+360.98564736629*(jd-2451545))*r,ha=gmst+lon*r-ra;
+  const h0=0.7275*Math.asin(6378.14/del)-0.5667*r;
+  return Math.asin(Math.sin(lat*r)*Math.sin(dec)+Math.cos(lat*r)*Math.cos(dec)*Math.cos(ha))-h0;
+}
+function calcMoonTimes(date,lat,lon){
+  const tz=-new Date(date).getTimezoneOffset()/60,jd0=Math.floor(date/86400000)+2440588;
+  let prev=moonAltAt(jd0,lat,lon),rise=null,set2=null;
+  for(let h=1;h<=25;h++){
+    const cur=moonAltAt(jd0+h/24,lat,lon);
+    if(prev<0&&cur>=0&&rise===null)rise=h-cur/(cur-prev);
+    if(prev>=0&&cur<0&&set2===null)set2=h-cur/(cur-prev);
+    prev=cur;
+  }
+  const fmt=t=>{if(t===null)return'--:--';t=((t+tz)%24+24)%24;const h=Math.floor(t),m=Math.round((t-h)*60);return String(h).padStart(2,'0')+':'+String(m>=60?m-60:m<0?m+60:m).padStart(2,'0');};
+  return{rise:fmt(rise),set:fmt(set2)};
+}
+
 async function render(){
   const myID=++_rid,date=new Date(selDate.getTime()),loc=selLoc;
   const today=new Date();today.setHours(0,0,0,0);
@@ -1061,6 +1151,10 @@ async function render(){
   const moon=getMoon(date);
   const mi=document.getElementById('moon-ico'),mn=document.getElementById('moon-name'),mp=document.getElementById('moon-phase'),mt=document.getElementById('moon-tip');
   if(mi)mi.textContent=moon.i;if(mn)mn.textContent=moon.n;if(mp)mp.textContent='Faza: '+moon.p.toFixed(1)+' dni';
+  const sunT=calcSunTimes(date.getTime(),loc.lat,loc.lon);
+  if(sunT){const srEl=document.getElementById('sun-rise'),ssEl=document.getElementById('sun-set'),dlEl=document.getElementById('day-len');if(srEl)srEl.textContent=sunT.rise;if(ssEl)ssEl.textContent=sunT.set;if(dlEl){const[sh,sm]=sunT.rise.split(':').map(Number),[eh,em]=sunT.set.split(':').map(Number);dlEl.textContent=Math.floor((eh*60+em-sh*60-sm)/60)+'h '+((eh*60+em-sh*60-sm)%60)+'m';}}
+  const moonT=calcMoonTimes(date.getTime(),loc.lat,loc.lon);
+  if(moonT){const mr=document.getElementById('moon-rise'),ms=document.getElementById('moon-set');if(mr)mr.textContent=moonT.rise;if(ms)ms.textContent=moonT.set;}
   if(mt)mt.textContent=moon.p<2||Math.abs(moon.p-14.77)<1.5?'★ Idealno za ribolov!':moon.p>12&&moon.p<17.5?'Dober čas':'Povprečen čas';
   const wc=document.getElementById('w-content');
   if(wc)wc.innerHTML='<div style="text-align:center;color:#334155;font-size:11px;padding:16px;letter-spacing:2px">⟳ NALAGANJE...</div>';

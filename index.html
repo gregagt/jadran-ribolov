@@ -213,7 +213,7 @@ button{cursor:pointer;font-family:inherit}button:focus{outline:none}a{color:#38b
       <div><div style="color:#e2e8f0;font-size:16px;font-family:'Playfair Display',serif">Prizna – Žigljen</div>
       <div style="color:#94a3b8;font-size:12px;margin-top:3px">~15 min · Jadrolinija L9052</div></div>
     </div>
-    <a href="https://www.jadrolinija.hr/vozni-red/trajektne-linije/prizna-zigljen-9052" target="_blank" style="display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,#1d4ed8,#1e40af);border-radius:12px;padding:14px 16px;color:#fff;font-size:13px;text-decoration:none;margin-bottom:10px">
+    <a href="https://www.jadrolinija.hr" target="_blank" style="display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,#1d4ed8,#1e40af);border-radius:12px;padding:14px 16px;color:#fff;font-size:13px;text-decoration:none;margin-bottom:10px">
       <div style="display:flex;align-items:center;gap:10px"><span style="font-size:20px">📋</span><div><div style="font-weight:600">Uradni urnik Jadrolinija</div><div style="font-size:11px;opacity:.8;margin-top:2px">jadrolinija.hr · vedno ažuren</div></div></div>
       <span style="font-size:20px">›</span>
     </a>
@@ -406,7 +406,7 @@ button{cursor:pointer;font-family:inherit}button:focus{outline:none}a{color:#38b
           <div style="color:#e2e8f0;font-family:'Playfair Display',serif;font-size:16px">Jadrolinija · Linija 9052</div>
         </div>
       </div>
-      <a href="https://www.jadrolinija.hr/vozni-red/trajektne-linije/prizna-zigljen-9052" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;background:#0f1e35;border:1px solid #1e3a5f;border-radius:10px;padding:10px;margin-bottom:10px;color:#38bdf8;font-size:12px;font-family:monospace;text-decoration:none;letter-spacing:1px">
+      <a href="https://www.jadrolinija.hr" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;background:#0f1e35;border:1px solid #1e3a5f;border-radius:10px;padding:10px;margin-bottom:10px;color:#38bdf8;font-size:12px;font-family:monospace;text-decoration:none;letter-spacing:1px">
         📋 URADNI URNIK JADROLINIJA →
       </a>
       <div style="display:flex;align-items:center;justify-content:space-between;background:#040e1c;border-radius:8px;padding:8px 12px;margin-bottom:8px">
@@ -570,6 +570,46 @@ async function fetchWT(loc,date){
   const exs=data.extremes.map(e=>{const d=new Date(e.dt*1000),m=Math.round((d-ds)/60000);return{minute:m,height:e.height,time:d,type:e.type==='High'?'high':'low'};}).filter(e=>e.minute>=0&&e.minute<=1440);
   const r={pts,exs,src:'worldtides'};tCache[ck]=r;return r;
 }
+// ── TidesAtlas ─────────────────────────────────────────────────────
+const TA_KEY='ta_90304450b340e081b15310494d1cf767a217a234f90016ec9094c9c1b5c7';
+const TA_PORTS={pag:'zadar',zadar:'zadar',split:'split',dubrovnik:'dubrovnik',pula:'pula',cervar:'pula',rovinj:'rovinj'};
+
+function reconstructCurve(exs,d0){
+  if(!exs||exs.length<2)return[];
+  const pts=[],sorted=[...exs].sort((a,b)=>a.minute-b.minute);
+  const first=sorted[0],last=sorted[sorted.length-1];
+  if(first.minute>0)sorted.unshift({minute:0,height:first.type==='high'?first.height-.1:first.height+.1,time:new Date(d0),type:first.type==='high'?'low':'high'});
+  if(last.minute<1440)sorted.push({minute:1440,height:last.type==='high'?last.height-.1:last.height+.1,time:new Date(d0.getTime()+1440*60000),type:last.type==='high'?'low':'high'});
+  for(let i=0;i<sorted.length-1;i++){
+    const a=sorted[i],b=sorted[i+1],steps=Math.max(1,Math.round((b.minute-a.minute)/15));
+    for(let j=0;j<=steps;j++){
+      const t=j/steps,m=Math.round(a.minute+(b.minute-a.minute)*t);
+      pts.push({minute:m,height:parseFloat((a.height+(b.height-a.height)*(1-Math.cos(Math.PI*t))/2).toFixed(3)),time:new Date(d0.getTime()+m*60000)});
+    }
+  }
+  return pts;
+}
+
+async function fetchTA(loc,date){
+  const ld=lD(date),ckey='ta_'+loc.id+'_'+ld;
+  if(tCache[ckey])return tCache[ckey];
+  const port=TA_PORTS[loc.id]||'split';
+  let res;
+  try{res=await fetch('https://tidesatlas.com/api/v1/tides?port='+port+'&date='+ld+'&days=1',{headers:{'X-API-Key':TA_KEY}});}
+  catch(fe){throw new Error('Network: '+fe.message);}
+  if(!res.ok)throw new Error('TA HTTP '+res.status);
+  const data=await res.json();
+  if(!data.extremes||!data.extremes.length)throw new Error('TA: ni ekstremov');
+  const d0=new Date(date.getFullYear(),date.getMonth(),date.getDate());
+  const exs=data.extremes.filter(e=>e.datetime.startsWith(ld)).map(e=>{
+    const d=new Date(e.datetime),m=Math.round((d-d0)/60000);
+    return{minute:Math.max(0,Math.min(1440,m)),height:e.height_m,time:d,type:e.type==='high'?'high':'low'};
+  });
+  if(!exs.length)throw new Error('TA: ni za '+ld);
+  const r={pts:reconstructCurve(exs,d0),exs,src:'tidesatlas'};
+  tCache[ckey]=r;return r;
+}
+
 async function getTides(loc,date){
   if(tideSrcOverride==='harmonic')return buildHarmonic(loc,date);
   if(tideSrcOverride==='tidesatlas'){try{return await fetchTA(loc,date);}catch(e){const h=buildHarmonic(loc,date);h.apiErr='TA: '+e.message;return h;}}
@@ -842,7 +882,7 @@ function buildFerryAll(){
       <div class="fl-times-wrap">${times.map((t,i)=>`<span class="fl-time${i===ni?' next':''}">${t}</span>`).join('')}</div>
     </div>`;
   };
-  let h='<div style="background:#0a1628;border:1px solid #334155;border-radius:9px;padding:9px 12px;margin-bottom:12px;font-size:12px;color:#475569;line-height:1.6">⚠️ Urniki so <strong style="color:#e2e8f0">orientacijski</strong> — preverite na <a href="https://www.jadrolinija.hr/vozni-red" target="_blank" style="color:#38bdf8">jadrolinija.hr</a></div>';
+  let h='<div style="background:#0a1628;border:1px solid #334155;border-radius:9px;padding:9px 12px;margin-bottom:12px;font-size:12px;color:#475569;line-height:1.6">⚠️ Urniki so <strong style="color:#e2e8f0">orientacijski</strong> — preverite na <a href="https://www.jadrolinija.hr" target="_blank" style="color:#38bdf8">jadrolinija.hr</a></div>';
   FERRY_ALL.forEach(reg=>{
     h+=`<div class="fl-region"><div class="fl-region-title">${reg.region}</div>`;
     reg.lines.forEach(line=>{
@@ -866,7 +906,7 @@ function buildFerryAll(){
     });
     h+='</div>';
   });
-  h+=`<div style="text-align:center;margin-top:8px"><a href="https://www.jadrolinija.hr/vozni-red/brodske-linije" target="_blank" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#1d4ed8,#1e40af);border:1px solid #3b82f6;border-radius:10px;padding:11px 20px;color:#fff;font-size:12px;font-family:monospace;text-decoration:none;letter-spacing:1px">🌐 JADROLINIJA.HR — URADNI URNIKI</a></div>`;
+  h+=`<div style="text-align:center;margin-top:8px"><a href="https://www.jadrolinija.hr" target="_blank" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#1d4ed8,#1e40af);border:1px solid #3b82f6;border-radius:10px;padding:11px 20px;color:#fff;font-size:12px;font-family:monospace;text-decoration:none;letter-spacing:1px">🌐 JADROLINIJA.HR — URADNI URNIKI</a></div>`;
   el.innerHTML=h;
 }
 
@@ -966,7 +1006,7 @@ function initFerryMap(){
     // Invisible hit area + visible line
     const hit=L.polyline(route.coords,{color:col,weight:20,opacity:0}).addTo(_map);
     const vis=L.polyline(route.coords,{color:col,weight:4,opacity:.8}).addTo(_map);
-    const url=route.url||'https://www.jadrolinija.hr/vozni-red/trajektne-linije';
+    const url=route.url||'https://www.jadrolinija.hr';
     const popup=`<div style="background:#0a1628;border-radius:10px;padding:12px;min-width:210px">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
         <span style="font-size:20px">⛴️</span>

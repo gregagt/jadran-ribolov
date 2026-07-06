@@ -408,7 +408,7 @@ button{cursor:pointer;font-family:inherit}button:focus{outline:none}a{color:#38b
       <div class="clbl">⛴️ Trajekt Prizna – Žigljen</div>
       <div style="display:flex;align-items:center;gap:14px;padding:2px 0 4px">
         <div style="font-size:44px">⛴️</div>
-        <div style="flex:1"><div style="color:#e2e8f0;font-family:'Playfair Display',serif;font-size:18px;margin-bottom:3px">Jadrolinija · Linija 9052</div><div id="ferry-lbl" style="color:#38bdf8;font-size:14px;font-family:monospace;margin-bottom:3px">⟳ nalagam...</div><div style="color:#94a3b8;font-size:12px">~15 min prečkanje</div></div>
+        <div style="flex:1"><div style="color:#e2e8f0;font-family:'Playfair Display',serif;font-size:18px;margin-bottom:3px">Jadrolinija · Linija 9052</div><div id="ferry-lbl" style="color:#38bdf8;font-size:14px;font-family:monospace;margin-bottom:3px">⛴️ Prizna – Žigljen</div><div style="color:#94a3b8;font-size:12px">~15 min prečkanje</div></div>
       </div>
       <div style="display:flex;gap:8px;margin-top:10px">
         <button class="smb" onclick="O('ov-ferry');toggleSched(true)" style="flex:1"><div class="smb-l"><span>🕐</span><span>Urnik odhodov</span></div><span style="font-size:18px;color:#60a5fa">›</span></button>
@@ -856,22 +856,17 @@ const FERRY_LINES=[
   {name:'Split – Stari Grad',sub:'Hvar · ~2h',icon:'⚓',url:'https://www.jadrolinija.hr/vozni-red/brodske-linije/9026'},
 ];
 
-let _ferryUrl='';
-function openFerryLine(url){
-  _ferryUrl=url;
-  const fi=document.getElementById('ferry-iframe');
-  if(fi)fi.src=url;
-  O('ov-ferry-line');
-}
-
 function renderFerry(){
   const fb=document.getElementById('ferry-btns');
   if(!fb)return;
   fb.innerHTML=FERRY_LINES.map(l=>`
-    <button onclick="openFerryLine('${l.url}')" class="smb">
+    <button onclick="window.open('${l.url}','_blank')" class="smb">
       <div class="smb-l"><span>${l.icon}</span><div><div style="font-size:13px">${l.name}</div><div style="font-size:10px;color:#94a3b8">${l.sub}</div></div></div>
       <span style="font-size:18px;color:#60a5fa">›</span>
     </button>`).join('');
+  // Update ferry-lbl
+  const fl=document.getElementById('ferry-lbl');
+  if(fl)fl.innerHTML='<a href="https://www.jadrolinija.hr/vozni-red/brodske-linije/9052" target="_blank" style="color:#38bdf8;text-decoration:none">📋 Preveri urnik →</a>';
 }
 
 

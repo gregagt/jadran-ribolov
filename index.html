@@ -397,6 +397,10 @@ button{cursor:pointer;font-family:inherit}button:focus{outline:none}a{color:#38b
         <div class="smb-l"><span>📡</span><div><div style="font-size:13px">Nastavitve Fishfinderja</div><div style="font-size:10px;color:#94a3b8">Humminbird Helix 9 · lignjev 10–35 m</div></div></div>
         <span style="font-size:18px;color:#60a5fa">›</span>
       </button>
+      <button class="smb" onclick="O('ov-ff-steps')" style="margin-bottom:10px">
+        <div class="smb-l"><span>🎛️</span><div><div style="font-size:13px">Navodila po korakih</div><div style="font-size:10px;color:#94a3b8">Katere gumbe pritisnem na Helix 9</div></div></div>
+        <span style="font-size:18px;color:#60a5fa">›</span>
+      </button>
       <div style="display:flex;align-items:center;gap:14px;padding:2px 0 4px">
         <div style="font-size:44px">🪢</div>
         <div style="flex:1"><div style="color:#e2e8f0;font-family:'Playfair Display',serif;font-size:18px;margin-bottom:4px">5 ribiških vozlov</div><div style="color:#4ade80;font-size:13px">Palomar · Rapala · Clinch · Uni · San Diego</div></div>
@@ -1380,6 +1384,148 @@ renderFerry();
       <div style="border-bottom:1px solid #1e3a5f;padding:6px 0;display:flex;justify-content:space-between"><span style="color:#e2e8f0">Svetel razpršen oblak</span><span style="color:#4ade80;font-size:11px">jata lignjev</span></div>
       <div style="border-bottom:1px solid #1e3a5f;padding:6px 0;display:flex;justify-content:space-between"><span style="color:#e2e8f0">Lok (arch)</span><span style="color:#f87171;font-size:11px">riba — ne liganj</span></div>
       <div style="padding:6px 0;display:flex;justify-content:space-between"><span style="color:#e2e8f0">Tanke pike, brez loka</span><span style="color:#fbbf24;font-size:11px">lignjev ali sitke</span></div>
+    </div>
+
+  </div>
+</div>
+
+<div id="ov-ff-steps" class="ovl">
+  <div class="ovl-hdr">
+    <div><div class="ovl-ttl">🎛️ Navodila po korakih</div><div class="ovl-sub">HELIX 9 · PRITISNI TO V TEM VRSTNEM REDU</div></div>
+    <button class="cls-btn" onclick="Z('ov-ff-steps')">✕ Zapri</button>
+  </div>
+  <div class="ovl-body" style="font-size:13px">
+
+    <div style="background:#040e1c;border-radius:10px;padding:12px;margin-bottom:12px">
+      <div style="color:#38bdf8;font-size:11px;font-family:monospace;letter-spacing:2px;margin-bottom:10px">📡 1. NASTAVITEV 2D CHIRP</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="background:#1e3a5f;border-radius:6px;padding:4px 10px;font-family:monospace;font-size:12px;color:#38bdf8;white-space:nowrap">MENU</div>
+          <div style="color:#94a3b8;font-size:12px">Pritisni enkrat</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="background:#1e3a5f;border-radius:6px;padding:4px 10px;font-family:monospace;font-size:12px;color:#38bdf8;white-space:nowrap">Sonar</div>
+          <div style="color:#e2e8f0;font-size:12px">→ izberi <span style="color:#fbbf24">Sonar Menu</span></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="background:#1e3a5f;border-radius:6px;padding:4px 10px;font-family:monospace;font-size:12px;color:#38bdf8;white-space:nowrap">Frequency</div>
+          <div style="color:#e2e8f0;font-size:12px">→ nastavi na <span style="color:#4ade80;font-weight:700">High CHIRP</span></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="background:#1e3a5f;border-radius:6px;padding:4px 10px;font-family:monospace;font-size:12px;color:#38bdf8;white-space:nowrap">Sensitivity</div>
+          <div style="color:#e2e8f0;font-size:12px">→ nastavi na <span style="color:#fbbf24;font-weight:700">75%</span></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="background:#1e3a5f;border-radius:6px;padding:4px 10px;font-family:monospace;font-size:12px;color:#38bdf8;white-space:nowrap">Depth Range</div>
+          <div style="color:#e2e8f0;font-size:12px">→ <span style="color:#fbbf24">Manual</span> → 0–45 m</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="background:#1e3a5f;border-radius:6px;padding:4px 10px;font-family:monospace;font-size:12px;color:#38bdf8;white-space:nowrap">Ping Speed</div>
+          <div style="color:#e2e8f0;font-size:12px">→ nastavi na <span style="color:#fbbf24;font-weight:700">9</span></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="background:#1e3a5f;border-radius:6px;padding:4px 10px;font-family:monospace;font-size:12px;color:#38bdf8;white-space:nowrap">Colorline</div>
+          <div style="color:#e2e8f0;font-size:12px">→ nastavi na <span style="color:#fbbf24;font-weight:700">5</span></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="background:#1e3a5f;border-radius:6px;padding:4px 10px;font-family:monospace;font-size:12px;color:#38bdf8;white-space:nowrap">Upper Limit</div>
+          <div style="color:#e2e8f0;font-size:12px">→ nastavi na <span style="color:#fbbf24;font-weight:700">5 m</span></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="background:#1d4ed8;border-radius:6px;padding:4px 10px;font-family:monospace;font-size:12px;color:#fff;white-space:nowrap">EXIT</div>
+          <div style="color:#94a3b8;font-size:12px">Izhod iz menija</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:#040e1c;border-radius:10px;padding:12px;margin-bottom:12px">
+      <div style="color:#4ade80;font-size:11px;font-family:monospace;letter-spacing:2px;margin-bottom:10px">📺 2. MEGA DOWN IMAGING</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="background:#1e3a5f;border-radius:6px;padding:4px 10px;font-family:monospace;font-size:12px;color:#38bdf8;white-space:nowrap">MENU</div>
+          <div style="color:#94a3b8;font-size:12px">Pritisni enkrat</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="background:#1e3a5f;border-radius:6px;padding:4px 10px;font-family:monospace;font-size:12px;color:#38bdf8;white-space:nowrap">Down Imaging</div>
+          <div style="color:#e2e8f0;font-size:12px">→ <span style="color:#fbbf24">DI Menu</span></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="background:#1e3a5f;border-radius:6px;padding:4px 10px;font-family:monospace;font-size:12px;color:#38bdf8;white-space:nowrap">Frequency</div>
+          <div style="color:#e2e8f0;font-size:12px">→ <span style="color:#4ade80;font-weight:700">MEGA</span></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="background:#1e3a5f;border-radius:6px;padding:4px 10px;font-family:monospace;font-size:12px;color:#38bdf8;white-space:nowrap">Sensitivity</div>
+          <div style="color:#e2e8f0;font-size:12px">→ <span style="color:#fbbf24;font-weight:700">85%</span></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="background:#1e3a5f;border-radius:6px;padding:4px 10px;font-family:monospace;font-size:12px;color:#38bdf8;white-space:nowrap">Range</div>
+          <div style="color:#e2e8f0;font-size:12px">→ Manual → <span style="color:#fbbf24;font-weight:700">0–40 m</span></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="background:#1e3a5f;border-radius:6px;padding:4px 10px;font-family:monospace;font-size:12px;color:#38bdf8;white-space:nowrap">Contrast</div>
+          <div style="color:#e2e8f0;font-size:12px">→ <span style="color:#fbbf24;font-weight:700">7</span></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="background:#1e3a5f;border-radius:6px;padding:4px 10px;font-family:monospace;font-size:12px;color:#38bdf8;white-space:nowrap">Palette</div>
+          <div style="color:#e2e8f0;font-size:12px">→ <span style="color:#fbbf24;font-weight:700">Amber</span> ali Blue-Gray</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="background:#1d4ed8;border-radius:6px;padding:4px 10px;font-family:monospace;font-size:12px;color:#fff;white-space:nowrap">EXIT</div>
+          <div style="color:#94a3b8;font-size:12px">Izhod iz menija</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:#040e1c;border-radius:10px;padding:12px;margin-bottom:12px">
+      <div style="color:#a78bfa;font-size:11px;font-family:monospace;letter-spacing:2px;margin-bottom:10px">◀▶ 3. MEGA SIDE IMAGING</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="background:#1e3a5f;border-radius:6px;padding:4px 10px;font-family:monospace;font-size:12px;color:#38bdf8;white-space:nowrap">MENU</div>
+          <div style="color:#94a3b8;font-size:12px">Pritisni enkrat</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="background:#1e3a5f;border-radius:6px;padding:4px 10px;font-family:monospace;font-size:12px;color:#38bdf8;white-space:nowrap">Side Imaging</div>
+          <div style="color:#e2e8f0;font-size:12px">→ <span style="color:#fbbf24">SI Menu</span></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="background:#1e3a5f;border-radius:6px;padding:4px 10px;font-family:monospace;font-size:12px;color:#38bdf8;white-space:nowrap">Frequency</div>
+          <div style="color:#e2e8f0;font-size:12px">→ <span style="color:#a78bfa;font-weight:700">MEGA</span></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="background:#1e3a5f;border-radius:6px;padding:4px 10px;font-family:monospace;font-size:12px;color:#38bdf8;white-space:nowrap">Sensitivity</div>
+          <div style="color:#e2e8f0;font-size:12px">→ <span style="color:#fbbf24;font-weight:700">75%</span></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="background:#1e3a5f;border-radius:6px;padding:4px 10px;font-family:monospace;font-size:12px;color:#38bdf8;white-space:nowrap">SI Range</div>
+          <div style="color:#e2e8f0;font-size:12px">→ <span style="color:#fbbf24;font-weight:700">30 m</span> vsako stran</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="background:#1d4ed8;border-radius:6px;padding:4px 10px;font-family:monospace;font-size:12px;color:#fff;white-space:nowrap">EXIT</div>
+          <div style="color:#94a3b8;font-size:12px">Izhod iz menija</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:#040e1c;border-radius:10px;padding:12px">
+      <div style="color:#fbbf24;font-size:11px;font-family:monospace;letter-spacing:2px;margin-bottom:10px">🖥️ 4. SPLIT SCREEN NASTAVITEV</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="background:#1e3a5f;border-radius:6px;padding:4px 10px;font-family:monospace;font-size:12px;color:#38bdf8;white-space:nowrap">VIEW</div>
+          <div style="color:#94a3b8;font-size:12px">Pritisni gumb VIEW</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="background:#1e3a5f;border-radius:6px;padding:4px 10px;font-family:monospace;font-size:12px;color:#38bdf8;white-space:nowrap">Split Screen</div>
+          <div style="color:#e2e8f0;font-size:12px">→ izberi <span style="color:#fbbf24">2-panel</span></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="background:#1e3a5f;border-radius:6px;padding:4px 10px;font-family:monospace;font-size:12px;color:#38bdf8;white-space:nowrap">Levo</div>
+          <div style="color:#e2e8f0;font-size:12px">→ <span style="color:#4ade80;font-weight:700">Down Imaging</span></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="background:#1e3a5f;border-radius:6px;padding:4px 10px;font-family:monospace;font-size:12px;color:#38bdf8;white-space:nowrap">Desno</div>
+          <div style="color:#e2e8f0;font-size:12px">→ <span style="color:#38bdf8;font-weight:700">2D Sonar</span></div>
+        </div>
+      </div>
     </div>
 
   </div>

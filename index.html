@@ -393,6 +393,10 @@ button{cursor:pointer;font-family:inherit}button:focus{outline:none}a{color:#38b
 
     <div class="kcard">
       <div class="clbl" style="color:#4ade80">🔗 Uporabne povezave</div>
+      <button class="smb" onclick="O('ov-ff')" style="margin-bottom:10px">
+        <div class="smb-l"><span>📡</span><div><div style="font-size:13px">Nastavitve Fishfinderja</div><div style="font-size:10px;color:#94a3b8">Humminbird Helix 9 · lignjev 10–35 m</div></div></div>
+        <span style="font-size:18px;color:#60a5fa">›</span>
+      </button>
       <div style="display:flex;align-items:center;gap:14px;padding:2px 0 4px">
         <div style="font-size:44px">🪢</div>
         <div style="flex:1"><div style="color:#e2e8f0;font-family:'Playfair Display',serif;font-size:18px;margin-bottom:4px">5 ribiških vozlov</div><div style="color:#4ade80;font-size:13px">Palomar · Rapala · Clinch · Uni · San Diego</div></div>
@@ -1103,7 +1107,7 @@ function Z(id){
     if(t)t.textContent='🗺️ Izberi lokacijo';if(s)s.textContent='TAPNI NA KARTI ZA POLJUBNO LOKACIJO';
   }
 }
-document.addEventListener('keydown',e=>{if(e.key==='Escape')['ov-chart','ov-wf','ov-knots','ov-cfg','ov-map','ov-inst','ov-ferry','ov-ferry-all'].forEach(Z);});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')['ov-chart','ov-wf','ov-knots','ov-cfg','ov-map','ov-inst','ov-ferry','ov-ferry-all','ov-ff'].forEach(Z);});
 
 // ── Location helpers ──────────────────────────────────────────────
 function buildLocs(){
